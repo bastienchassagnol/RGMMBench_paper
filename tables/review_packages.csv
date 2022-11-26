@@ -1,0 +1,5 @@
+Platforms;Searched\nterms;Number of\nreturned packages;Number of packages\nimplementing GMMs;Packages implementing GMMs;Packages kept
+Bioconductor;mixture;15;3;epigenomix, fmrs, semisup;varnothing
+Bioconductor;cluster;69;1;Melissa;varnothing
+CRAN;mixture;179;44;AdaptGauss, bayesmix, bgmm\nbmixture, bpgmm, CAMAN, ClusterR, deepgmm\nDPP, dppmix, EMCluster, EMMIXgene\nEMMIXmfa, fabMix, \nflexmix, fmerPack, GMKMcharlie, IMIX, ManlyMix\nmclust, MGMM, mixAK, MixAll, mixdist, mixR\nmixreg, mixsmsn, mixtools, mixture\nMixtureInf, MMDvariance, MVNBayesian, nor1mix\npcensmix, pgmm, pmclust, polySegratioMM\nrebmix, Rmixmod, RMixtComp\nRobMixReg, RPMM, SAGMM, sensory, SMNCensReg;bgmm, EMCluster\nflexmix, GMKMcharlie\nmclust, mixtools, Rmixmod
+CRAN;cluster;418;16;ClusterR, clustMD, DCEM, EMCluster, HDclassif\nManlyMix, mclust, mixAK, MixAll\nmixture, oclust, otrimle, pmclust, rebmix\nRmixmod,  tclust; EMCluster\nmclust, Rmixmod

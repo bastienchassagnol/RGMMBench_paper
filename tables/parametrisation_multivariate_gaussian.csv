@@ -1,0 +1,15 @@
+Model,Notation,Family,M-step,Number of parameters
+EII,[\lambda I],Spherical,CF,\alpha + 1
+VII,[\lambda_j I],Spherical,CF,\alpha + k
+EEI,[\lambda D],Diagonal,CF,\alpha + d
+VEI,[\lambda_j D],Diagonal,IP,\alpha + d + k - 1
+EVI,[\lambda D_j],Diagonal,CF,\alpha + kd - k + 1
+VVI,[\lambda_j D_j],Diagonal,CF,\alpha + kd
+EEE,[\lambda Q D Q^\top],Ellipsoidal,CF,\alpha + \beta
+EVE,[\lambda QD_j Q^\top],Ellipsoidal,IP,\alpha + \beta
+VEE,[\lambda_j Q D Q^\top],Ellipsoidal,IP,\alpha + \beta + (k-1)(d-1)
+VVE,[\lambda_j QD_j Q^\top],Ellipsoidal,IP,\alpha + \beta + d(k-1)
+EEV,[\lambda Q_j D Q_j^\top],Ellipsoidal,CF,\alpha + k \beta - d(k-1)
+VEV,[\lambda_j Q_j D Q_j^\top],Ellipsoidal,IP,\alpha + k \beta - (k-1)(d-1)
+EVV,[\lambda Q_j D_j Q_j^\top],Ellipsoidal,CF,\alpha + k \beta - k + 1
+VVV,[\lambda_j Q_j D_j Q_j^\top],Ellipsoidal,CF,\alpha + k \beta

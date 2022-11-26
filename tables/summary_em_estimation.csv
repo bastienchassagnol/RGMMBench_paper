@@ -1,0 +1,5 @@
+Column1;Univariate GMM;Multivariate GMM
+E-step;\eta_i(j) = \frac{\hat{p}_j^q \mathcal{N} (x_i|\hat{\mu}_j^q, \hat{\sigma}_j^q)}{\sum_{j=1}^k \hat{p}_j^q \mathcal{N} (x_i|\hat{\mu}_j^q, \hat{\sigma}_j^q)};\eta_i(j) = \frac{\hat{p}_j^q \mathcal{N}_D (\boldsymbol{x}_i|\boldsymbol{\hat{\mu}}_j^q, \boldsymbol{\hat{\Sigma}}_j^q)}{\sum_{j=1}^k \hat{p}_j^q \mathcal{N}_D (\boldsymbol{x}_i|\boldsymbol{\hat{\mu}}_j^q, \boldsymbol{\hat{\Sigma}}_j^q)}
+Ratios estimation;\hat{p}_j^{q+1}= \frac{\sum_{i=1}^n \eta_{i}(j)}{n};\hat{p}_j^{q+1}= \frac{\sum_{i=1}^n \eta_{i}(j)}{n}
+Mean estimation;\hat{\mu}_j^{q+1} = \frac{\sum_{i=1}^n \eta_i(j) x_i}{\sum_{i=1}^n \eta_i(j)};\hat{\boldsymbol{\mu}}_j^{q+1} = \frac{\sum_{i=1}^n \eta_i(j) \boldsymbol{x}_i}{\sum_{i=1}^n \eta_i(j)}
+(Co)Variance estimation;\left(\hat{\sigma}_j^2\right)^{q+1}  =  \frac{\sum_{i=1}^n \eta_i(j) \left(x_i - \hat{\mu}_j^{q+1}\right)^2 }{\sum_{i=1}^n \eta_i(j)};\left(\boldsymbol{\hat{\Sigma}}_j^2\right)^{q+1} = \frac{\sum_{i=1}^n \eta_i(j) \left(\boldsymbol{x}_i - \hat{\boldsymbol{\mu}}_j^{q+1} \right)\left(\boldsymbol{x}_i - \hat{\boldsymbol{\mu}}_j^{q+1} \right)^\top }{\sum_{i=1}^n \eta_i(j)}

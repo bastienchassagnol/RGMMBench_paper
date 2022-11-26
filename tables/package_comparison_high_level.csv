@@ -1,0 +1,10 @@
+Column1;mclust;flexmix;mixtools;Rmixmod;EMCluster;bgmm;GMKMcharlie
+Models Available (univariate);canonical;unconstrained;canonical;canonical;unconstrained;canonical;unconstrained
+Models Available (multivariate);canonical;unconstrained diagonal or general;unconstrained;canonical;unconstrained;4 models (diagonal and general, either component specific or global) ;unconstrained
+Labelled data;supervised, unsupervised;unsupervised;unsupervised;supervised, unsupervised;supervised, unsupervised;soft-supervised, supervised, unsupervised;unsupervised
+Variants of the EM algorithm;VBEM;SEM, CEM;ECM;SEM, CEM;redcross;redcross;CW-EM, MML
+Initialisation;hierarchical clustering, quantile;short-EM, random;random;random, short-EM, CEM, SEM;random, short-EM;k-means, quantile;k-means
+Weighted implementation;greentick;redcross;redcross;redcross;redcross;greentick;greentick
+Model or Cluster Selection;BIC, ICL, LRTS;AIC, BIC, ICL;AIC, BIC, ICL, CAIC, LRTS;BIC, ICL, NEC;AIC, BIC, ICL, CLC;GIC;redcross
+Bootstrap Confidence Intervals;greentick;greentick;greentick;redcross;redcross;redcross;redcross
+Visualisation;performance, histograms and boxplots of bootstrapped estimates, density plots, isodensity, scatter plots with uncertainity regions and boundaries;redcross;density curves;density curves, scatter plots with uncertainty boundaries;redcross;performance, scatter plots with uncertainty boundaries;redcross
