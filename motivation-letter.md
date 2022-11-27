@@ -13,11 +13,10 @@ The R Journal
 Dear Professor Cook,
 \bigskip
 
-Please consider our article titled "ToOoOlTiPs: An R Package for Customizable Tooltips in Interactive Graphics" for publication in the R Journal.
+We would like to thank you for considering our manuscript, and the reviewers for their constructive comments. We note that the reviewers found that our article, referred to as article id 2021-201, was an "accurate" and "useful" comparison of R packages estimating the parameters of GMMs by means of the EM algorithm.
 
-The manuscript introduces the new package called `ToOoOlTiPs` which provides examples on how to use interactive graphics in journal articles, and general tips for making an interesting contribution.
 
-We believe the readers of the R Journal will find this article helpful for their work because it provides generally useful instructions that will work for many purposes. 
+We acknowledge that reviewers notably suggested that we improve upon our notations, shorten our statements and that we extend our analysis to the multivariate setting. We revised our manuscript accordingly and answer point-by-point below, using a blue colour to clearly distinguish from the reviewers' comments. You will find the complete response to the reviewers in the zip archive, under "Response_to_the_reviewers__Gaussian_mixtures_in_R.pdf" document.
 
 \bigskip
 \bigskip
@@ -27,15 +26,10 @@ Regards,
     
     
     
-Quietest Quokka  
-Department of Letter Q  
-University of Little Mates  
-Somewhere, Australia  
-qquo@ulm.edu
+Bastien CHASSAGNOL  
+Laboratoire de Probabilités, Statistiques et Modélisation (LPSM), UMR CNRS 8001  
+Sorbonne Université   
+4, Place Jussieu, Paris, France  
+bastien_chassagnol@laposte.net  
 
-\bigskip
 
-NOTES: Modify this file with information about your article. 
-
-1. It may be invisible to you, so be aware that after each address line there are two spaces, this makes the line break correctly.
-2. It is also reasonable to submit an .md format of your motivating letter instead of a pdf. 
