@@ -8,148 +8,48 @@
 Gaussian mixture models (GMMs) are widely used for modelling stochastic problems. Indeed, a wide diversity of packages have been developed in R. However, no recent review describing the main features offered by these packages and comparing their performances has been performed. In this article, we first introduce the GMM and the EM algorithm used to retrieve the parameters of the model and analyse the main features implemented among seven of the most widely used R packages. We then empirically compare their statistical and computational performances in relation with the choice of the initialisation algorithm and the complexity of the mixture. We demonstrate that the best estimation with well-separated components or with a small number of components with distinguishable modes is obtained with REBMIX initialisation, implemented in the \CRANpkg{rebmix} package, while the best estimation with highly overlapping components is obtained with \emph{k}-means or random initialisation. Importantly, we show that implementation details in the EM algorithm yield differences in the parameters' estimation. Especially, packages \CRANpkg{mixtools} (Young et al. 2020) and \CRANpkg{Rmixmod} (Langrognet et al. 2021) estimate the parameters of the mixture with smaller bias, while the RMSE and variability of the estimates is smaller with packages \CRANpkg{bgmm} (Ewa Szczurek 2021) , \CRANpkg{EMCluster} (Chen and Maitra 2022) , \CRANpkg{GMKMcharlie} (Liu 2021) , \CRANpkg{flexmix} (Gruen and Leisch 2022) and \CRANpkg{mclust} (Fraley, Raftery, and Scrucca 2022) . The comparison of these packages provides R users with useful recommendations for improving the computational and statistical performance of their clustering and for identifying common deficiencies. Additionally, we propose several improvements in the development of a future, unified mixture model package.
 }
 
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
+\begin{table}
 
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
---\textgreater{}
---\textgreater{}
---\textgreater{}
-
-\begin{itemize}
-\item
-  Additional files related to the univariate setting
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \textbf{S1.} Bootstrap distributions of the estimated parameters for each
-    scenario described in \ref{tab:parameter-configuration-univariate}, for each
-    combination of package and initialisation method.
-  \item
-    \textbf{S2.} Mean, standard deviation, bias and MSE for each individually
-    estimated parameter in scenarios listed in \ref{tab:parameter-configuration-univariate}, for each
-    combination of package and initialisation method.
-  \item
-    \textbf{S3.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \ref{tab:parameter-configuration-univariate}, for each benchmarked package. We selected the \emph{k}-means
-    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threhsold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
-  \item
-    \textbf{S4.} Distribution of the time computations taken by the six initialisation methods listed in Table Table \ref{tab:general-parameter-description-pdf}.
-  \end{itemize}
-\item
-  Additional files related to the outliers setting:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \textbf{S5.} Bootstrap distributions of the estimated parameters used to
-    generate Figure \ref{fig:outliers}, for each combination of package
-    and initialisation method. Two scenarios were tested, introducing
-    \(2 \%\) and \(4 \%\) of outliers drawn from an improper uniform distribution.
-  \item
-    \textbf{S6.} Mean, standard deviation, bias and MSE for each individually
-    estimated parameter in both scenarios visualised on Figure
-    \ref{fig:outliers}, for each combination of package and
-    initialisation method.
-  \end{itemize}
-\item
-  Additional files related to the multivariate setting:
-
-  \begin{itemize}
-  \item
-    \textbf{S7.} Bootstrap distributions of the estimated parameters for each
-    scenario described in \ref{tab:parameter-configuration-bivariate}, for each
-    combination of package and initialisation method.
-  \item
-    \textbf{S8.} Mean, standard deviation, bias and MSE for each individually
-    estimated parameter in scenarios listed in \ref{tab:parameter-configuration-bivariate}, for each
-    combination of package and initialisation method.
-  \item
-    \textbf{S9.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \ref{tab:parameter-configuration-bivariate}, for each benchmarked package. We selected the \emph{k}-means
-    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
-  \end{itemize}
-\end{itemize}
+\caption{\label{tab:param-multivariate-gaussian}The 14 canonical parametrisations of the within-group covariance matrix $\boldsymbol{\Sigma_j}$ with the corresponding geometric representations.}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{>{\raggedright\arraybackslash}m{2cm}>{\raggedright\arraybackslash}m{3cm}>{\raggedright\arraybackslash}m{3cm}>{\raggedright\arraybackslash}m{2cm}>{\raggedright\arraybackslash}m{4.5cm}>{\raggedright\arraybackslash}m{6.5cm}}
+\toprule
+\multicolumn{1}{c}{\textbf{Model}} & \multicolumn{1}{c}{\textbf{Notation}} & \multicolumn{1}{c}{\textbf{Family}} & \multicolumn{1}{c}{\textbf{M-step}} & \multicolumn{1}{c}{\textbf{Number of parameters}} & \multicolumn{1}{c}{\textbf{Representation}}\\
+\midrule
+\multicolumn{1}{c}{EII} & \multicolumn{1}{c}{$[\lambda I]$} & \multicolumn{1}{c}{Spherical} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EII.png}\\
+\midrule
+\multicolumn{1}{c}{VII} & \multicolumn{1}{c}{$[\lambda_j I]$} & \multicolumn{1}{c}{Spherical} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VII.png}\\
+\midrule
+\multicolumn{1}{c}{EEI} & \multicolumn{1}{c}{$[\lambda D]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + d$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EEI.png}\\
+\midrule
+\multicolumn{1}{c}{VEI} & \multicolumn{1}{c}{$[\lambda_j D]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + d + k - 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VEI.png}\\
+\midrule
+\multicolumn{1}{c}{EVI} & \multicolumn{1}{c}{$[\lambda D_j]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + kd - k + 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EVI.png}\\
+\midrule
+\addlinespace
+\multicolumn{1}{c}{VVI} & \multicolumn{1}{c}{$[\lambda_j D_j]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + kd$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VVI.png}\\
+\midrule
+\multicolumn{1}{c}{EEE} & \multicolumn{1}{c}{$[\lambda Q D Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + \beta$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EEE.png}\\
+\midrule
+\multicolumn{1}{c}{EVE} & \multicolumn{1}{c}{$[\lambda QD_j Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EVE.png}\\
+\midrule
+\multicolumn{1}{c}{VEE} & \multicolumn{1}{c}{$[\lambda_j Q D Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta + (k-1)(d-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VEE.png}\\
+\midrule
+\multicolumn{1}{c}{VVE} & \multicolumn{1}{c}{$[\lambda_j QD_j Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta + d(k-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VVE.png}\\
+\midrule
+\addlinespace
+\multicolumn{1}{c}{EEV} & \multicolumn{1}{c}{$[\lambda Q_j D Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta - d(k-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EEV.png}\\
+\midrule
+\multicolumn{1}{c}{VEV} & \multicolumn{1}{c}{$[\lambda_j Q_j D Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + k \beta - (k-1)(d-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VEV.png}\\
+\midrule
+\multicolumn{1}{c}{EVV} & \multicolumn{1}{c}{$[\lambda Q_j D_j Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta - k + 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EVV.png}\\
+\midrule
+\multicolumn{1}{c}{VVV} & \multicolumn{1}{c}{$[\lambda_j Q_j D_j Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VVV.png}\\
+\midrule
+\bottomrule
+\end{tabular}}
+\end{table}
 
 \hypertarget{references}{%
 \section*{References}\label{references}}
