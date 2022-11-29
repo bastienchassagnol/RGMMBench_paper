@@ -1072,7 +1072,7 @@ to a given class, which explains its rather bad performances with
 overlapping components. Overall, there is always an initialisation
 algorithm performing better than the hierarchical clustering, whereas it
 is by far the slowest and most computationally intensive initialisation
-method.
+method, as best illustrated in supplementary Figure .
 
 Our study reveals differences in the estimates obtained across different packages.
 Yet,  the EM algorithm is supposed to be deterministic but we could relate distinct estimates to differences in implementations and global design.
@@ -1414,21 +1414,20 @@ Parsimonious parametrisation of GMMs models are provided by the following *eigen
 
 ```{=tex}
 \begin{equation}
-    \boldsymbol{\Sigma}_j=\boldsymbol{\lambda}_j \boldsymbol{Q}_j \boldsymbol{D}_j \boldsymbol{Q}_j^\top
+    \boldsymbol{\Sigma}_j=\lambda_j \boldsymbol{Q}_j \boldsymbol{D}_j \boldsymbol{Q}_j^\top
     (\#eq:covariance-decomposition)
 \end{equation}
 ```
 
-with $\boldsymbol{\lambda}_j$ a diagonal matrix whose diagonal elements are the eigenvalues resulting from the factorisation, sorted by decreasing order, $\boldsymbol{D}_j$ a permutation matrix composed of only ones and zeros inputs and $\boldsymbol{Q}_j$ a $D^2$-dimensional *orthogonal matrix* whose
-columns are $D$ linearly independent *eigenvectors* generating an orthonormal $\mathbb{R}^D$ basis while $\boldsymbol{Q}_j^\top$ is its corresponding transpose matrix^[The existence of the decomposition is guaranteed by the positive definiteness constraint over the covariance matrix. Additionally, as
-$\boldsymbol{\Sigma}_j$ is symmetric, $\boldsymbol{Q}_j$ is orthogonal, therefore $\boldsymbol{Q}_j^{-1}=\boldsymbol{Q}_j^\top$. When the matrix to factorise is positive-definite and symmetric, we refer to it as *spectral decomposition*, a special case of *eigendecomposition*.]
+with $\lambda_j=\operatorname{det}\left( \boldsymbol{\Sigma}_j\right)^{\frac{1}{D}}$ a scalar proportional to the total volume of the ellipsoid (or area in bidimensional setting), $\boldsymbol{D}_j$ a diagonal matrix storing the eigenvalues normalised such that $|\boldsymbol{D}_j|=1$^[@R-Rmixmod enforces an additional but, in our opinion, superfluous constraint that the eigen values are sorted by decreasing order] and $\boldsymbol{Q}_j$ a $\mathcal{M}_D(\mathbb{R})$ *orthogonal matrix* whose
+columns are $D$ linearly independent *eigenvectors* generating an orthonormal basis in $\mathbb{R}^D$ while $\boldsymbol{Q}_j^\top$ is its corresponding transpose matrix. The existence of the decomposition is guaranteed by the positive definiteness constraint over the covariance matrix. The orthogonality of $\boldsymbol{Q}_j$ results from its symmetry, implying that $\boldsymbol{Q}_j^{-1}=\boldsymbol{Q}_j^\top$. When the matrix to factorise is positive-definite and symmetric, we also refer to it as *spectral decomposition*, a special case of *eigendecomposition*.
 
 
 Each of these matrices can be constrained to be equal or variable across clusters, hence this decomposition reveals 14 possible models with different geometric characteristics, namely:
 
-- two models with the *spherical family*, for which only $\boldsymbol{\lambda}_j$ is used to control the *isotropic* (same radius in any dimension) volume of each component of the corresponding distribution structure
+- two models with the *spherical family*, for which only $\lambda_j$ is used to control the *isotropic* (same radius in any dimension) volume of each component of the corresponding distribution structure
 
-- four models with the *diagonal family*, using $\boldsymbol{\lambda}_j$ with possibly distinct diagonal elements and $\boldsymbol{D}_j$ to specify the shape of the density contours
+- four models with the *diagonal family*, using $\lambda_j$ with possibly distinct diagonal elements and $\boldsymbol{D}_j$ to specify the shape of the density contours. In that context, $\boldsymbol{Q}_j$ is henceforth a permutation matrix, whose inputs are only zeros and an unique one per row.
 
 - eight models with the *general family*, using additionally $\boldsymbol{Q}_j$ to determine the orientation of the main axes of the ellipsoids. Indeed, in the last two families described, this matrix was equal to the identity, hence the axis of the ellipsoids were aligned with the standard $\mathbb{R}^D$ basis.
 
@@ -1450,7 +1449,10 @@ data %>% kbl(booktabs=T, caption = "The 14 canonical parametrisations of the wit
   column_spec(column = 1:6, width = c("2cm", "3cm", "3cm", "2cm", "4.5cm", "6.5cm"), latex_valign = "m")
 ```
 
-The first column describes in general and understandable terms each parametrisation, with I meaning invariant (alternatively, not used in the parametrisation), E means equal and V variable while the second column matches the corresponding matrix decomposition of the covariance matrix. These 14 models are all included in one of the three super-families: spherical, diagonal and ellipsoidal, reviewed in [Univariate and multivariate Gaussian distributions in the context of mixture models]. For instance, the model VEI has variable volumes $\lambda_j$ in relation with the cluster, however shares same general shape (as we can note on the Representations, all isodensities are spread out along the $x$-axis) and invariant directions (in other words, the transition matrix is the identity matrix, entailing that all scatter plots are aligned with the Cartesian coordinate axes).
+The first column describes in general and understandable terms each parametrisation, with I meaning invariant (alternatively, not used in the parametrisation), E means equal and V variable while the second column matches the corresponding matrix decomposition of the covariance matrix. These 14 models are all included in one of the three super-families: spherical, diagonal and ellipsoidal listed before. As an example, the model VEI has variable volumes $\lambda_j$ in relation with the cluster, however shares same general shape (as we can note on the Representations, all isodensities are spread out along the $x$-axis) and invariant directions (in other words, the transition matrix is the identity matrix, entailing that all scatter plots are aligned with the Cartesian coordinate axes). 
+
+
+Varying the volume $\lambda_j$, given a fixed $\boldsymbol{Q}$ and $\boldsymbol{D}$, amounts to an *enlargement* (when all dimensions of a figure are changed in the same scale, also referred to as *isotropic* transformation),  varying the eigenvectors $\boldsymbol{Q}_j$, given a fixed volume $\lambda_$ and $\boldsymbol{D}$ is equivalent to a rotation and finally varying the diagonal matrix $\boldsymbol{D}_j$, given the other parameters of Equation \@ref(eq:covariance-decomposition) are fixed, results in a *distortion* of the representation.
 
 
 CF means that the M-step is in closed form while IP entails that the M-step is iterative. The number of parameters enumerates the degrees of freedom, namely the number of parameters to truly estimate once the sum-to-one constraint has been guaranteed (Equation \@ref(eq:2)). In details, $k$ is the number of components of the GMM model, $D$ its dimension, $\alpha=kD + k - 1$ is the number of parameters required to identify the mean vector of each component ($kD$) and the ratios $k-1$ and $\beta=\frac{D(D+1)}{2}$ the number of covariance terms to estimate for a given component ($D$ variance diagonal terms, the remaining terms being the pairwise symmetric covariance terms between the dimensional variables). Of note, the complexity of the covariance matrix in the fully unconstrained model (Model VVV) grows linearly with the number of components and explodes squarely with the number of dimensions, while the fully constrained model (Model EII) is constant. Last column represents in an illustrative way the 14 most common GMMs parametrisations, by plotting the ellipses of isodensity of a three components bivariate GMM. For any additional detail, we refer the interested reader to the \pkg{mclust} vignette [@scrucca_etal16] and to the \pkg{Rmixmod} vignette [@R-Rmixmod] for a general introduction to GMMs and to [@banfield_raftery93; @celeux_govaert92; @browne_mcnicholas14] for a comprehensive review of the computational tips and the closed formulas, when available, to estimate each model parametrisation.
@@ -2421,6 +2423,9 @@ pdf_caption_intermediate_scenario_univariate <- "Benchmark summary plots of scen
 
 html_global_heatmap_univariate <- "Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure \\@ref(fig:dichotomy-package-conclusion), in the bivariate setting."
 pdf_global_heatmap_univariate <- "Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure \\ref{fig:dichotomy-package-conclusion}, in the bivariate setting."
+
+html_univariate_init_time <- "Distribution of the running times taken by each initialisation algorithm enumerated in Table \\@ref(tab:general-parameter-description-html), across all scenarios listed in Table \\@ref(tab:parameter-configuration-univariate), sorted by increasing ID number in the lexicographical order."
+pdf_univariate_init_time <- "Distribution of the running times taken by each initialisation algorithm enumerated in Table \\ref{tab:general-parameter-description-pdf}, across all scenarios listed in Table \\ref{tab:parameter-configuration-univariate}, sorted by increasing ID number in the lexicographical order."
 ```
 
 
@@ -2807,13 +2812,30 @@ knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi=300)
 
 \newpage
 ```{r heatmap-all-correlation-plots-univariate, fig.cap= if (univariate_html_ouput) html_global_heatmap_univariate else pdf_global_heatmap_univariate}
-univariate_correlation_heatmaps <- plot_correlation_Heatmap(univariate_distribution_parameters %>% filter(ID=="U9"))
+discriminating_data <- univariate_distribution_parameters %>% dplyr::filter(ID=="U9") %>% 
+  dplyr::bind_rows(readRDS("./tables/univariate/univariate_small_EM.rds"))
+
+univariate_correlation_heatmaps <- plot_correlation_Heatmap(discriminating_data)
+
 univariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=univariate_correlation_heatmaps %>% purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                           top="", ncol = 2)
 ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 300)
 
 knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
 ```
+
+```{r univariate-initialisation-time-computations, fig.cap= if (univariate_html_ouput) html_univariate_init_time else pdf_univariate_init_time}
+
+initialisation_time_data <- readRDS("./tables/univariate/univariate_initialisation_time_computation.rds")
+inialisation_plot <- plot_initialisation_time_computations(initialisation_time_data, size=4, x = 2.6)
+ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 300)
+
+knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
+```
+
+
+
+
 
 The running times displayed in Panel B, from Figure
 \@ref(fig:four-component-balanced-separated) to Figure
