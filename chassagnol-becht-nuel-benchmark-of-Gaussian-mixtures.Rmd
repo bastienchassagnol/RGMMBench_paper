@@ -109,7 +109,9 @@ knitr::opts_chunk$set(
 	tab.cap.pre = "Table ",
 	tab.cap.sep = ": ",
 	fig.cap.pre = "Figure ",
-	fig.cap.sep = ": ")
+	fig.cap.sep = ": ",
+	fig.fullwidth=TRUE,
+	fig.pos = "h")
 
 library(ggplot2)
 library(dplyr)
@@ -119,6 +121,8 @@ library(downlit)
 library(RGMMBench)
 
 options(dplyr.summarise.inform = FALSE) # remove the override .groups argument
+
+# rjtools::initial_check_article(".", dic = "en_GB", ignore=c("gmms", "transcriptomic", "gaussian", "heteroscedascity", "equi", "clusterwise", "underbrace", "homoscedascity", "rebmix", "cran", "bioconductor", "mclust", "kd", "st", "th", "homoscedastic", "hyperparameters"))
 ```
 
 
@@ -287,7 +291,7 @@ fully unconstrained model in both the univariate (heteroscedastic and
 unbalanced classes) and multivariate dimension (unbalanced and complete
 covariance matrices for each cluster) in the remainder of our paper.
 
-\color{black}
+
 ## Parameter estimation in finite mixtures models
 
 A common way for estimating the parameters of a parametric distribution is
@@ -531,7 +535,7 @@ updated and let the user to provide its own initialisation estimates:
 complete inclusion process is detailed in [Appendix C: the meta-analysis workflow for the final selection of CRAN and Bioconductor platforms]. The flowchart summarising
 our choices is represented in Figure \@ref(fig:flowchart):
 
-```{r flowchart, out.width="100%", fig.cap="A minimal roadmap used for the selection of the packages reviewed in our benchmark.", fig.alt="From root to top, we describe schematically the filtering process used for the final selection of the reviewed packages"}
+```{r flowchart, fig.cap="A minimal roadmap used for the selection of the packages reviewed in our benchmark.", fig.alt="From root to top, we describe schematically the filtering process used for the final selection of the reviewed packages"}
 knitr::include_graphics("figs/flowchart_packages_selection.png")
 ```
 
@@ -582,7 +586,7 @@ readr::read_delim("./tables/package_comparison_low_level.csv", delim=";", show_c
   row_spec(0,bold=T, align = "c", hline_after = T) %>%
   row_spec(1:7, hline_after = T, align = "c") %>%
   column_spec(column = 1:9, latex_valign = "m") %>%
-  kable_styling(latex_options=c("HOLD_position", "scale_down"))
+  kable_styling(latex_options=c("hold_position", "scale_down"))
 ```
 
 We further detail features specifically related to GMMs in
@@ -633,7 +637,7 @@ readr::read_delim("./tables/package_comparison_high_level.csv", delim=";", show_
   mutate(dplyr::across(.cols = everything(), ~ gsub(pattern = "redcross", "\\\\redcross", .x)),
          dplyr::across(.cols = everything(), ~ gsub(pattern = "greentick", "\\\\greentick", .x))) %>%
   kbl(booktabs=T, caption = "Custom features associated to GMMs estimation for any of the benchmarked packages.", escape=F) %>%
-  kable_styling(latex_options=c("HOLD_position", "scale_down")) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T, align = "c") %>%
   row_spec(1:7, hline_after = T) %>%
   column_spec(column = 1:8, latex_valign = "m", width = c("2.4cm", "4cm", rep("2.4cm", 6))) %>%
@@ -828,7 +832,7 @@ the initialisation algorithm are not met.
 
 
 The dichotomy between the two classes of packages is highlighted in Figure \@ref(fig:heatmap-all-correlation-plots-univariate).
-\color{green}. Panels A and B show respectively in the univariate and bivariate setting the heatmap of the Pearson correlation between the parameters estimated by the evaluated packages. The correlation matrix was computed using the function
+Panels A and B show respectively in the univariate and bivariate setting the heatmap of the Pearson correlation between the parameters estimated by the evaluated packages. The correlation matrix was computed using the function
 `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("stats::cor"),   '\\code{"stats::cor"}'))`, with option *complete* to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{Complexheatmap}. In both cases, we emphasise the differences between them by choosing the most discriminative scenario, which reveals to be the one featuring the higher imbalance and overlapping components (scenario U9, Table \@ref(tab:parameter-configuration-univariate) in the univariate setting and scenario B11, Table \@ref(tab:parameter-configuration-univariate), for the bivariate simulation), and the most discriminative initialisation method, namely the random one.
 
 
@@ -1006,7 +1010,7 @@ metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "globa
 <!-- ``` -->
 
 
-```{r dichotomy-package-conclusion, fig.cap="Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. Panel C represents a tree summarising the main differences betweent the benchmarked packages in terms of the EM implementation.", out.width="100%"}
+```{r dichotomy-package-conclusion, fig.cap="Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. Panel C represents a tree summarising the main differences betweent the benchmarked packages in terms of the EM implementation."}
 
 knitr::include_graphics("./figs/dichotomy_package_conclusion.png")
 ```
@@ -1042,7 +1046,6 @@ than the previously-published studies [@nityasuddhi_bohning03;
 level of overlap and the imbalance of the mixture proportions on the
 quality of the estimation.
 
-\color{green}
 
 Interestingly, the EM algorithm sometimes tends to returns biased and
 inefficient estimators when the components of the GMM under study highly overlap, confirming the experimental observations reported in papers
@@ -1092,7 +1095,7 @@ Based on these results, we design a decision tree indicating the best choice of 
 
 
 
-```{r decision-tree-GMMs, out.width = "100%",fig.cap="A decision tree to select the best combination of package and initialisation method with respect to the main characteristics of the mixture. It's worth pointing that in both univariate and low dimension multivariate settings, the recommandations are similar."}
+```{r decision-tree-GMMs, fig.cap="A decision tree to select the best combination of package and initialisation method with respect to the main characteristics of the mixture. It's worth pointing that in both univariate and low dimension multivariate settings, the recommandations are similar."}
 
 # decision_tree_univariate <- Node$new("Estimation of the MLE in GMMs")
 # separated <- decision_tree_univariate$AddChild("Well-separated components")
@@ -1302,7 +1305,7 @@ readr::read_delim("./tables/summary_em_estimation.csv", delim=";", show_col_type
   tibble::column_to_rownames("Column1") %>%
   mutate(dplyr::across(.cols = c("Univariate GMM", "Multivariate GMM"), ~ paste0("$", .x, "$"))) %>%
   kbl(booktabs=T, caption = "An overview of the practical implementation of the EM algorithm in GMMs.", escape=F) %>%
-  kable_styling(latex_options=c("HOLD_position", "scale_down")) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T, align = "c") %>%
   row_spec(1:3, hline_after = T, align = "c") %>%
   column_spec(column = 1:3, width = rep("6.8cm", 3), latex_valign = "m") %>%
@@ -1360,7 +1363,7 @@ turn to be equivalent to the computation of the mean and variance of a
 weighted sample, which can be computed in R with
 `r downlit::autolink("stats::weighted.mean()")` and
 `r downlit::autolink("stats::cov.wt()")` functions^[we set the parameter *method* to
-"ML" in the last one, to get the biased but true MLE estimate of the covariance]. Importantly, the value of the mapping function only depends on the set of the observations $X$, but does not depend on the parameter to estimate $\theta$. \textcolor{green}{Indeed, with the approach of the EM algorithm, the MLE is a sufficient statistic. add in the Table above this idea}.
+"ML" in the last one, to get the biased but true MLE estimate of the covariance]. Importantly, the value of the mapping function only depends on the set of the observations $X$, but does not depend on the parameter to estimate $\theta$. Indeed, the statistic computed by the EM algorithm is sufficient, being one of its major advantage.
 
 
 The complete code associated to our R implementation is implemented respectively
@@ -1442,17 +1445,17 @@ Representation <- file.path("./tables", "gaussian_param",paste0(data$Model, ".pn
 
 
 data %>% kbl(booktabs=T, caption = "The 14 canonical parametrisations of the within-group covariance matrix $\\boldsymbol{\\Sigma_j}$ with the corresponding geometric representations.", escape=F) %>%
-  kable_styling(latex_options=c("scale_down")) %>%
+  kable_styling(latex_options=c("scale_down"), font_size = 7) %>%
   row_spec(0,bold=T, align = "c") %>%
   row_spec(1:14, align = "c", hline_after = T) %>%
-  column_spec(6, image=spec_image(Representation, 600, 350, res=600)) %>%
-  column_spec(column = 1:6, width = c("2cm", "3cm", "3cm", "2cm", "4.5cm", "6.5cm"), latex_valign = "m")
+  column_spec(6, image=spec_image(Representation, 400, 235, res=600)) %>%
+  column_spec(column = 1:6, width = c("2cm", "3cm", "3cm", "2cm", "4.5cm", "5cm"), latex_valign = "m")
 ```
 
 The first column describes in general and understandable terms each parametrisation, with I meaning invariant (alternatively, not used in the parametrisation), E means equal and V variable while the second column matches the corresponding matrix decomposition of the covariance matrix. These 14 models are all included in one of the three super-families: spherical, diagonal and ellipsoidal listed before. As an example, the model VEI has variable volumes $\lambda_j$ in relation with the cluster, however shares same general shape (as we can note on the Representations, all isodensities are spread out along the $x$-axis) and invariant directions (in other words, the transition matrix is the identity matrix, entailing that all scatter plots are aligned with the Cartesian coordinate axes). 
 
 
-Varying the volume $\lambda_j$, given a fixed $\boldsymbol{Q}$ and $\boldsymbol{D}$, amounts to an *enlargement* (when all dimensions of a figure are changed in the same scale, also referred to as *isotropic* transformation),  varying the eigenvectors $\boldsymbol{Q}_j$, given a fixed volume $\lambda_$ and $\boldsymbol{D}$ is equivalent to a rotation and finally varying the diagonal matrix $\boldsymbol{D}_j$, given the other parameters of Equation \@ref(eq:covariance-decomposition) are fixed, results in a *distortion* of the representation.
+Varying the volume $\lambda_j$, given a fixed $\boldsymbol{Q}$ and $\boldsymbol{D}$, amounts to an *enlargement* (when all dimensions of a figure are changed in the same scale, also referred to as *isotropic* transformation),  varying the eigenvectors $\boldsymbol{Q}_j$, given a fixed volume $\lambda_j$ and $\boldsymbol{D}$ is equivalent to a rotation and finally varying the diagonal matrix $\boldsymbol{D}_j$, given the other parameters of Equation \@ref(eq:covariance-decomposition) are fixed, results in a *distortion* of the representation.
 
 
 CF means that the M-step is in closed form while IP entails that the M-step is iterative. The number of parameters enumerates the degrees of freedom, namely the number of parameters to truly estimate once the sum-to-one constraint has been guaranteed (Equation \@ref(eq:2)). In details, $k$ is the number of components of the GMM model, $D$ its dimension, $\alpha=kD + k - 1$ is the number of parameters required to identify the mean vector of each component ($kD$) and the ratios $k-1$ and $\beta=\frac{D(D+1)}{2}$ the number of covariance terms to estimate for a given component ($D$ variance diagonal terms, the remaining terms being the pairwise symmetric covariance terms between the dimensional variables). Of note, the complexity of the covariance matrix in the fully unconstrained model (Model VVV) grows linearly with the number of components and explodes squarely with the number of dimensions, while the fully constrained model (Model EII) is constant. Last column represents in an illustrative way the 14 most common GMMs parametrisations, by plotting the ellipses of isodensity of a three components bivariate GMM. For any additional detail, we refer the interested reader to the \pkg{mclust} vignette [@scrucca_etal16] and to the \pkg{Rmixmod} vignette [@R-Rmixmod] for a general introduction to GMMs and to [@banfield_raftery93; @celeux_govaert92; @browne_mcnicholas14] for a comprehensive review of the computational tips and the closed formulas, when available, to estimate each model parametrisation.
@@ -2110,8 +2113,7 @@ packages implementing other unsupervised clustering methods, such as
 *k*-means, KNN or graph clustering, were specifically dedicated to
 specific data, such as single cell analyses. The search term "mixture"
 returned either packages dealing only with non-Gaussian components, such
-as \CRANpkg{fitmix} with log-normal distributions or \CRANpkg{mixtNB}
-with negative binomials, or were dedicated to chemical mixture designs.
+as \CRANpkg{fitmix} with log-normal distributions or were dedicated to chemical mixture designs.
 
 ```{r searched-packages-html, layout="l-body-outset", eval = knitr::is_html_output()}
 readr::read_delim("./tables/review_packages.csv", delim=";", show_col_types = F) %>%
@@ -2135,7 +2137,7 @@ caption = "Meta-analysis summary about the selection of packages implementing th
   row_spec(0,bold=T, align = "c", hline_after = T) %>%
   row_spec(1:4, hline_after = T, align = "c") %>%
   column_spec(column = 1:6, latex_valign = "m") %>%
-  kable_styling(latex_options=c("HOLD_position", "scale_down"))
+  kable_styling(latex_options=c("hold_position", "scale_down"))
 ```
 
 At this stage, too many packages for a tractable benchmark remained. We
@@ -2175,12 +2177,9 @@ criteria:
     algorithm, using maximum likelihood estimation to retrieve the
     parameters of GMMs. For instance, some packages offer a Bayesian
     estimation of the parameters of the model using MCMC methods, such
-    as \CRANpkg{Bayesmix} [@R-bayesmix] , \CRANpkg{bmixture}
-    [@R-bmixture] , \CRANpkg{bpgmm} [@R-bpgmm] , \CRANpkg{DPP} [@R-DPP]
-    , \CRANpkg{dppmix} [@R-dppmix] , \CRANpkg{MVNBayesian }
-    [@R-MVNBayesian] , \CRANpkg{BayesCR} [@R-BayesCR] and
-    \BIOpkg{Melissa} [@R-Melissa] . \CRANpkg{bayesmix} [@R-bayesmix] and
-    \CRANpkg{polySegratioMM} [@R-polySegratioMM] use the Bayesian
+    as \CRANpkg{bmixture} @R-bmixture], \CRANpkg{bpgmm} [@R-bpgmm], \CRANpkg{DPP} [@R-DPP]
+   , \CRANpkg{dppmix} [@R-dppmix], \CRANpkg{BayesCR} [@R-BayesCR] and
+    \BIOpkg{Melissa} [@R-Melissa] . \CRANpkg{polySegratioMM} [@R-polySegratioMM] uses the Bayesian
     framework JAGS's interface in R. Alternatively, other algorithms
     focusing on maximising the likelihood do exist, but rely on
     different statistical methods, such as \CRANpkg{RPMM} [@R-RPMM]
@@ -2228,8 +2227,8 @@ unconstrained GMM model was an ancillary task:
     ([A small simulation to evaluate the impact of outliers]).
 
 -   We also removed packages that were limited in their functionalities
-    or complex to install. Indeed, \pkg{ClusterR} [@R-ClusterR]
-    (*k*-means), \pkg{rebmix} (REBMIX), \pkg{norm1mix} (univariate
+    or complex to install. Indeed, \CRANpkg{ClusterR} [@R-ClusterR]
+    (*k*-means), \pkg{rebmix} (REBMIX), \CRANpkg{norm1mix} (univariate
     dimension only, wrong initialisation process), \CRANpkg{MixAll}
     [@R-MixAll] (random and small EM) do not allow to perform the EM
     algorithm with its own initial estimates. The function to provide its own initial estimates for the \pkg{DCEM] package is only internal, and not supposed to be available for the common user. \CRANpkg{pmclust} [@R-pmclust] depends on
@@ -2304,7 +2303,7 @@ We detail below some additional functions we implement to both homogenise input 
 
 + Instead of the covariance matrix, the \pkg{mclust} package requires the lower triangular matrix resulting from its Cholesky decomposition. One of the main advantages of this input, in addition to save storage space, is that it ensures that the covariance matrix is indeed positive-definite, as the Cholesky factorisation is only defined if this condition is respected [Cholesky decomposition](https://en.wikipedia.org/wiki/Cholesky_decomposition).
 
-+ \pkg{Flexmix} starts by the M-step of the EM algorithm instead of the E-step. Hence, it expects the posterior probabilities assigned to each cluster $j$ for each observation $i$, $\eta_i(j)$ (Equation \@ref(eq:posteriori)), instead of the initial estimates. Both approaches are, however, equivalent.
++ \pkg{flexmix} starts by the M-step of the EM algorithm instead of the E-step. Hence, it expects the posterior probabilities assigned to each cluster $j$ for each observation $i$, $\eta_i(j)$ (Equation \@ref(eq:posteriori)), instead of the initial estimates. Both approaches are, however, equivalent.
 
 In the multivariate scenario, several practical implementation reasons led us to restrain to a bivariate scenario:
 
@@ -2370,18 +2369,15 @@ univariate_configuration  %>%   mutate(Proportions=purrr::map_chr(true_parameter
 univariate_html_ouput <- knitr::is_html_output()  # change to TRUE for larger figures
 
 html_caption_balanced_well_separated_univariate <- "Benchmark summary plots of scenario U1 in Table \\@ref(tab:parameter-configuration-univariate) (balanced and well-separated components), organised as such:
-
 - The panel A displays the distribution of the global mixture distribution $f_{\\theta}(X)$
 (pink solid line) and of each of its constitutive components scaled by
 their respective proportions (dotted lines).
-
 - Running times are displayed in Panel B with the *k*-means initialisation. The number of observations
 (x-axis) and the running time (y-axis) is in $\\log(10)$ scale, implying
 that any linear relationship between the running time and the number of
 observations is represented by a slope of 1. The points represent median
 running time. The coloured bands represent the 5th and 95th percentiles
 of the running time.
-
 - In panel C are represented the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method. The median is displayed with bold
 black line, the mean with a yellow cross and the 0.25 and 0.95 quantiles
 match the edges of the rectangular band. Solid black lines extending
@@ -2830,7 +2826,7 @@ initialisation_time_data <- readRDS("./tables/univariate/univariate_initialisati
 inialisation_plot <- plot_initialisation_time_computations(initialisation_time_data, size=4, x = 2.6)
 ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 300)
 
-knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
+knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 300)
 ```
 
 
@@ -2898,7 +2894,6 @@ $2.967 \times 10^{-4}$ and *p*-value of $0.32$). In case of hard-to-estimate pac
 relative ratios and a fast programming language, while our
 custom R implementation, preceded by \pkg{Rmixmod} and \pkg{mixtools},
 are on average a hundred times slower.
-\textcolor{green}{vérifier ces résults}.
 
 \newpage
 ## Supplementary Figures and Tables in the multivariate simulation {.appendix}
@@ -2916,7 +2911,7 @@ multivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameter
   rename(Entropy=entropy, OVL=OVL_pairwise) %>%
   kbl(booktabs=T, caption = "The 20 parameter configurations tested to generate the samples of the bivariate experiment.",
       escape=F, align = "c") %>%
-  kable_styling(latex_options=c("HOLD_position", "scale_down")) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T) %>% row_spec(1:20, hline_after = T) %>%
   kable_styling(bootstrap_options = c("hover", "condensed"))
 ```
@@ -3514,15 +3509,15 @@ by the greatest element (Equation \@ref(eq:trick-underflow), Equation 3 p.5 @mix
 In both cases, the computation of the smallest posterior probability, the most
 proned to be assigned a null value, is avoided, avoiding inconsistent ratios of type $0/0$.
 
-  + The previous two items handle specific numeric limitations, but do not directly address to one  of the main     theoretical limitation of the EM algorithm, namely the risk of falling in a sub-optimal maximum, in a plateau or to the boundary space (occurs when the proportion of one of the component tends to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default $10^{-8}$). \pkg{Flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{Flexmix} removes any component whose associated weight is by default below $0.05$ (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)^[Indeed, at least one of the component was removed in $80\%$ of our estimations in the unbalanced and overlapping case (scenario U9 in \@ref(tab:parameter-configuration-univariate)) and in $20\%$ of the simulations in the unbalanced and well-separated case (scenario U3 in \@ref(tab:parameter-configuration-univariate)).], while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \@ref(eq:covariance-decomposition))^[These options are set respectively to 0 and $+\infty$ by default, thus they did not impact our simulations].
+  + The previous two items handle specific numeric limitations, but do not directly address to one  of the main     theoretical limitation of the EM algorithm, namely the risk of falling in a sub-optimal maximum, in a plateau or to the boundary space (occurs when the proportion of one of the component tends to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default $10^{-8}$). \pkg{flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{flexmix} removes any component whose associated weight is by default below $0.05$ (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)^[Indeed, at least one of the component was removed in $80\%$ of our estimations in the unbalanced and overlapping case (scenario U9 in \@ref(tab:parameter-configuration-univariate)) and in $20\%$ of the simulations in the unbalanced and well-separated case (scenario U3 in \@ref(tab:parameter-configuration-univariate)).], while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \@ref(eq:covariance-decomposition))^[These options are set respectively to 0 and $+\infty$ by default, thus they did not impact our simulations].
 
 
 We enumerate below some additional features supplied by the packages:
 
-- In addition to the log rescaling, \pkg{GMKMcharlie} includes an additional argument *embedNoise* to avoid degenerate GMMs by adding a small constant to any diagonal term (by default $10^{-6}$). Besides, instead of controlling whether there was a relative change of the log-likelihood, \textcolor{green}{the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations}^[In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class.
+- In addition to the log rescaling, \pkg{GMKMcharlie} includes an additional argument *embedNoise* to avoid degenerate GMMs by adding a small constant to any diagonal term (by default $10^{-6}$). Besides, instead of controlling whether there was a relative change of the log-likelihood, the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations^[In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class.
 However, the use of an Euclidean distance criterion may be problematic when parameters are not on the same order of magnitude, requiring their prior normalisation]. And as it implements a parallelised version of the algorithm, it ensures that the algorithm indeed terminates, by adding a time schedule (by default, one hour).
 
-- Flexmix performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor $n-1$ instead of the number of observations $n$). \textcolor{green}{Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.}
+- \pkg{flexmix} performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor $n-1$ instead of the number of observations $n$). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
 
 
 # Additional files {.appendix}
@@ -3537,7 +3532,7 @@ However, the use of an Euclidean distance criterion may be problematic when para
     estimated parameter in scenarios listed in \@ref(tab:parameter-configuration-univariate), for each
     combination of package and initialisation method.
     + **S3.** Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \@ref(tab:parameter-configuration-univariate), for each benchmarked package. We selected the *k*-means
-    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threhsold, ...) are listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
+    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, ...) are listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
     + **S4.** Distribution of the time computations taken by the six initialisation methods listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
 
 * Additional files related to the outliers setting:
