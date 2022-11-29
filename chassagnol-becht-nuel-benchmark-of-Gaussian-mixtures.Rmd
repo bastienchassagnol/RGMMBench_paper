@@ -63,7 +63,6 @@ output:
   rjtools::rjournal_web_article:
     self_contained: yes
     toc: no
-    css: style_bastien.css
 date: "`r Sys.Date()`"
 header-includes:
   - \usepackage[most]{tcolorbox}
@@ -126,6 +125,24 @@ options(dplyr.summarise.inform = FALSE) # remove the override .groups argument
 ```
 
 
+```{css, echo=FALSE}
+p.caption {
+  font-size: 0.6em;
+}
+
+.blackbox {
+  padding: 1em;
+  background: #DBDBDB;
+  color: black;
+  border: 4px solid black;
+  border-radius: 10px;
+}
+.center {
+  text-align: center;
+}
+
+.cols {display: flex; }
+```
 
 # Introduction to Mixture modelling
 
@@ -2386,36 +2403,34 @@ limits considered as outliers and omitted from the plot. Finally, the
 true value of the parameter is represented as a dashed red line. The bold black writing in the upper right-hand corner refers to the parameter whose distribution is shown in the corresponding facet. The first, second and third rows are the distributions of the ratios, means and variances of each component, identified by the column index."
 
 pdf_caption_balanced_well_separated_univariate <- "Benchmark summary plots of scenario U1 in Table \\ref{tab:parameter-configuration-univariate} (balanced and well-separated components), organised as such:
-\\begin{itemize}
-\\item The panel A displays the distribution of the global mixture distribution $f_{\\theta}(X)$
+The panel A displays the distribution of the global mixture distribution $f_{\\theta}(X)$
 (pink solid line) and of each of its constitutive components scaled by
 their respective proportions (dotted lines).
-\\item Running times are displayed in Panel B with the \\textit{k}-means initialisation. The number of observations
+Running times are displayed in Panel B with the \\textit{k}-means initialisation. The number of observations
 (x-axis) and the running time (y-axis) is in $\\log(10)$ scale, implying
 that any linear relationship between the running time and the number of
 observations is represented by a slope of 1. The points represent median
 running time. The coloured bands represent the 5th and 95th percentiles
 of the running time.
-\\item In panel C are represented the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method. The median is displayed with bold
+In panel C are represented the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method. The median is displayed with bold
 black line, the mean with a yellow cross and the 0.25 and 0.95 quantiles
 match the edges of the rectangular band. Solid black lines extending
 past the box boundaries represent the $1.5$ IQR, estimates above these
 limits considered as outliers and omitted from the plot. Finally, the
-true value of the parameter is represented as a dashed red line. The bold black writing in the upper right-hand corner refers to the parameter whose distribution is shown in the corresponding facet. The first, second and third rows are the distributions of the ratios, means and variances of each component, identified by the column index.
-\\end{itemize}"
+true value of the parameter is represented as a dashed red line. The bold black writing in the upper right-hand corner refers to the parameter whose distribution is shown in the corresponding facet. The first, second and third rows are the distributions of the ratios, means and variances of each component, identified by the column index."
 
 
-html_caption_unbalanced_well_separated_univariate <- "Benchmark summary plots of scenario U7 in Table \\@ref(tab:parameter-configuration-univariate)( and well-separated components), with same layout as in Figure \\@ref(fig:four-component-balanced-separated)."
-pdf_caption_unbalanced_well_separated_univariate <- "Benchmark summary plots of scenario U7 in Table \\ref{tab:parameter-configuration-univariate}( and well-separated components), with same layout as in Figure \\ref{fig:four-component-balanced-separated}."
+html_caption_unbalanced_well_separated_univariate <- "Benchmark summary plots of scenario U7 in Table \\@ref(tab:parameter-configuration-univariate) (unbalanced and well-separated components), with same layout as in Figure \\@ref(fig:four-component-balanced-separated)."
+pdf_caption_unbalanced_well_separated_univariate <- "Benchmark summary plots of scenario U7 in Table \\ref{tab:parameter-configuration-univariate} (unbalanced and well-separated components), with same layout as in Figure \\ref{fig:four-component-balanced-separated}."
 
-html_caption_balanced_overlapping_univariate <- "Benchmark summary plots of scenario U3 in Table \\@ref(tab:parameter-configuration-univariate)(balanced and overlapping components), with same layout as in Figure \\@ref(fig:four-component-balanced-separated)."
-pdf_caption_balanced_overlapping_univariate <- "Benchmark summary plots of scenario U3 in Table \\ref{tab:parameter-configuration-univariate}(balanced and overlapping components), with same layout as in Figure \\ref{fig:four-component-balanced-separated}."
+html_caption_balanced_overlapping_univariate <- "Benchmark summary plots of scenario U3 in Table \\@ref(tab:parameter-configuration-univariate) (balanced and overlapping components), with same layout as in Figure \\@ref(fig:four-component-balanced-separated)."
+pdf_caption_balanced_overlapping_univariate <- "Benchmark summary plots of scenario U3 in Table \\ref{tab:parameter-configuration-univariate} (balanced and overlapping components), with same layout as in Figure \\ref{fig:four-component-balanced-separated}."
 
-html_caption_unbalanced_overlapping_univariate <- "Benchmark summary plots of scenario U9 in Table \\@ref(tab:parameter-configuration-univariate)(unbalanced and overlapping components), with same layout as in Figure \\@ref(fig:four-component-balanced-separated)."
-pdf_caption_unbalanced_overlapping_univariate <- "Benchmark summary plots of scenario U9 in Table \\ref{tab:parameter-configuration-univariate}(unbalanced and overlapping components), with same layout as in Figure \\ref{fig:four-component-balanced-separated}."
+html_caption_unbalanced_overlapping_univariate <- "Benchmark summary plots of scenario U9 in Table \\@ref(tab:parameter-configuration-univariate) (unbalanced and overlapping components), with same layout as in Figure \\@ref(fig:four-component-balanced-separated)."
+pdf_caption_unbalanced_overlapping_univariate <- "Benchmark summary plots of scenario U9 in Table \\ref{tab:parameter-configuration-univariate} (unbalanced and overlapping components), with same layout as in Figure \\ref{fig:four-component-balanced-separated}."
 
 html_caption_intermediate_scenario_univariate <- "Benchmark summary plots of scenarios U4 and U6 in Table \\@ref(tab:parameter-configuration-univariate) (small unbalance, with additional overlap in scenario U6). Panel A and B display the univariate GMM distributions of respectively scenarios U4 and U6, and Panel C and D the benchmarked distributions of respectively scenarios U4 and U6, built as Panel C of Figure \\@ref(fig:four-component-balanced-separated)."
-pdf_caption_intermediate_scenario_univariate <- "Benchmark summary plots of scenarios U4 and U6 in Table \\ref{tab:parameter-configuration-univariate}(small unbalance, with additional overlap in scenario U6). Panel A and B display the univariate GMM distributions of respectively scenarios U4 and U6, and Panel C and D the benchmarked distributions of respectively scenarios U4 and U6, built as Panel C of Figure \\ref{fig:four-component-balanced-separated}."
+pdf_caption_intermediate_scenario_univariate <- "Benchmark summary plots of scenarios U4 and U6 in Table \\ref{tab:parameter-configuration-univariate} (small unbalance, with additional overlap in scenario U6). Panel A and B display the univariate GMM distributions of respectively scenarios U4 and U6, and Panel C and D the benchmarked distributions of respectively scenarios U4 and U6, built as Panel C of Figure \\ref{fig:four-component-balanced-separated}."
 
 html_global_heatmap_univariate <- "Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure \\@ref(fig:dichotomy-package-conclusion), in the bivariate setting."
 pdf_global_heatmap_univariate <- "Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure \\ref{fig:dichotomy-package-conclusion}, in the bivariate setting."
@@ -2820,6 +2835,7 @@ ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatma
 knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
 ```
 
+\newpage
 ```{r univariate-initialisation-time-computations, fig.cap= if (univariate_html_ouput) html_univariate_init_time else pdf_univariate_init_time}
 
 initialisation_time_data <- readRDS("./tables/univariate/univariate_initialisation_time_computation.rds")
@@ -2828,9 +2844,6 @@ ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_pl
 
 knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 300)
 ```
-
-
-
 
 
 The running times displayed in Panel B, from Figure
@@ -2896,6 +2909,8 @@ custom R implementation, preceded by \pkg{Rmixmod} and \pkg{mixtools},
 are on average a hundred times slower.
 
 \newpage
+
+
 ## Supplementary Figures and Tables in the multivariate simulation {.appendix}
 
 
@@ -2935,17 +2950,15 @@ of the running time.
 - In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same convenstions detailed in [Supplementary Figures and Tables in the univariate simulation]. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2."
 
 
-pdf_caption_unbalanced_negative_correlated_multivariate <- "Benchmark plots of scenario B11 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such:
-\\begin{itemize}
-\\item The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
-\\item In both Panels A and B, the ellipsoids correspond to the $95\\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the \\code{mixtools::ellipse()} and website \\href{https://cookierobotics.com/007/}{How to draw ellipses}. To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
-\\item The running times are displayed in Panel C with the \\textit{k}-means initialisation. The number of observations
+pdf_caption_unbalanced_negative_correlated_multivariate <- "Benchmark plots of scenario B11 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such: 
+The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
+In both Panels A and B, the ellipsoids correspond to the $95\\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the \\code{mixtools::ellipse()} and website \\href{https://cookierobotics.com/007/}{How to draw ellipses}. To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
+The running times are displayed in Panel C with the \\textit{k}-means initialisation. The number of observations
 (x-axis) and the running time (y-axis) is in $\\log(10)$ scale. The points represent median
 running time. The coloured bands represent the $5^{\\text{th}}$ and $95^{\\text{th}}$ percentiles
 of the running time.
-\\item The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1 \\footnote{More on the Hellinger distance as a quantifier of the similarity between two probability distributions in \\href{https://en.wikipedia.org/wiki/Hellinger_distance}{Hellinger distance}}. We represent them using boxplot representations in Panel D.
-\\item In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \\nameref{Supplementary Figures and Tables in the univariate simulation}. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2.
-\\end{itemize}"
+The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1 \\footnote{More on the Hellinger distance as a quantifier of the similarity between two probability distributions in \\href{https://en.wikipedia.org/wiki/Hellinger_distance}{Hellinger distance}}. We represent them using boxplot representations in Panel D.
+In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \\nameref{Supplementary Figures and Tables in the univariate simulation}. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2."
 
 
 
@@ -3048,7 +3061,7 @@ specific_multivariate_parameters_local_scores_flex %>%
 
 \newpage
 
-```{r multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_negative_correlated_multivariate else pdf_caption_unbalanced_negative_correlated_multivariate, out.width="80%"}
+```{r multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_negative_correlated_multivariate else pdf_caption_unbalanced_negative_correlated_multivariate, out.width="60%"}
 true_theta <- multivariate_configuration %>% filter(ID=="B11") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -3527,20 +3540,18 @@ However, the use of an Euclidean distance criterion may be problematic when para
 
     + **S1.** Bootstrap distributions of the estimated parameters for each
     scenario described in \@ref(tab:parameter-configuration-univariate), for each
-    combination of package and initialisation method.
+    combination of package and initialisation method listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
     + **S2.** Mean, standard deviation, bias and MSE for each individually
     estimated parameter in scenarios listed in \@ref(tab:parameter-configuration-univariate), for each
-    combination of package and initialisation method.
-    + **S3.** Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \@ref(tab:parameter-configuration-univariate), for each benchmarked package. We selected the *k*-means
-    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, ...) are listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
+    combination of package and initialisation method listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
+    + **S3.** Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \@ref(tab:parameter-configuration-univariate), for each benchmarked package. We selected the *k*-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, ...) are listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
     + **S4.** Distribution of the time computations taken by the six initialisation methods listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
 
 * Additional files related to the outliers setting:
 
     +  **S5.** Bootstrap distributions of the estimated parameters used to
     generate Figure \@ref(fig:outliers), for each combination of package
-    and initialisation method. Two scenarios were tested, introducing
-    $2 \%$ and $4 \%$ of outliers drawn from an improper uniform distribution.
+    and initialisation method listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`. We additionally include the \pkg{otrimle} package, dedicated to these extreme distributions. Two scenarios were tested, introducing $2 \%$ and $4 \%$ of outliers drawn from an improper uniform distribution.
     + **S6.** Mean, standard deviation, bias and MSE for each individually
     estimated parameter in both scenarios visualised on Figure
     \@ref(fig:outliers), for each combination of package and
@@ -3551,17 +3562,11 @@ However, the use of an Euclidean distance criterion may be problematic when para
 
     + **S7.** Bootstrap distributions of the estimated parameters for each
     scenario described in \@ref(tab:parameter-configuration-bivariate), for each
-    combination of package and initialisation method.
+    combination of package and initialisation method listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
 
     + **S8.** Mean, standard deviation, bias and MSE for each individually
     estimated parameter in scenarios listed in \@ref(tab:parameter-configuration-bivariate), for each
-    combination of package and initialisation method.
+    combination of package and initialisation method listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
 
-    + **S9.** Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \@ref(tab:parameter-configuration-bivariate), for each benchmarked package. We selected the *k*-means
-    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, ...) are listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
-    
-    
-    
-$$
-\hat{p}_j^{q+1}= \frac{\sum_{i=1}^n \eta_{i}(j)}{n}
-$$
+    + **S9.** Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \@ref(tab:parameter-configuration-bivariate), for each benchmarked package. We selected the *k*-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, ...) are listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))`.
+
