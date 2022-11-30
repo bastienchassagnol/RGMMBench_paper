@@ -429,7 +429,7 @@ updated and let the user to provide its own initialisation estimates:
 complete inclusion process is detailed in \protect\hyperlink{appendix-c-the-meta-analysis-workflow-for-the-final-selection-of-cran-and-bioconductor-platforms}{Appendix C: the meta-analysis workflow for the final selection of CRAN and Bioconductor platforms}. The flowchart summarising
 our choices is represented in Figure \ref{fig:flowchart}:
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/flowchart_packages_selection} 
 
@@ -451,7 +451,7 @@ regression of mixtures and implement mixture models using other
 parametric distributions or non-parametric methods via kernel-density
 estimation.
 
-\begin{table}[H]
+\begin{table}[!h]
 
 \caption{\label{tab:low-comparison-package-pdf}Main features of the reviewed packages, sorted by decreasing number of daily downloads.
                \textit{Downloads per day} returns the daily average number of downloads for each package on the last 2 years.
@@ -501,7 +501,7 @@ We further detail features specifically related to GMMs in
   Four packages supply several visualisations, summarised in the last row of Table \ref{tab:high-comparison-packages-pdf} to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction) with the possibility to add custom confidence intervals and critical regions and boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
 \end{itemize}
 
-\begin{table}[H]
+\begin{table}[!h]
 
 \caption{\label{tab:high-comparison-packages-pdf}Custom features associated to GMMs estimation for any of the benchmarked packages.}
 \centering
@@ -703,7 +703,7 @@ The dichotomy between the two classes of packages is highlighted in Figure \ref{
 Panels A and B show respectively in the univariate and bivariate setting the heatmap of the Pearson correlation between the parameters estimated by the evaluated packages. The correlation matrix was computed using the function
 \code{"stats::cor"}, with option \emph{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{Complexheatmap}. In both cases, we emphasise the differences between them by choosing the most discriminative scenario, which reveals to be the one featuring the higher imbalance and overlapping components (scenario U9, Table \ref{tab:parameter-configuration-univariate} in the univariate setting and scenario B11, Table \ref{tab:parameter-configuration-univariate}, for the bivariate simulation), and the most discriminative initialisation method, namely the random one.
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/dichotomy_package_conclusion} 
 
@@ -784,7 +784,7 @@ of the overall performance in our simulations.
 Based on these results, we design a decision tree indicating the best choice of package and initialisation method in relation with the shape of the distribution, displayed in Figure
 \ref{fig:decision-tree-GMMs}. Interestingly, our conclusions are consistent between the univariate and multivariate settings.
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/decision_tree_GMMs} 
 
@@ -885,9 +885,6 @@ Chen, Wei-Chen, and Ranjan Maitra. 2022. \emph{EMCluster: EM Algorithm for Model
 \leavevmode\vadjust pre{\hypertarget{ref-R-pmclust}{}}%
 Chen, Wei-Chen, and George Ostrouchov. 2021. \emph{Pmclust: Parallel Model-Based Clustering Using Expectation-Gathering-Maximization Algorithm for Finite Mixture Gaussian Model}.
 
-\leavevmode\vadjust pre{\hypertarget{ref-R-MVNBayesian}{}}%
-Chen, ZHANG. 2018. \emph{MVNBayesian: Bayesian Analysis Framework for MVN (Mixture) Distribution}.
-
 \leavevmode\vadjust pre{\hypertarget{ref-R-oclust}{}}%
 Clark, Katharine M., and Paul D. McNicholas. 2019. \emph{Oclust: Gaussian Model-Based Clustering with Outliers}.
 
@@ -947,9 +944,6 @@ García-Escudero, Luis A., Alfonso Gordaliza, Carlos Matrán, and Agustin Mayo-I
 
 \leavevmode\vadjust pre{\hypertarget{ref-geary36}{}}%
 Geary, R. C. 1936. {``The {Distribution} of "{Student}'s" {Ratio} for {Non-Normal Samples}.''} \emph{Supplement to the Journal of the Royal Statistical Society} 3 (2): 178--84. \url{https://doi.org/10.2307/2983669}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-R-bayesmix}{}}%
-Gruen, Bettina. 2021. \emph{Bayesmix: Bayesian Mixture Models with JAGS}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-flexmix}{}}%
 Gruen, Bettina, and Friedrich Leisch. 2022. \emph{Flexmix: Flexible Mixture Modeling}.
@@ -1355,7 +1349,7 @@ properties hold:
 
 From the explicit derivation of Equations \eqref{eq:univariate-auxiliary}-\eqref{eq:multivariate-auxiliary} and using the calculus formulas provided above, we readily compute the MLE parameters in both univariate and multivariate settings (Leytham 1984; Redner and Walker 1984). We summarise them below (Table \ref{tab:summary-em-pdf}).
 
-\begin{table}[H]
+\begin{table}[!h]
 
 \caption{\label{tab:summary-em-pdf}An overview of the practical implementation of the EM algorithm in GMMs.}
 \centering
@@ -1497,39 +1491,40 @@ We detail the main characteristics of the 14 parametrisations (28 if we add for 
 \caption{\label{tab:param-multivariate-gaussian}The 14 canonical parametrisations of the within-group covariance matrix $\boldsymbol{\Sigma_j}$ with the corresponding geometric representations.}
 \centering
 \resizebox{\linewidth}{!}{
-\begin{tabular}[t]{>{\raggedright\arraybackslash}m{2cm}>{\raggedright\arraybackslash}m{3cm}>{\raggedright\arraybackslash}m{3cm}>{\raggedright\arraybackslash}m{2cm}>{\raggedright\arraybackslash}m{4.5cm}>{\raggedright\arraybackslash}m{6.5cm}}
+\fontsize{7}{9}\selectfont
+\begin{tabular}[t]{>{\raggedright\arraybackslash}m{2cm}>{\raggedright\arraybackslash}m{3cm}>{\raggedright\arraybackslash}m{3cm}>{\raggedright\arraybackslash}m{2cm}>{\raggedright\arraybackslash}m{4.5cm}>{\raggedright\arraybackslash}m{5cm}}
 \toprule
 \multicolumn{1}{c}{\textbf{Model}} & \multicolumn{1}{c}{\textbf{Notation}} & \multicolumn{1}{c}{\textbf{Family}} & \multicolumn{1}{c}{\textbf{M-step}} & \multicolumn{1}{c}{\textbf{Number of parameters}} & \multicolumn{1}{c}{\textbf{Representation}}\\
 \midrule
-\multicolumn{1}{c}{EII} & \multicolumn{1}{c}{$[\lambda I]$} & \multicolumn{1}{c}{Spherical} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EII.png}\\
+\multicolumn{1}{c}{EII} & \multicolumn{1}{c}{$[\lambda I]$} & \multicolumn{1}{c}{Spherical} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + 1$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/EII.png}\\
 \midrule
-\multicolumn{1}{c}{VII} & \multicolumn{1}{c}{$[\lambda_j I]$} & \multicolumn{1}{c}{Spherical} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VII.png}\\
+\multicolumn{1}{c}{VII} & \multicolumn{1}{c}{$[\lambda_j I]$} & \multicolumn{1}{c}{Spherical} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/VII.png}\\
 \midrule
-\multicolumn{1}{c}{EEI} & \multicolumn{1}{c}{$[\lambda D]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + d$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EEI.png}\\
+\multicolumn{1}{c}{EEI} & \multicolumn{1}{c}{$[\lambda D]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + d$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/EEI.png}\\
 \midrule
-\multicolumn{1}{c}{VEI} & \multicolumn{1}{c}{$[\lambda_j D]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + d + k - 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VEI.png}\\
+\multicolumn{1}{c}{VEI} & \multicolumn{1}{c}{$[\lambda_j D]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + d + k - 1$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/VEI.png}\\
 \midrule
-\multicolumn{1}{c}{EVI} & \multicolumn{1}{c}{$[\lambda D_j]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + kd - k + 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EVI.png}\\
-\midrule
-\addlinespace
-\multicolumn{1}{c}{VVI} & \multicolumn{1}{c}{$[\lambda_j D_j]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + kd$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VVI.png}\\
-\midrule
-\multicolumn{1}{c}{EEE} & \multicolumn{1}{c}{$[\lambda Q D Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + \beta$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EEE.png}\\
-\midrule
-\multicolumn{1}{c}{EVE} & \multicolumn{1}{c}{$[\lambda QD_j Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EVE.png}\\
-\midrule
-\multicolumn{1}{c}{VEE} & \multicolumn{1}{c}{$[\lambda_j Q D Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta + (k-1)(d-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VEE.png}\\
-\midrule
-\multicolumn{1}{c}{VVE} & \multicolumn{1}{c}{$[\lambda_j QD_j Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta + d(k-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VVE.png}\\
+\multicolumn{1}{c}{EVI} & \multicolumn{1}{c}{$[\lambda D_j]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + kd - k + 1$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/EVI.png}\\
 \midrule
 \addlinespace
-\multicolumn{1}{c}{EEV} & \multicolumn{1}{c}{$[\lambda Q_j D Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta - d(k-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EEV.png}\\
+\multicolumn{1}{c}{VVI} & \multicolumn{1}{c}{$[\lambda_j D_j]$} & \multicolumn{1}{c}{Diagonal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + kd$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/VVI.png}\\
 \midrule
-\multicolumn{1}{c}{VEV} & \multicolumn{1}{c}{$[\lambda_j Q_j D Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + k \beta - (k-1)(d-1)$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VEV.png}\\
+\multicolumn{1}{c}{EEE} & \multicolumn{1}{c}{$[\lambda Q D Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + \beta$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/EEE.png}\\
 \midrule
-\multicolumn{1}{c}{EVV} & \multicolumn{1}{c}{$[\lambda Q_j D_j Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta - k + 1$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/EVV.png}\\
+\multicolumn{1}{c}{EVE} & \multicolumn{1}{c}{$[\lambda QD_j Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/EVE.png}\\
 \midrule
-\multicolumn{1}{c}{VVV} & \multicolumn{1}{c}{$[\lambda_j Q_j D_j Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta$} & \multicolumn{1}{c}{}\includegraphics[width=1in, height=0.58in]{./tables/gaussian_param/VVV.png}\\
+\multicolumn{1}{c}{VEE} & \multicolumn{1}{c}{$[\lambda_j Q D Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta + (k-1)(d-1)$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/VEE.png}\\
+\midrule
+\multicolumn{1}{c}{VVE} & \multicolumn{1}{c}{$[\lambda_j QD_j Q^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + \beta + d(k-1)$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/VVE.png}\\
+\midrule
+\addlinespace
+\multicolumn{1}{c}{EEV} & \multicolumn{1}{c}{$[\lambda Q_j D Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta - d(k-1)$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/EEV.png}\\
+\midrule
+\multicolumn{1}{c}{VEV} & \multicolumn{1}{c}{$[\lambda_j Q_j D Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{IP} & \multicolumn{1}{c}{$\alpha + k \beta - (k-1)(d-1)$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/VEV.png}\\
+\midrule
+\multicolumn{1}{c}{EVV} & \multicolumn{1}{c}{$[\lambda Q_j D_j Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta - k + 1$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/EVV.png}\\
+\midrule
+\multicolumn{1}{c}{VVV} & \multicolumn{1}{c}{$[\lambda_j Q_j D_j Q_j^\top]$} & \multicolumn{1}{c}{Ellipsoidal} & \multicolumn{1}{c}{CF} & \multicolumn{1}{c}{$\alpha + k \beta$} & \multicolumn{1}{c}{}\includegraphics[width=0.67in, height=0.39in]{./tables/gaussian_param/VVV.png}\\
 \midrule
 \bottomrule
 \end{tabular}}
@@ -1770,7 +1765,7 @@ misclassifying component 2 as component 1. Total overlap is since the
 sum of red and green area, in Figure
 \ref{fig:OVL-represention-pdf}.
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{chassagnol-becht-nuel-benchmark-of-Gaussian-mixtures_files/figure-latex/OVL-represention-pdf-1} 
 
@@ -2024,7 +2019,7 @@ distribution bounded by an interval five times as big as the 0.05 and
 the five reviewed initialisation methods, except with \pkg{otrimle}
 which has its own hierarchical clustering initialisation method.
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/univariate/outliers} 
 
@@ -2077,10 +2072,9 @@ packages implementing other unsupervised clustering methods, such as
 \emph{k}-means, KNN or graph clustering, were specifically dedicated to
 specific data, such as single cell analyses. The search term ``mixture''
 returned either packages dealing only with non-Gaussian components, such
-as \CRANpkg{fitmix} with log-normal distributions or \CRANpkg{mixtNB}
-with negative binomials, or were dedicated to chemical mixture designs.
+as \CRANpkg{fitmix} with log-normal distributions or were dedicated to chemical mixture designs.
 
-\begin{table}[H]
+\begin{table}[!h]
 
 \caption{\label{tab:searched-packages-pdf}Meta-analysis summary about the selection of packages implementing the estimation of GMMs,
               on CRAN and Bioconductor.}
@@ -2095,7 +2089,7 @@ with negative binomials, or were dedicated to chemical mixture designs.
 \midrule
 \multicolumn{1}{c}{Bioconductor} & \multicolumn{1}{c}{cluster} & \multicolumn{1}{c}{69} & \multicolumn{1}{c}{1} & \multicolumn{1}{c}{Melissa} & \multicolumn{1}{c}{$\varnothing$}\\
 \midrule
-\multicolumn{1}{c}{CRAN} & \multicolumn{1}{c}{mixture} & \multicolumn{1}{c}{179} & \multicolumn{1}{c}{44} & \multicolumn{1}{c}{\makecell[r]{AdaptGauss, bayesmix, bgmm\\bmixture, bpgmm, CAMAN, ClusterR, deepgmm\\DPP, dppmix, EMCluster, EMMIXgene\\EMMIXmfa, fabMix, \\flexmix, fmerPack, GMKMcharlie, IMIX, ManlyMix\\mclust, MGMM, mixAK, MixAll, mixdist, mixR\\mixreg, mixsmsn, mixtools, mixture\\MixtureInf, MMDvariance, MVNBayesian, nor1mix\\pcensmix, pgmm, pmclust, polySegratioMM\\rebmix, Rmixmod, RMixtComp\\RobMixReg, RPMM, SAGMM, sensory, SMNCensReg}} & \multicolumn{1}{c}{\makecell[r]{bgmm, EMCluster\\flexmix, GMKMcharlie\\mclust, mixtools, Rmixmod}}\\
+\multicolumn{1}{c}{CRAN} & \multicolumn{1}{c}{mixture} & \multicolumn{1}{c}{179} & \multicolumn{1}{c}{44} & \multicolumn{1}{c}{\makecell[r]{AdaptGauss, bgmm\\bmixture, bpgmm, CAMAN, ClusterR, deepgmm\\DPP, dppmix, EMCluster, EMMIXgene\\EMMIXmfa, fabMix, \\flexmix, fmerPack, GMKMcharlie, IMIX, ManlyMix\\mclust, MGMM, mixAK, MixAll, mixdist, mixR\\mixreg, mixsmsn, mixtools, mixture\\MixtureInf, MMDvariance, nor1mix\\pcensmix, pgmm, pmclust, polySegratioMM\\rebmix, Rmixmod, RMixtComp\\RobMixReg, RPMM, SAGMM, sensory, SMNCensReg}} & \multicolumn{1}{c}{\makecell[r]{bgmm, EMCluster\\flexmix, GMKMcharlie\\mclust, mixtools, Rmixmod}}\\
 \midrule
 \multicolumn{1}{c}{CRAN} & \multicolumn{1}{c}{cluster} & \multicolumn{1}{c}{418} & \multicolumn{1}{c}{16} & \multicolumn{1}{c}{\makecell[l]{ClusterR, clustMD, DCEM, EMCluster, HDclassif\\ManlyMix, mclust, mixAK, MixAll\\mixture, oclust, otrimle, pmclust, rebmix\\Rmixmod,  tclust}} & \multicolumn{1}{c}{\makecell[l]{ EMCluster\\mclust, Rmixmod}}\\
 \midrule
@@ -2142,12 +2136,9 @@ criteria:
   algorithm, using maximum likelihood estimation to retrieve the
   parameters of GMMs. For instance, some packages offer a Bayesian
   estimation of the parameters of the model using MCMC methods, such
-  as \CRANpkg{Bayesmix} (Gruen 2021) , \CRANpkg{bmixture}
-  (Mohammadi 2021) , \CRANpkg{bpgmm} (Lu, Li, and Love 2022) , \CRANpkg{DPP} (Avila, May, and Ross-Ibarra 2018)
-  , \CRANpkg{dppmix} (Y. Xu et al. 2020) , \CRANpkg{MVNBayesian }
-  (Z. Chen 2018) , \CRANpkg{BayesCR} (Garay et al. 2017) and
-  \BIOpkg{Melissa} (Kapourani 2022) . \CRANpkg{bayesmix} (Gruen 2021) and
-  \CRANpkg{polySegratioMM} (Baker 2018) use the Bayesian
+  as \CRANpkg{bmixture} Mohammadi (2021){]}, \CRANpkg{bpgmm} (Lu, Li, and Love 2022), \CRANpkg{DPP} (Avila, May, and Ross-Ibarra 2018)
+  , \CRANpkg{dppmix} (Y. Xu et al. 2020), \CRANpkg{BayesCR} (Garay et al. 2017) and
+  \BIOpkg{Melissa} (Kapourani 2022) . \CRANpkg{polySegratioMM} (Baker 2018) uses the Bayesian
   framework JAGS's interface in R. Alternatively, other algorithms
   focusing on maximising the likelihood do exist, but rely on
   different statistical methods, such as \CRANpkg{RPMM} (Houseman et al. 2017)
@@ -2198,8 +2189,8 @@ unconstrained GMM model was an ancillary task:
   (\protect\hyperlink{a-small-simulation-to-evaluate-the-impact-of-outliers}{A small simulation to evaluate the impact of outliers}).
 \item
   We also removed packages that were limited in their functionalities
-  or complex to install. Indeed, \pkg{ClusterR} (Mouselimis 2022)
-  (\emph{k}-means), \pkg{rebmix} (REBMIX), \pkg{norm1mix} (univariate
+  or complex to install. Indeed, \CRANpkg{ClusterR} (Mouselimis 2022)
+  (\emph{k}-means), \pkg{rebmix} (REBMIX), \CRANpkg{norm1mix} (univariate
   dimension only, wrong initialisation process), \CRANpkg{MixAll}
   (Iovleff 2019) (random and small EM) do not allow to perform the EM
   algorithm with its own initial estimates. The function to provide its own initial estimates for the \textbackslash pkg\{DCEM{]} package is only internal, and not supposed to be available for the common user. \CRANpkg{pmclust} (W.-C. Chen and Ostrouchov 2021) depends on
@@ -2219,7 +2210,7 @@ Among them, \pkg{mclust} and \pkg{flexmix} are largely the most popular,
 followed by \pkg{mixtools} and increasingly popular \pkg{Rmixmod}
 package.
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{chassagnol-becht-nuel-benchmark-of-Gaussian-mixtures_files/figure-latex/trend-package-pdf-1} 
 
@@ -2255,7 +2246,7 @@ We detail below some additional functions we implement to both homogenise input 
 \item
   Instead of the covariance matrix, the \pkg{mclust} package requires the lower triangular matrix resulting from its Cholesky decomposition. One of the main advantages of this input, in addition to save storage space, is that it ensures that the covariance matrix is indeed positive-definite, as the Cholesky factorisation is only defined if this condition is respected \href{https://en.wikipedia.org/wiki/Cholesky_decomposition}{Cholesky decomposition}.
 \item
-  \pkg{Flexmix} starts by the M-step of the EM algorithm instead of the E-step. Hence, it expects the posterior probabilities assigned to each cluster \(j\) for each observation \(i\), \(\eta_i(j)\) (Equation \eqref{eq:posteriori}), instead of the initial estimates. Both approaches are, however, equivalent.
+  \pkg{flexmix} starts by the M-step of the EM algorithm instead of the E-step. Hence, it expects the posterior probabilities assigned to each cluster \(j\) for each observation \(i\), \(\eta_i(j)\) (Equation \eqref{eq:posteriori}), instead of the initial estimates. Both approaches are, however, equivalent.
 \end{itemize}
 
 In the multivariate scenario, several practical implementation reasons led us to restrain to a bivariate scenario:
@@ -2418,34 +2409,29 @@ individual components.
 
 \newpage
 
-\textbackslash begin\{figure\}
+\begin{figure}[h]
 
-\{\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_balanced_separated}
+{\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_balanced_separated} 
 
-\}
+}
 
-\textbackslash caption\{Benchmark summary plots of scenario U1 in Table \ref{tab:parameter-configuration-univariate} (balanced and well-separated components), organised as such:
-
-\begin{itemize}
-\item The panel A displays the distribution of the global mixture distribution $f_{\theta}(X)$
+\caption{Benchmark summary plots of scenario U1 in Table \ref{tab:parameter-configuration-univariate} (balanced and well-separated components), organised as such:
+The panel A displays the distribution of the global mixture distribution $f_{\theta}(X)$
 (pink solid line) and of each of its constitutive components scaled by
 their respective proportions (dotted lines).
-\item Running times are displayed in Panel B with the \textit{k}-means initialisation. The number of observations
+Running times are displayed in Panel B with the \textit{k}-means initialisation. The number of observations
 (x-axis) and the running time (y-axis) is in $\log(10)$ scale, implying
 that any linear relationship between the running time and the number of
 observations is represented by a slope of 1. The points represent median
 running time. The coloured bands represent the 5th and 95th percentiles
 of the running time.
-\item In panel C are represented the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method. The median is displayed with bold
+In panel C are represented the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method. The median is displayed with bold
 black line, the mean with a yellow cross and the 0.25 and 0.95 quantiles
 match the edges of the rectangular band. Solid black lines extending
 past the box boundaries represent the $1.5$ IQR, estimates above these
 limits considered as outliers and omitted from the plot. Finally, the
-true value of the parameter is represented as a dashed red line. The bold black writing in the upper right-hand corner refers to the parameter whose distribution is shown in the corresponding facet. The first, second and third rows are the distributions of the ratios, means and variances of each component, identified by the column index.
-\end{itemize}
-
-\}\label{fig:four-component-balanced-separated}
-\textbackslash end\{figure\}
+true value of the parameter is represented as a dashed red line. The bold black writing in the upper right-hand corner refers to the parameter whose distribution is shown in the corresponding facet. The first, second and third rows are the distributions of the ratios, means and variances of each component, identified by the column index.}\label{fig:four-component-balanced-separated}
+\end{figure}
 
 \newpage
 
@@ -2513,13 +2499,13 @@ true value of the parameter is represented as a dashed red line. The bold black 
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_unbalanced_separated} 
 
 }
 
-\caption{Benchmark summary plots of scenario U7 in Table \ref{tab:parameter-configuration-univariate}( and well-separated components), with same layout as in Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-component-unbalanced-separated}
+\caption{Benchmark summary plots of scenario U7 in Table \ref{tab:parameter-configuration-univariate} (unbalanced and well-separated components), with same layout as in Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-component-unbalanced-separated}
 \end{figure}
 
 \newpage
@@ -2588,13 +2574,13 @@ true value of the parameter is represented as a dashed red line. The bold black 
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_balanced_overlapping} 
 
 }
 
-\caption{Benchmark summary plots of scenario U3 in Table \ref{tab:parameter-configuration-univariate}(balanced and overlapping components), with same layout as in Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-component-balanced-overlapping}
+\caption{Benchmark summary plots of scenario U3 in Table \ref{tab:parameter-configuration-univariate} (balanced and overlapping components), with same layout as in Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-component-balanced-overlapping}
 \end{figure}
 
 \newpage
@@ -2663,27 +2649,27 @@ true value of the parameter is represented as a dashed red line. The bold black 
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_unbalanced_overlapping} 
 
 }
 
-\caption{Benchmark summary plots of scenario U9 in Table \ref{tab:parameter-configuration-univariate}(unbalanced and overlapping components), with same layout as in Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-component-unbalanced-overlapping}
+\caption{Benchmark summary plots of scenario U9 in Table \ref{tab:parameter-configuration-univariate} (unbalanced and overlapping components), with same layout as in Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-component-unbalanced-overlapping}
 \end{figure}
 
 \newpage
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/univariate/univariate_midbalanced} 
 
 }
 
-\caption{Benchmark summary plots of scenarios U4 and U6 in Table \ref{tab:parameter-configuration-univariate}(small unbalance, with additional overlap in scenario U6). Panel A and B display the univariate GMM distributions of respectively scenarios U4 and U6, and Panel C and D the benchmarked distributions of respectively scenarios U4 and U6, built as Panel C of Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-components-midbalanced}
+\caption{Benchmark summary plots of scenarios U4 and U6 in Table \ref{tab:parameter-configuration-univariate} (small unbalance, with additional overlap in scenario U6). Panel A and B display the univariate GMM distributions of respectively scenarios U4 and U6, and Panel C and D the benchmarked distributions of respectively scenarios U4 and U6, built as Panel C of Figure \ref{fig:four-component-balanced-separated}.}\label{fig:four-components-midbalanced}
 \end{figure}
 
 \newpage
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/heatmap_univariate} 
 
@@ -2692,7 +2678,8 @@ true value of the parameter is represented as a dashed red line. The bold black 
 \caption{Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure \ref{fig:dichotomy-package-conclusion}, in the bivariate setting.}\label{fig:heatmap-all-correlation-plots-univariate}
 \end{figure}
 
-\begin{figure}
+\newpage
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate_initialisation_time_computations} 
 
@@ -2766,7 +2753,7 @@ are on average a hundred times slower.
 
 Table below (\ref{tab:parameter-configuration-bivariate}) lists the complete set of parameters used to simulate the multivariate Gaussian mixture distribution in our benchmark:
 
-\begin{table}[H]
+\begin{table}[!h]
 
 \caption{\label{tab:parameter-configuration-bivariate}The 20 parameter configurations tested to generate the samples of the bivariate experiment.}
 \centering
@@ -2887,27 +2874,22 @@ From our experiments, we deduce that the highest OVL is obtained when the main a
 
 \newpage
 
-\textbackslash begin\{figure\}
+\begin{figure}[h]
 
-\{\centering \includegraphics[width=0.8\linewidth]{figs/multivariate/multivariate_unbalanced_overlapping_negatively_correlated}
+{\centering \includegraphics[width=0.6\linewidth]{figs/multivariate/multivariate_unbalanced_overlapping_negatively_correlated} 
 
-\}
+}
 
-\textbackslash caption\{Benchmark plots of scenario B11 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components), organised as such:
-
-\begin{itemize}
-\item The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
-\item In both Panels A and B, the ellipsoids correspond to the $95\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the \code{mixtools::ellipse()} and website \href{https://cookierobotics.com/007/}{How to draw ellipses}. To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
-\item The running times are displayed in Panel C with the \textit{k}-means initialisation. The number of observations
+\caption{Benchmark plots of scenario B11 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such: 
+The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
+In both Panels A and B, the ellipsoids correspond to the $95\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the \code{mixtools::ellipse()} and website \href{https://cookierobotics.com/007/}{How to draw ellipses}. To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
+The running times are displayed in Panel C with the \textit{k}-means initialisation. The number of observations
 (x-axis) and the running time (y-axis) is in $\log(10)$ scale. The points represent median
 running time. The coloured bands represent the $5^{\text{th}}$ and $95^{\text{th}}$ percentiles
 of the running time.
-\item The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1 \footnote{More on the Hellinger distance as a quantifier of the similarity between two probability distributions in \href{https://en.wikipedia.org/wiki/Hellinger_distance}{Hellinger distance}}. We represent them using boxplot representations in Panel D.
-\item In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \nameref{Supplementary Figures and Tables in the univariate simulation}. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2.
-\end{itemize}
-
-\}\label{fig:multivariate-overlapping-unbalanced-negative-correlated}
-\textbackslash end\{figure\}
+The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1 \footnote{More on the Hellinger distance as a quantifier of the similarity between two probability distributions in \href{https://en.wikipedia.org/wiki/Hellinger_distance}{Hellinger distance}}. We represent them using boxplot representations in Panel D.
+In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \nameref{Supplementary Figures and Tables in the univariate simulation}. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2.}\label{fig:multivariate-overlapping-unbalanced-negative-correlated}
+\end{figure}
 
 \newpage
 
@@ -2965,7 +2947,7 @@ of the running time.
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/multivariate/multivariate_unbalanced_overlapping_opposite_correlated} 
 
@@ -3030,7 +3012,7 @@ of the running time.
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/multivariate/multivariate_unbalanced_overlapping_positive_correlated} 
 
@@ -3095,7 +3077,7 @@ of the running time.
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/multivariate/multivariate_unbalanced_uncorrelated} 
 
@@ -3110,7 +3092,7 @@ In contrast to the univariate setting (\protect\hyperlink{supplementary-figures-
 
 Finally, Figures \ref{fig:general-balanced-overlapping-multivariate}, \ref{fig:general-balanced-well-separated-multivariate} and \ref{fig:general-unbalanced-well-separated-multivariate} represent in a synthetic way some less interesting scenarios benchmarked with to the left, the contour maps and to the right the corresponding Hellinger boxplots, with one scenario being illustrated per row.
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/multivariate/multivariate_balanced_overlapping} 
 
@@ -3121,7 +3103,7 @@ Finally, Figures \ref{fig:general-balanced-overlapping-multivariate}, \ref{fig:g
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/multivariate/multivariate_balanced_well_separated} 
 
@@ -3132,7 +3114,7 @@ Finally, Figures \ref{fig:general-balanced-overlapping-multivariate}, \ref{fig:g
 
 \newpage
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{figs/multivariate/multivariate_unbalanced_well_separated} 
 
@@ -3141,7 +3123,7 @@ Finally, Figures \ref{fig:general-balanced-overlapping-multivariate}, \ref{fig:g
 \caption{Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \ref{tab:parameter-configuration-bivariate} featuring unbalanced and well-separated clusters, with the same layout as Figure \ref{fig:general-balanced-overlapping-multivariate}.}\label{fig:general-unbalanced-well-separated-multivariate}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics[width=1\linewidth]{./figs/multivariate/heatmap_multivariate} 
 
@@ -3194,7 +3176,7 @@ proned to be assigned a null value, is avoided, avoiding inconsistent ratios of 
 \begin{itemize}
 \tightlist
 \item
-  The previous two items handle specific numeric limitations, but do not directly address to one of the main theoretical limitation of the EM algorithm, namely the risk of falling in a sub-optimal maximum, in a plateau or to the boundary space (occurs when the proportion of one of the component tends to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default \(10^{-8}\)). \pkg{Flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{Flexmix} removes any component whose associated weight is by default below \(0.05\) (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)\footnote{Indeed, at least one of the component was removed in \(80\%\) of our estimations in the unbalanced and overlapping case (scenario U9 in \ref{tab:parameter-configuration-univariate}) and in \(20\%\) of the simulations in the unbalanced and well-separated case (scenario U3 in \ref{tab:parameter-configuration-univariate}).}, while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \eqref{eq:covariance-decomposition})\footnote{These options are set respectively to 0 and \(+\infty\) by default, thus they did not impact our simulations}.
+  The previous two items handle specific numeric limitations, but do not directly address to one of the main theoretical limitation of the EM algorithm, namely the risk of falling in a sub-optimal maximum, in a plateau or to the boundary space (occurs when the proportion of one of the component tends to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default \(10^{-8}\)). \pkg{flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{flexmix} removes any component whose associated weight is by default below \(0.05\) (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)\footnote{Indeed, at least one of the component was removed in \(80\%\) of our estimations in the unbalanced and overlapping case (scenario U9 in \ref{tab:parameter-configuration-univariate}) and in \(20\%\) of the simulations in the unbalanced and well-separated case (scenario U3 in \ref{tab:parameter-configuration-univariate}).}, while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \eqref{eq:covariance-decomposition})\footnote{These options are set respectively to 0 and \(+\infty\) by default, thus they did not impact our simulations}.
 \end{itemize}
 
 We enumerate below some additional features supplied by the packages:
@@ -3204,7 +3186,7 @@ We enumerate below some additional features supplied by the packages:
   In addition to the log rescaling, \pkg{GMKMcharlie} includes an additional argument \emph{embedNoise} to avoid degenerate GMMs by adding a small constant to any diagonal term (by default \(10^{-6}\)). Besides, instead of controlling whether there was a relative change of the log-likelihood, the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations\footnote{In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class.
     However, the use of an Euclidean distance criterion may be problematic when parameters are not on the same order of magnitude, requiring their prior normalisation}. And as it implements a parallelised version of the algorithm, it ensures that the algorithm indeed terminates, by adding a time schedule (by default, one hour).
 \item
-  Flexmix performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor \(n-1\) instead of the number of observations \(n\)). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
+  \pkg{flexmix} performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor \(n-1\) instead of the number of observations \(n\)). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
 \end{itemize}
 
 \hypertarget{additional-files}{%
@@ -3219,14 +3201,13 @@ We enumerate below some additional features supplied by the packages:
   \item
     \textbf{S1.} Bootstrap distributions of the estimated parameters for each
     scenario described in \ref{tab:parameter-configuration-univariate}, for each
-    combination of package and initialisation method.
+    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
   \item
     \textbf{S2.} Mean, standard deviation, bias and MSE for each individually
     estimated parameter in scenarios listed in \ref{tab:parameter-configuration-univariate}, for each
-    combination of package and initialisation method.
+    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
   \item
-    \textbf{S3.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \ref{tab:parameter-configuration-univariate}, for each benchmarked package. We selected the \emph{k}-means
-    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threhsold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
+    \textbf{S3.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \ref{tab:parameter-configuration-univariate}, for each benchmarked package. We selected the \emph{k}-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
   \item
     \textbf{S4.} Distribution of the time computations taken by the six initialisation methods listed in Table \ref{tab:general-parameter-description-pdf}.
   \end{itemize}
@@ -3238,8 +3219,7 @@ We enumerate below some additional features supplied by the packages:
   \item
     \textbf{S5.} Bootstrap distributions of the estimated parameters used to
     generate Figure \ref{fig:outliers}, for each combination of package
-    and initialisation method. Two scenarios were tested, introducing
-    \(2 \%\) and \(4 \%\) of outliers drawn from an improper uniform distribution.
+    and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}. We additionally include the \pkg{otrimle} package, dedicated to these extreme distributions. Two scenarios were tested, introducing \(2 \%\) and \(4 \%\) of outliers drawn from an improper uniform distribution.
   \item
     \textbf{S6.} Mean, standard deviation, bias and MSE for each individually
     estimated parameter in both scenarios visualised on Figure
@@ -3253,25 +3233,20 @@ We enumerate below some additional features supplied by the packages:
   \item
     \textbf{S7.} Bootstrap distributions of the estimated parameters for each
     scenario described in \ref{tab:parameter-configuration-bivariate}, for each
-    combination of package and initialisation method.
+    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
   \item
     \textbf{S8.} Mean, standard deviation, bias and MSE for each individually
     estimated parameter in scenarios listed in \ref{tab:parameter-configuration-bivariate}, for each
-    combination of package and initialisation method.
+    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
   \item
-    \textbf{S9.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \ref{tab:parameter-configuration-bivariate}, for each benchmarked package. We selected the \emph{k}-means
-    algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
+    \textbf{S9.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \ref{tab:parameter-configuration-bivariate}, for each benchmarked package. We selected the \emph{k}-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
   \end{itemize}
 \end{itemize}
-
-\[
-\hat{p}_j^{q+1}= \frac{\sum_{i=1}^n \eta_{i}(j)}{n}
-\]
 
 \hypertarget{references}{%
 \section{References}\label{references}}
 
-\bibliography{RJreferences.bib}
+\bibliography{chassagnol-becht-nuel-benchmark-of-Gaussian-mixtures.bib}
 
 \address{%
 Bastien Chassagnol\\

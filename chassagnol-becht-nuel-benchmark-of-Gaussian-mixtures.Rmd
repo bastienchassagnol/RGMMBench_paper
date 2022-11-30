@@ -1,8 +1,8 @@
 ---
 title: "Gaussian Mixtures in R"
 abstract: >
-  Gaussian mixture models (GMMs) are widely used for modelling stochastic problems. Indeed, a wide diversity of packages have been developed in R. However, no recent review describing the main features offered by these packages and comparing their performances has been performed. In this article, we first introduce the GMM and the EM algorithm used to retrieve the parameters of the model and analyse the main features implemented among seven of the most widely used R packages. We then empirically compare their statistical and computational performances in relation with the choice of the initialisation algorithm and the complexity of the mixture. 
-  We demonstrate that the best estimation with well-separated components or with a small number of components with distinguishable modes is obtained with REBMIX initialisation, implemented in the \CRANpkg{rebmix} package, while the best estimation with highly overlapping components is obtained with *k*-means or random initialisation. Importantly, we show that implementation details in the EM algorithm yield differences in the parameters' estimation. Especially, packages \CRANpkg{mixtools} [@R-mixtools]  and \CRANpkg{Rmixmod} [@R-Rmixmod]  estimate the parameters of the mixture with smaller bias, while the RMSE and variability of the estimates is smaller with packages \CRANpkg{bgmm} [@R-bgmm] , \CRANpkg{EMCluster} [@R-EMCluster] , \CRANpkg{GMKMcharlie} [@R-GMKMcharlie] , \CRANpkg{flexmix} [@R-flexmix]  and \CRANpkg{mclust} [@R-mclust] . 
+  Gaussian mixture models (GMMs) are widely used for modelling stochastic problems. Indeed, a wide diversity of packages have been developed in R. However, no recent review describing the main features offered by these packages and comparing their performances has been performed. In this article, we first introduce GMMs and the EM algorithm used to retrieve the parameters of the model and analyse the main features implemented among seven of the most widely used R packages. We then empirically compare their statistical and computational performances in relation with the choice of the initialisation algorithm and the complexity of the mixture. 
+  We demonstrate that the best estimation with well-separated components or with a small number of components with distinguishable modes is obtained with REBMIX initialisation, implemented in the \CRANpkg{rebmix} package, while the best estimation with highly overlapping components is obtained with *k*-means or random initialisation. Importantly, we show that implementation details in the EM algorithm yield differences in the parameters' estimation. Especially, packages \CRANpkg{mixtools} [@R-mixtools]  and \CRANpkg{Rmixmod} [@R-Rmixmod]  estimate the parameters of the mixture with smaller bias, while the RMSE and variability of the estimates is smaller with packages \CRANpkg{bgmm} [@R-bgmm] , \CRANpkg{EMCluster} [@R-EMCluster] , \CRANpkg{GMKMcharlie} [@R-GMKMcharlie] , \CRANpkg{flexmix} [@R-flexmix]  and \CRANpkg{mclust} [@R-mclust]. 
   The comparison of these packages provides R users with useful recommendations for improving the computational and statistical performance of their clustering and for identifying  common deficiencies. Additionally, we propose several improvements in the development of a future, unified mixture model package.
 draft: true
 author:  
@@ -66,7 +66,6 @@ output:
 date: "`r Sys.Date()`"
 header-includes:
   - \usepackage[most]{tcolorbox}
-  - \usepackage[list=off, singlelinecheck=off, parskip=5pt]{caption}
   - \usepackage{booktabs}
   - \usepackage{bm, amsmath}
   - \usepackage{array}
@@ -179,13 +178,13 @@ p_j \ge 0 \quad \forall j \in \{1, \ldots, k \}\\
 In terms of applications, mixture models can be used to achieve the
 following goals:
 
--   *clustering*: *Hard clustering* consists in determining a complete
+-   *Clustering*: hard clustering consists in determining a complete
     partition of the $n$ observations $x_{1:n}$ into $k$ disjoint
     non-empty subsets. In the context of *mixture model-based
-    clustering*, this is done by assigning for each observation $i$ the
-    cluster $\hat{s_i}=\arg \max_j \eta_{i} (j)$ which maximises the
-    posterior distribution (MAP) conditioned on $x_i$ Equation
-    \@ref(eq:posteriori):
+    clustering*, this is done by assigning each observation $i$ to the
+    cluster $\hat{s_i}=\arg \max_j \eta_{i} (j)$ that maximises the
+    posterior distribution (MAP) (see Equation
+    \@ref(eq:posteriori)):
 
 ```{=tex}
 \begin{equation}
@@ -193,11 +192,11 @@ following goals:
     (\#eq:posteriori)
 \end{equation}
 ```
--   *prediction*: the purpose is to predict a response variable $Y$ from
+-   *Prediction*: the purpose is to predict a response variable $Y$ from
     an explanatory variable $X$. The dependent variable $Y$ can either
     be discrete, taking values in classes $\{1, \ldots, G\}$
     (*classification* task) or continuous (*regression* task). In this
-    paper we do not extensively discuss regression but refer the reader
+    paper, we do not extensively discuss application of mixture models to regression purposes but refer the reader
     to @bouveyron_girard09 for mixture classification and
     @shimizu_kaneko20 for mixtures of regression models.
 
@@ -231,10 +230,18 @@ f_{\zeta j}(X=x)=\varphi_{\zeta_j}(x | \mu_j, \sigma_j):=\frac{1}{\sqrt{2\pi} \s
 In the univariate case, the parameters to be inferred from each
 component, $\zeta_j$, are: $\mu_j$, the *location* parameter (equal to
 the mean of the distribution) and $\sigma_j$, the *scale* parameter
-(equal to the standard deviation of the distribution).
+(equal to the standard deviation of the distribution with a Gaussian distribution).
 
 Following parsimonious parametrisations with respect to univariate GMMs
-are often considered: [^1]
+are often considered: 
+
+-   *homoscedascity*: variance is considered equal for all components,
+    $\sigma_j = \sigma, \forall j \in \{1, \ldots, k \}$, as opposed to
+    heteroscedascity where each sub-population has its unique
+    variability.
+
+-   *equi-proportion* among all mixtures:
+    $p_j = \frac{1}{k} \quad j \in \{ 1, \ldots, k\}$ [^1]
 
 [^1]: A rarer constraint considered implies to enforce a linear
     constraint over the clusters' means, of the following general form:
@@ -250,19 +257,6 @@ are often considered: [^1]
     model is then degenerate. Additionally, setting constraints on the
     means makes the estimation of the parameters challenging, as
     detailed in section [Appendix B: Extensions of the EM algorithm to overcome its limitations].
-
--   *homoscedascity*: variance is considered equal for all components,
-    $\sigma_j = \sigma, \forall j \in \{1, \ldots, k \}$, as opposed to
-    heteroscedascity where each sub-population has its unique
-    variability.
-
--   *equi-proportion* among all mixtures:
-    $p_j = \frac{1}{k} \quad j \in \{ 1, \ldots, k\}$ [^2]
-
-[^2]: It is worth noting that the MAP of a homoscedastic and
-    equi-balanced GMM is the MAP distribution of a *k*-means procedure
-    with Euclidean distance, namely for each observation the cluster
-    with the nearest mean.
 
 
 In the finite multivariate Gaussian mixture model, the distribution $f_{\zeta j}(\boldsymbol{X})$ of each component $j$, where
@@ -280,7 +274,7 @@ following multivariate Gaussian p.d.f. (probability density function)
 which we note
 $\boldsymbol{X} \sim \mathcal{N}_D(\boldsymbol{\mu}_j, \boldsymbol{\Sigma}_j)$. The parameters to be estimated for each component can be decomposed into:
 
--   $\boldsymbol{\mu}_j=\begin{pmatrix} \mu_{1j} \\ \vdots \\ \mu_{Dj} \end{pmatrix} \in \mathbb{R}^D$, the $D$-dimensional mean vector
+-   $\boldsymbol{\mu}_j=\begin{pmatrix} \mu_{1j} \\ \vdots \\ \mu_{Dj} \end{pmatrix} \in \mathbb{R}^D$, the $D$-dimensional mean vector.
 
 -   $\boldsymbol{\Sigma}_j$, the $\mathcal{M}_D(\mathbb{R})$ positive-definite [^3]covariance matrix, whose diagonal terms are the individual variance of each feature and the off-diagonal terms the pairwise covariance terms.
 
@@ -290,17 +284,17 @@ $\mathbf{v}^\top \boldsymbol{X} \mathbf{v} > 0$ is enforced.
 
 Three families of multivariate GMMs are often considered:
 
--   the *spherical* family, $\boldsymbol{\Sigma}_j=\sigma_j^2 \boldsymbol{I}_D$, with $\sigma_j \in \mathbb{R}_{+}$, refers to GMMs whose covariance matrix is diagonal with a fixed diagonal element and the corresponding volume representation is a $D-$*hypersphere* of constant radius $\sigma_j$.
--   the *diagonal* family, $\boldsymbol{\Sigma}_j=\operatorname{diag} \left(\sigma_{1j}^2, \ldots, \sigma_{1D}^2\right)$, with $\sigma_j \in \mathbb{R}_{+}^D$, refers to GMMs whose covariance matrix is diagonal . Its associated volume representation is an ellipsoid whose main axis are aligned with the $D$ canonical basis of $\mathbb{R}^D$. Of note, the null constraint imposed over the off-diagonal terms in the spherical and diagonal families imply that the multivariate distribution can be further decomposed and analysed as the product of univariate independent Gaussian realisations.
--   the *ellipsoidal* family, also nicknamed the *general* family, refer to GMMs whose covariance matrix, $\boldsymbol{\Sigma}_j$, can be any arbitrary positive-definite $D \times D$ matrix. Thus, the corresponding clusters for each component $J$ are ellipsoidal, centred at the mean vector $\boldsymbol{\mu}_j$, and volume and orientation respectively determined by the eigenvalues and the eigenvectors of the covariance matrix $\boldsymbol{\Sigma}_j$.
+-   the *spherical* family, $\boldsymbol{\Sigma}_j=\sigma_j^2 \boldsymbol{I}_D$, with $\sigma_j \in \mathbb{R}_{+}^*$, refers to GMMs whose covariance matrix is diagonal with an unique standard deviation term.  The corresponding volume representation is a $D-$*hypersphere* of radius $\sigma_j$.
+-   the *diagonal* family, $\boldsymbol{\Sigma}_j=\operatorname{diag} \left(\sigma_{1j}^2, \ldots, \sigma_{1D}^2\right)$, with $\sigma_j \in \mathbb{R}_{+}^D$, refers to GMMs whose covariance matrix is diagonal. Its associated volume representation is an ellipsoid whose main axes are aligned with the $D$ canonical basis of $\mathbb{R}^D$. Of note, the null constraint imposed over the off-diagonal terms in the spherical and diagonal families imply that the multivariate distribution can be further decomposed and analysed as the product of univariate independent Gaussian realisations.
+-   the *ellipsoidal* family, also named the *general* family, refer to GMMs whose covariance matrix, $\boldsymbol{\Sigma}_j$, can be any arbitrary positive-definite $D \times D$ matrix. Thus, the corresponding clusters for each component $J$ are ellipsoidal, centred at the mean vector $\boldsymbol{\mu}_j$, and volume and orientation respectively determined by the eigenvalues and the eigenvectors of the covariance matrix $\boldsymbol{\Sigma}_j$.
 
 
-In the multivariate setting, the volume, shape, and orientation of the covariances can be constrained to be equal or variable across groups, generating 14 possible models with different geometric characteristics [@banfield_raftery93, @celeux_govaert92]. We review them in Appendix ([Parameters estimation in a high-dimensional context]) and Table \@ref(tab:parameter-configuration-bivariate). Of note, the
-correlation matrix can be easily obtained from the covariance
-matrix after the following normalisation:
+In the multivariate setting, the volume, shape, and orientation of the covariances can be constrained to be equal or variable across clusters, generating 14 possible parametrisations with different geometric characteristics [@banfield_raftery93; @celeux_govaert92]. We review them in Appendix ([Parameters estimation in a high-dimensional context]) and Table \@ref(tab:parameter-configuration-bivariate). Of note, the
+correlation matrix can be easily derived from the covariance
+matrix with the following normalisation:
 $\operatorname{cor}(\boldsymbol{X})=\left(\frac{\operatorname{cov}(x_l, x_m)}{\sqrt{\operatorname{var}(x_l)} \times \sqrt{\operatorname{var}(x_m)}}\right)_{(l,m) \in D \times D}$. Correlation if strictly included between -1 and 1, the strength of the
 correlation is given by its absolute value while the type of the
-interaction is returned by its sign. An absolute correlation between two features of 1 indicates a strictly linear relationship.
+interaction is returned by its sign. A correlation of 1 or -1 between two features indicates a strictly linear relationship.
 
 
 For the sake of simplicity and tractability, we will only consider the
@@ -349,8 +343,7 @@ incomplete with respect to the previous case, is given by Equation
 (\#eq:7)
 \end{equation}
 ```
-The sum of terms embed in a log function (underbrace in Equation \@ref(eq:7)) makes it intractable in practice to derive the null values of its
-corresponding derivative. Thus, no closed form of the MLE is available,
+The sum of terms embed in the log function (see underbrace section in Equation \@ref(eq:7)) makes it intractable in practice to derive the null values of its corresponding derivative. Thus, no closed form of the MLE is available,
 including for the basic univariate GMM model. This is why most
 parameter estimation methods derive instead from the *EM algorithm*,
 first described in @dempster_etal77. We detail in the next section its
@@ -364,9 +357,9 @@ However, when either $S$ or $\theta$ are known, the estimation of the
 other parameters is straightforward. Hence, the general principle of
 EM-like algorithms is splitting this complex non-closed joint MLE
 estimation of $(S, \theta)$ into the iterative estimation of $S_q$ from
-$(\theta_{q-1}, X)$ (expectation phase, or *E-step* of the algorithm)
-and the estimation of $\theta_q$ from $(S_q, X)$ (maximisation phase, or
-*M-step*), with $\theta_{q-1}$ being the estimated parameters at the
+$(\hat{\theta}_{q-1}, X)$ (expectation phase, or *E-step* of the algorithm)
+and the estimation of $\hat{\theta}_{q}$ from $(S_q, X)$ (maximisation phase, or
+*M-step*), with $\hat{\theta}_{q-1}$ being the estimated parameters at the
 previous step $q-1$, until we reach the convergence.
 
 
@@ -383,7 +376,7 @@ models by Equation \@ref(eq:8).
 ```{=tex}
 \begin{equation}
 \begin{split}
-Q(\theta|\theta_{q-1}) & := \mathbb{E}_{S_{1:n}| X_{1:n}, \hat{\theta}_{q-1}} \left[\ell(\theta | X_{1:n}, S_{1:n})\right] \\
+Q(\theta|\hat{\theta}_{q-1}) & := \mathbb{E}_{S_{1:n}| X_{1:n}, \hat{\theta}_{q-1}} \left[\ell(\theta | X_{1:n}, S_{1:n})\right] \\
 &=\sum_{i=1}^n \sum_{j=1}^k \eta_{i}(j) \left( \log (p_j) +  \log (\mathbb{P}(X_i|S_i=j, \theta)) \right)
 \end{split}
 (\#eq:8)
@@ -413,7 +406,7 @@ In practice, the EM algorithm consists in performing alternatively E-step and M-
 that we reach a maximum, we should assert that the Hessian matrix evaluated at the MLE is indeed negative semi-definite.]:
 ```{=tex}
 \begin{equation}
-    \frac{\partial Q(\theta| \theta_{q-1})}{\partial \theta}=0
+    \frac{\partial Q(\theta| \hat{\theta}_{q-1})}{\partial \theta}=0
 (\#eq:mapping-function-derivative)
 \end{equation}
 ```
@@ -459,49 +452,49 @@ algorithm, while meta-methods include as well an initialisation step.
 The commonly-used initialisation methods are:
 
 -   The *Model-based Hierarchical Agglomerative Clustering* (MBHC) is
-    an agglomerative hierarchical clustering based on MLE criteria for
-    Gaussian mixture models [@scrucca_raftery15] . First, the MBHC is
+    an agglomerative hierarchical clustering based on MLE criteria applied to
+    GMMs [@scrucca_raftery15]. First, the MBHC is
     initialised by assigning each observation to its own cluster. Next,
     the pair of clusters that maximises the likelihood of the underlying
     statistical model among all possible pairs is merged. This procedure
     is repeated until all clusters are merged. The final resulting
     clusters are then simply the last $k$ cuts of the resulting
-    dendrogram. In the homoscedastic univariate case, the underlying
-    merging criteria reveals similar to the Ward's criterion, with the
+    dendrogram. In the homoscedastic case in the univariate setting, and the diagonal family with shared variance across all components, the underlying
+    merging criteria reveals similar to the *Ward's criterion*, with the
     merged pair of clusters being the one minimising the sum of squares.
-    As opposed to other initialisation methods described below, it is
-    deterministic and does not require careful calibration of
-    hyperparameters but the resulting partitions are generally
-    suboptimal [@fraley98] .
+    As opposed to other initialisation methods described after, MBHC is a
+    deterministic method that hence does not require careful calibration of
+    hyperparameters. However, as acknowledged by the creator of the method itself of the method [@fraley98], the resulting partitions are generally
+    suboptimal compared to other initialisation methods.
 
 -   The standard *random* initialisation, used classically for the
     initialisation step of the *k*-means algorithm, consists in randomly
     selecting $k$ distinct observations, referred to as *centroids* and
-    then assign each observation to the closest centroid
-    [@biernacki_etal03] . Doing so is close from the C-step of the CEM algorithm.
-    This is the method used in this paper, unless otherwise stated.  Alternatives have since been developed: for instance, the package \pkg{mixtools} first guesses the proportions of the components drawing from a Dirichlet distribution, whose main advantage lies on respecting the unit simplex constraint (Equation \@ref(eq:2))^[Without prior knowledge favouring one component over another, the Dirichlet distribution is generally parametrised by $\alpha=\frac{1}{k}$, implicitly stating that any observation has equal chance to proceed from a given cluster. In that case, the corresponding distribution is parametrised by a single scalar value $\alpha$, called the *concentration parameter*.], but uses binning methods to guess the means and standard deviations of the components. In paper @kwedlo13, the means of the components are randomly chosen but with additional constraint of maximising the Mahalanobis distance between the selected centroids. This enables to cover a larger portion of the parameters' space.
+    then assigns each observation to the closest centroid
+    [@biernacki_etal03]. Doing so is close from the C-step of the CEM algorithm.
+    This is the method used in this paper, unless otherwise stated.  Alternative versions of this method have been developed: for instance, the package \pkg{mixtools} draws the proportions of the components from a Dirichlet distribution, whose main advantage lies on respecting the unit simplex constraint (Equation \@ref(eq:2))^[Without prior knowledge favouring one component over another, the Dirichlet distribution is generally parametrised by $\alpha=\frac{1}{k}$, implicitly stating that any observation has equal chance to proceed from a given cluster. In that case, the corresponding distribution is parametrised by a single scalar value $\alpha$, called the *concentration parameter*.], but uses binning methods to guess the means and standard deviations of the components. In paper @kwedlo13, the means of the components are randomly chosen but with additional constraint of maximising the Mahalanobis distance between the selected centroids. This enables to cover a larger portion of the parameters' space.
 
--   **k*-means* is a CEM algorithm, in which the additional assumption of
+-   *k*-means is a CEM algorithm, in which the additional assumption of
     balanced classes and homoscedascity implies that each observation in
     the E-step is assigned to the cluster with the nearest mean (the one
     with the shortest Euclidean distance). *K*-means is initialised by
-    randomly selecting $k$ points, the *centroids*. it is often chosen
-    for its fast convergence and its less-greedy memory consumption.
+    randomly selecting $k$ points, the *centroids*. It is often chosen
+    for its fast convergence and memory-saving consumption.
 
 -   The *quantile* method sorts each observation $x_i$ by increasing
-    order, and split them into quantiles of size $1/k$. Then, all
+    order and splits them into equi-balanced quantiles of size $1/k$. Then, all
     observations for a given quantile are assumed to belong to the same
     component. \footnote{This method is only available in the univariate framework,
     since it is not possible to define a unique partition of the observable space into $k$-splits. For example, in bivariate setting, a binning with $k=2$ components on each axis leads to a total of $2 \times 2=4$ binned regions, which raises the selection issue of the best $k$ hyper-squared volumes for the initial parameters estimation. More generally, $\binom{D}{k}$ binning choices are possible in the multivariate setting.}
 
 -   The *Rough-Enhanced-Bayes mixture* (REBMIX) algorithm is implemented
-    in the \CRANpkg{rebmix} [@R-rebmix] package, and the complete
-    pseudo-code is described thoroughly in [@rebmix2015a; @rebmix2020b] . First, the
+    in the \CRANpkg{rebmix} [@R-rebmix] package and the complete
+    pseudo-code is described thoroughly in [@rebmix2015a; @rebmix2020b]. First, the
     observations are processed using one of the three available methods:
-    *k*-nearest neighbours (KNN), Parzen kernel density estimation and finally
-    binned intervals, the method we used for this paper. First, data are
-    binned in $\sqrt{n}$ intervals of equal lengths. Then, the mode of
-    one of the components' distribution is determined as the interval
+    *k*-nearest neighbours (KNN), Parzen kernel density estimation or
+    binned intervals, the method we used for this paper. In this method, firstly, data are
+    binned in $\sqrt{n}^D$ intervals of equal lengths. Then, the mode of
+    one of the components' distribution is given by the centre of the interval
     with the highest frequency. This interval is also used to define a
     ``rough'' parameters' estimation of its associated component. All the
     other observations and intervals are then iteratively assigned to
@@ -510,35 +503,31 @@ The commonly-used initialisation methods are:
     another component when at least $25\%$ of the currently non
     assigned intervals are associated to the currently estimated
     component.
-    The choice between estimated or residual components is based on the
-    measurement of the deviation between the observed and the expected
-    frequency of the interval, a low value enforcing the algorithm to
+    The decision of assigning an interval to either a currently estimated component or residuals relies on the measurement of the deviation between the observed and the expected
+    frequency of the interval, a low value supporting the choice of the algorithm to
     assign the interval to the currently estimated component. Finally,
     all intervals assigned to the estimated component are used to
-    determine the parameters of the associated Gaussian distribution.
+    determine the parameters of the associated Gaussian distribution (computation of the first and second moments of the distribution). Since this step relies on a higher number of observations to estimate the parameters, @rebmix2015a refers to it as ``enhanced components parameter estimation''.
     The algorithm stops when all intervals are assigned to a cluster and
     the parameters of the several distributions' components are
-    estimated. Accordingly, the rebmix algorithm can be interpreted as a natural and more general extension of the quantile method with a more rigorous statistical support. Two drawbacks of the algorithm are the need of an intensive calibration of the hyperparameters (the number of of
-    binned intervals in the binning protocol) and its inadequacy for the
+    estimated. Accordingly, the rebmix algorithm can be interpreted as a natural and more general extension of the quantile method with a more rigorous statistical support. Two drawbacks of the algorithm are the need of an intensive calibration of the hyperparameters and its inadequacy for the
     estimation of highly overlapping mixture distributions (uncertainty
-    of the cluster assignment is not taken into account)\footnote{The method we describe here to preprocess the observations in order to estimate the empirical density estimation, namely "the histogram method" is not well suited for high dimensional data, as the exponential growth of the volume with respect to dimensionality leads to data sparsity, related to the well-known issue of the "curse of dimensionality". Indeed, $\sqrt{n}^D$ distinct intervals will be parsed by the method and the probability with an increasing number of features and decreasing number of observations that no clear local maximum emerges converges to 1. In high-dimensional context, the Parzen window or the KNN method should be favoured, see [@rebmix2015a], p. 16.}.
+    of the cluster assignment is not taken into account).^[The method we describe here to preprocess the observations in order to estimate the empirical density estimation, namely the ``histogram method'' is not well suited for high dimensional data, as the exponential growth of the volume with respect to dimensionality leads to data sparsity, related to the well-known issue of the ``curse of dimensionality''. Indeed, $\sqrt{n}^D$ distinct intervals will be parsed by the method and the probability with an increasing number of features and decreasing number of observations that no clear local maximum emerges converges to 1. In high-dimensional context, the Parzen window or the KNN method should be favoured, see [@rebmix2015a], p. 16.].
 
 -   The *meta-methods* consist generally in short runs of EM-like
-    algorithms, namely CEM, SEM and EM (see [Appendix B: Extensions of the EM algorithm to overcome its limitation]), with alleviated convergence criterion. The main idea is
+    algorithms, namely CEM, SEM and EM (see [Appendix B: Extensions of the EM algorithm to overcome its limitations]), with alleviated convergence criterion. The main idea is
     to use several random initial estimates with shorter runs of the
     algorithm to explore a larger parameter space, and avoid being
-    trapped in a local maximum. yet, they still depend on an initialisation
-    algorithm to start the optimisation [@biernacki_etal03] .
+    trapped in a local maximum. Yet, they highly depend on the choice of the initialisation
+    algorithm to start the optimisation [@biernacki_etal03].
 
 After this theoretical introduction, we evaluate empirically the
 computational and statistical performances of the R packages in relation
 with the choice of the initialisation algorithm and the complexity of
-the simulation in [A comprehensive benchmark comparing estimation
-performance of GMMs]. The method used to compare the seven reviewed
+the simulation in the next section. The method used to compare the seven reviewed
 packages is detailed in [Methods], while the key results are reported in
 section [Results]. We conclude by providing a general simplified
-framework to help the R user in its selection of the package and
-initialisation algorithm best fitted to the distribution of its dataset.
+framework to select the combination of package and initialisation method best suited to its objectives and the nature of the distribution of the dataset.
 
 # A comprehensive benchmark comparing estimation performance of GMMs
 
@@ -546,7 +535,7 @@ We searched CRAN and Bioconductor mirrors for packages that can retrieve
 parameters of GMM models. Briefly, out of 54 packages dealing with GMMs
 estimation, we focused on seven packages that all estimate the
 MLE in  GMMs using the EM algorithm, were recently
-updated and let the user to provide its own initialisation estimates:
+updated and let the user provide its own initialisation estimates:
 \pkg{bgmm}, \pkg{EMCluster}, \pkg{flexmix},
 \pkg{GMKMcharlie}, \pkg{mclust}, \pkg{mixtools} and \pkg{Rmixmod}. The
 complete inclusion process is detailed in [Appendix C: the meta-analysis workflow for the final selection of CRAN and Bioconductor platforms]. The flowchart summarising
@@ -606,20 +595,20 @@ readr::read_delim("./tables/package_comparison_low_level.csv", delim=";", show_c
   kable_styling(latex_options=c("hold_position", "scale_down"))
 ```
 
-We further detail features specifically related to GMMs in
-`r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`. We detail row after row the content of this Table below:
+We further detail features specifically related to GMMs in Table
+`r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`. We detail row after row its content below:
 
-- The parametrisations used to provide parsimonious estimation of the GMMs are reviewed in [Parameter estimation in finite mixtures models] and summarised in rows 1 and 2 (Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`) for the univariate and multivariate setting. We refer to them as *canonical* when homoscedasticity and heteroscedasticity assumptions in the univariate setting and the 14 most common parametrisations (see Table \@ref(tab:param-multivariate-gaussian)) in the multivariate setting are implemented. Adding the additional constraint of equi-balanced clusters results in a total to $14 \times 2=28$ distinct models and $2 \times 2=4$ parametrisations respectively in the univariate and multivariate setting.
+- The parametrisations used to provide parsimonious estimation of the GMMs are reviewed in [Parameter estimation in finite mixtures models] and summarised in rows 1 and 2 (Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`) for the univariate and multivariate setting. We refer to them as *canonical* when both homoscedastic and heteroscedastic parametrisations in the univariate setting, and the 14 parametrisations listed in Table \@ref(tab:param-multivariate-gaussian) in the multivariate setting, are implemented. Adding the additional constraint of equi-balanced clusters results in a total to $14 \times 2=28$ distinct models and $2 \times 2=4$ parametrisations, respectively in the univariate and multivariate setting.
 
 - [The EM algorithm] is the most commonly used
-algorithm to retrieve the estimates parametrising the GMMs but faster or complementary extensions of the EM algorithm are reviewed in [Appendix B: Extensions of the EM algorithm to overcome its limitations] and row 3 of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`. Especially, GMMs estimation is particularly impacted by the presence of outliers, justifying a specific benchmark ([A small simulation to evaluate the impact of outliers]).
-We briefly review the most common initialisation algorithms in section [Initialisation of the EM algorithm] and row 4 of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`, a required and painstaking task for both the EM algorithm and its variants.
+algorithm to retrieve the parameters of the GMMs but faster or variants complementary of the EM algorithm are reviewed in [Appendix B: Extensions of the EM algorithm to overcome its limitations] and row 3 of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`. Especially, GMMs estimation is particularly impacted by the presence of outliers, justifying a specific benchmark ( see [A small simulation to evaluate the impact of outliers]).
+We briefly review the most common initialisation algorithms in section [Initialisation of the EM algorithm] and row 4 of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`, a necessary and tedious task for both the EM algorithm and its alternatives.
 
 - To select the best parametrisations and number of components that fit the mixture, several metrics are provided by the reviewed packages
 ([Model selection] and row 5). Due to the complexity of computing the true distribution of the parameters estimated, bootstrap methods are commonly used used to derive confidence intervals (see [Derivation of
 confidence intervals in GMMs] and row 6 in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`.
 
-- Four packages supply several visualisations, summarised in the last row of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))` to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction) with the possibility to add custom confidence intervals and critical regions and boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
+- Four packages supply several visualisations, summarised in the last row of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`, to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction), with the additional possibility of integrating custom confidence intervals and critical regions, and finally boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
 
 ```{r high-comparison-packages-html, layout="l-body-outset", eval = knitr::is_html_output()}
 data <- readr::read_delim("./tables/package_comparison_high_level.csv", delim=";", show_col_types = F) %>%
@@ -664,9 +653,8 @@ readr::read_delim("./tables/package_comparison_high_level.csv", delim=";", show_
 ## Methods
 
 In addition to the the seven packages selected for our benchmark, we
-include an additional R implementation of the EM algorithm used
-as a baseline algorithm, to which we refer to by *RGMMBench* and whose code is provided in [Application of the EM algorithm to GMMs]. To compare the statistical performances of these packages, we performed *parametric bootstrap* ([Derivation of confidence intervals
-in GMMs]) and built an experimental design to cover distinct mixture distributions parameter configurations, using prior user-defined parameters.
+include a custom R implementation of the EM algorithm used
+as baseline, referred to as *RGMMBench*. Its code is provided in [Application of the EM algorithm to GMMs]. To compare the statistical performances of these packages, we performed *parametric bootstrap* ([Derivation of confidence intervals in GMMs]) and built an experimental design to cover distinct mixture distributions parameter configurations, using prior user-defined parameters.
 
 
 For each experiment, we assign each observation to an unique cluster by drawing $n$ labels $S_{1:n}$ from a multinomial distribution whose parameters were the prior user-defined proportions $p=(p_1, \ldots, p_k)$. Then, each observation $x_i$ assigned to hidden component $j$ is drawn respectively using the R function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("stats::rnorm()"),   '\\code{stats::rnorm()}'))` for the univariate distribution and `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("MASS::mvrnorm"),   '\\code{MASS::mvrnorm}'))` for the multivariate distribution. The complete code used for simulating data is
@@ -677,27 +665,27 @@ of each randomly generated sample.
 
 
 
-For all the packages, we have used the same stopping threshold of
-$10^{-6}$ which can be interpreted as a numerical proof of convergence and the same maximal number, 1000, of iterations to reach that threshold. We simulated data with $n = 200$ draws in the univariate setting and $n=500$ in the multivariate framework to both lower the probability of generating a sample without drawing any observation from one of the components in case of highly-unbalanced scenario. Unless stated explicitly, we keep the default hyper-parameters and custom global options provided by each package. For instance, the \pkg{flexmix} package has a default option, *minprior*, set by default to 0.05 and which removes any component present in the mixture with a ratio below $0.05$. Besides, we only implement the fully unconstrained model in both univariate and multivariate settings, as it is the only parametrisation implemented in all the seven packages and the most popular to perform classic GMM clustering (fewer hypothesis required).
+For all the packages, we have used the same combination of criterion threshold of
+$10^{-6}$ and maximal number, 1000, of iterations as a numerical proof of convergence. We simulated data with $n = 200$ draws in the univariate setting and $n=500$ in the multivariate framework to lower the probability of generating a sample without drawing any observation from one of the components, especially in case of a highly-unbalanced scenario [Practical details for the implementation of our benchmark]. Unless stated explicitly, we keep the default hyper-parameters and custom global options provided by each package. For instance, the \pkg{flexmix} package has a default option, *minprior*, set by default to 0.05 and which removes any component present in the mixture with a ratio below $0.05$. Besides, we only implement the fully unconstrained model in both univariate and multivariate settings, as it is the only parametrisation implemented in all the seven packages and the most popular to perform classic GMM clustering, since fewer hypothesis are required.
 
 We compared the packages' performances using five
 initialisation methods: random, quantile, *k*-means, rebmix and
-hierarchical clustering in the univariate framework. We benchmarked the same initialisation methods in the multivariate setting, except for the quantile method which has no multivariate equivalent (see section [Initialisation of the EM algorithm]):
+hierarchical clustering in the univariate setting. We benchmarked the same initialisation methods in the multivariate setting, except for the quantile method which has no multivariate equivalent (see section [Initialisation of the EM algorithm]):
 
 
   * We used the function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("EMCluster::simple.init()"),   '\\code{EMCluster::simple.init()}'))` with 10 random restarts for the random initialisation. The method implemented by \pkg{EMCluster} is the most commonly used, described in details in @biernacki_etal03 and in section [Initialisation of the EM algorithm].
 
   * We used the function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("stats::kmeans()"),   '\\code{stats::kmeans()}'))`  function with a $10^{-2}$ stopping criterion and 200 maximal number of iterations to implement the *k*-means initialisation method.
-The initial centroid and covariance matrix for each component are then computed by restricting to the sample observations assigned to the corresponding component. The approach is related to that of the CEM algorithm (see [Appendix B: Extensions of the EM algorithm to overcome its limitations]), in which each observation is uniquely assigned to a component and from which supervised estimation is then performed to learn the parameters of the individual component distributions.
+The initial centroid and covariance matrix for each component are then computed by restricting to the sample observations assigned to the corresponding component. The approach is close to the one adopted by the CEM algorithm (see [Appendix B: Extensions of the EM algorithm to overcome its limitations]).
 
-  * We use the `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("mclust::hcV()"),   '\\code{mclust::hcV()}'))` function for the MBHC algorithm. This method has two main limitations: just like the *k*-means implementation, it only returns a cluster assignment to each observation instead of the posterior probabilities, and the splitting process to generate the clusters results in some simulations in one or more groups composed of only one observation. In that case, we add a small epsilon to each posterior probability to avoid Dirac, point-wise distributions.
+  * We use the `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("mclust::hcV()"),   '\\code{mclust::hcV()}'))` function for the MBHC algorithm. This method has two main limitations: just like the *k*-means implementation, it only returns a cluster assignment to each observation instead of the posterior probabilities, and the splitting process to generate the clusters results sometimes in clusters composed of only one observation. In that case, we add a small epsilon to each posterior probability to avoid Dirac degenerated distributions.
 
   * We used in the univariate setting `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("bgmm::init.model.params"),   '\\code{"bgmm::init.model.params"}'))` for the quantiles initialisation.
 
-  * To implement the rebmix method, we use the `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("rebmix::REBMIX()"),   '\\code{"rebmix::REBMIX"}'))` function, using the *kernel density estimation* for the estimation of the empirical density distribution coupled with Restraints argument set to *loose* to account for overlapping distributions and *EMcontrol* fixed to one step maximal to prevent the algorithm from starting EM iterations.
+  * To implement the rebmix method, we use the `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("rebmix::REBMIX()"),   '\\code{"rebmix::REBMIX"}'))` function, using the *kernel density estimation* for the estimation of the empirical density distribution coupled with *EMcontrol* set to one to prevent the algorithm from starting EM iterations.
 
-  * Any of the seven packages could be used to implement the small EM method. We decided to use the `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("mixtools::normalmixEM"),   '\\code{"mixtools::normalmixEM"}'))` as it is the closest to our own implementation, setting 10 random restarts, a maximal number of iterations of 200 and with an alleviated absolute threshold of $10^{-2}$. However, preliminary experiments suggest us to discard the small EM
-initialisation method, as it tends to smooth the differences between the packages and has an extensive number of hyperparameters to control compared to other methods, as illustrated in supplementary Figure \@ref(fig:heatmap-all-correlation-plots-univariate).
+  * Any of the seven packages could be used to implement the small EM method. We decided to use the `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("mixtools::normalmixEM"),   '\\code{"mixtools::normalmixEM"}'))` as it is the closest one to our custom implementation, setting 10 random restarts, a maximal number of iterations of 200 and with an alleviated absolute threshold of $10^{-2}$. However, preliminary experiments suggest us to discard the small EM
+initialisation method, as it tends to smooth the differences between the packages, as illustrated in supplementary Figure \@ref(fig:heatmap-all-correlation-plots-univariate).
 
 
 We sum up in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\@ref(tab:general-parameter-description-pdf)'))` the general configuration used to run the scripts. Additionally, all simulations were run with the same stable R version 4.0.2 (2020-06-22) using an OS system under Linux and numerical precision of $2.22 \times 10^{-16}$.
@@ -763,7 +751,7 @@ We report the most significant results and features and the associated recommend
 
 ## Results
 
-All the figures and performance overview tables are reported in [Supplementary Figures and Tables in the univariate simulation] for the univariate setting, and [Supplementary Figures and Tables in the multivariate simulation] for the bivariate scenario.
+All the figures and performance overview tables are reported in [Supplementary Figures and Tables in the univariate simulation] for the univariate setting and [Supplementary Figures and Tables in the multivariate simulation] for the bivariate scenario.
 
 **Balanced and non-overlapping components**
 
@@ -776,6 +764,8 @@ methods (Figure \@ref(fig:four-component-balanced-separated) and Table
 `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:balanced-well-separated-table-univariate-html)', '\\@ref(tab:balanced-well-separated-table-univariate-pdf)'))`),
 with various optimisations returning only local maxima far from the
 optimal estimate.
+
+
 Similar scenarios in the bivariate setting (scenarios B6-B10 in Table \@ref(tab:parameter-configuration-bivariate)), with a focus on B6, B7 and B10 visualised in Supplementary Figures \@ref(fig:general-balanced-well-separated-multivariate), feature well-separated and balanced components. Consistent with conclusions from the corresponding univariate scenarios, all benchmarked packages return the same estimates across initialisation methods.
 
 **Unbalanced and non-overlapping components**
@@ -794,7 +784,7 @@ well-discriminated components, most of the differences on the estimation
 originate from the choice of initialisation method, while the choice of
 the package has only small impact.
 
-We detail expensively in our bivariate simulations one scenario featuring both strongly unbalanced and well-separated components, similarly to scenario U3 in Table \@ref(tab:parameter-configuration-univariate):  the scenario B15 (Figure \@ref(fig:multivariate-overlapping-unbalanced-positive-correlated and Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-pdf)'))`) and briefly summarise scenarios B16, B17 and B20 (Table \@ref(tab:parameter-configuration-bivariate)) with similar characteristics in supplementary Figure \@ref(fig:general-unbalanced-well-separated-multivariate). For all these scenarios, neither the initialisation method nor the package have a significant impact (same estimates returned) on the overall performance.
+We detail expensively in our bivariate simulations two scenarios featuring both strongly unbalanced and well-separated components, similarly to scenario U3 in Table \@ref(tab:parameter-configuration-univariate): the scenarios B12 (Figure \@ref(fig:multivariate-overlapping-unbalanced-opposite-correlated) and Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-pdf)'))`) and B14 (Figure \@ref(fig:multivariate-overlapping-unbalanced-positive-correlated) and Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-pdf)'))`). Similarly, scenarios B16, B17 and B20 (Table \@ref(tab:parameter-configuration-bivariate)) with similar characteristics are summarised in supplementary Figure \@ref(fig:general-unbalanced-well-separated-multivariate). For all these scenarios, neither the initialisation method nor the package have a statistical significant impact on the overall performance.
 
 
 **Balanced and overlapping components**
@@ -807,7 +797,7 @@ the *k*-means initialisation (Figure
 \@ref(fig:four-component-balanced-overlapping) and Table
 `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:balanced-overlapping-table-univariate-html)', '\\@ref(tab:balanced-overlapping-table-univariate-pdf)'))`) while
 the rebmix initialisation returns the most biased and variable
-estimates. Similar results are found in the bivariate setting with a balanced and highly overlapping two-components GMM (scenarios B1-B5 from Table \@ref(tab:parameter-configuration-bivariate)), with the best performance reached with the *k*-means initialisation method, followed by MBHC. This is emphasised in supplementary Figure \@ref(fig:general-balanced-overlapping-multivariate), in the top three most complex scenarios, namely B1, B2 and B5. If the shape of the covariance matrix is pretty well-recovered, no matter the package, the Hellinger distances are notably higher (and thus the estimate further away from the target distribution) with the random and rebmix methods.
+estimates. Similar results are found in the bivariate setting with a balanced and highly overlapping two-components GMM (scenarios B1-B5 from Table \@ref(tab:parameter-configuration-bivariate)), with the best performance reached with the *k*-means initialisation method, followed by MBHC. This is emphasised in supplementary Figure \@ref(fig:general-balanced-overlapping-multivariate), in the top three most complex scenarios, namely B1, B2 and B5. If the shape of the covariance matrix is pretty well-recovered, no matter the package, the Hellinger distances are significantly higher (and thus the estimate further away from the target distribution) with the random and rebmix methods.
 
 **Unbalanced and overlapping components**
 
@@ -827,20 +817,18 @@ substantial impact on the quality of the estimation of this mixture.
 
 
 
-Four scenarios in our bivariate simulation feature distributions sharing similar characteristics to scenario U9, featuring both strong OVL and unbalanced components. Scenario B11 (Table \@ref(tab:parameter-configuration-bivariate)) has the strongest OVL overall, with notably a risk of wrongly assigning minor component 2 to major component 1 of 0.5 (a random method classifying each observation to cluster 1 or 2 would have the same performance). The component-specific covariance matrices are diagonal in Scenario B15, thus present spherical density distributions.
+Two scenarios in our bivariate simulation feature distributions with both strong OVL and unbalanced components. Especially, the scenario B11 (Table \@ref(tab:parameter-configuration-bivariate)) has the strongest OVL overall, with notably a risk of wrongly assigning minor component 2 to major component 1 of 0.5 (a random method classifying each observation to cluster 1 or 2 would have the same performance). 
 
-First, we observe that the the random and rebmix initialization methods have similar performance, significantly better than $k$-means or MBHC (Figure \@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)). Specifically, the rebmix method returns the least biased estimates, while the random method is associated with the lowest MSE (respectively for scenarios B11, B12 and B15, the Tables `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-negative-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-negative-correlated-pdf)'))`,
-`r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-pdf)'))`
-and `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-uncorrelated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-uncorrelated-pdf)'))`). Second, the estimates differ across packages only in these two complex scenarios, with packages \pkg{Rmixmod} and \pkg{mixtools} returning more accurate estimates than the others. For instance, the bivariate $95\%$ confidence region is spherical with the first class of packages, consistent with the parametrisation of scenario B15, while slightly ellipsoidal with the second class of packages (Panel B, Figure \@ref(fig:multivariate-overlapping-unbalanced-uncorrelated)).
+First, we observe that the the random and rebmix initialization methods have similar performance, significantly better than $k$-means or MBHC (Figure \@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)). Specifically, the rebmix method returns the least biased estimates, while the random method is associated with the lowest MSE (respectively for scenarios B11 and B15, the Tables `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-negative-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-negative-correlated-pdf)'))` 
+and `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-uncorrelated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-uncorrelated-pdf)'))`). Second, the estimates differ across packages only in these two complex scenarios, with packages \pkg{Rmixmod} and \pkg{mixtools} returning more accurate estimates than the others. 
+It it is particularly emphasised in Scenario B15, where the component-specific covariance matrices are diagonal with same non-null input, and thus should present spherical density distributions. However, only the first class of packages correctly recovers the spherical bivariate $95\%$ confidence regions while they are slightly ellipsoidal with the second class of packages (Panel B, Figure \@ref(fig:multivariate-overlapping-unbalanced-uncorrelated)).
 
 **Identification of two classes of packages with distinct behaviours**
 
 By summarizing the results obtained across all simulations, we identify two classes of packages with distinct behaviours (Figure
 \@ref(fig:dichotomy-package-conclusion)):
 
-* The first class of packages, represented by \pkg{Rmixmod} and \pkg{mixtools}, returns similar estimates to our own R implementation of the EM algorithm. Packages of this class are less biased but at the extent of a higher variability on the estimates. Additionally, with overlapping mixtures, they tend to be
-slower compared to the second class, requiring additional steps to reach
-convergence.
+* The first class of packages, represented by \pkg{Rmixmod} and \pkg{mixtools}, returns similar estimates to our baseline EM implementation. The estimates returned by these packages are less biased but at the extent of a higher variability on the estimates. Additionally, with overlapping mixtures, they tend to be slower compared to the second class, since they require additional steps to reach convergence.
 
 * The second class of packages, composed of the other
 reviewed packages, is more sensitive to the initialisation method. This leads to more
@@ -848,9 +836,7 @@ biased but less variable estimates, especially when assumptions done by
 the initialisation algorithm are not met.
 
 
-The dichotomy between the two classes of packages is highlighted in Figure \@ref(fig:heatmap-all-correlation-plots-univariate).
-Panels A and B show respectively in the univariate and bivariate setting the heatmap of the Pearson correlation between the parameters estimated by the evaluated packages. The correlation matrix was computed using the function
-`r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("stats::cor"),   '\\code{"stats::cor"}'))`, with option *complete* to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{Complexheatmap}. In both cases, we emphasise the differences between them by choosing the most discriminative scenario, which reveals to be the one featuring the higher imbalance and overlapping components (scenario U9, Table \@ref(tab:parameter-configuration-univariate) in the univariate setting and scenario B11, Table \@ref(tab:parameter-configuration-univariate), for the bivariate simulation), and the most discriminative initialisation method, namely the random one.
+Panels A and B display, respectively in the univariate and bivariate setting, the heatmap of the Pearson correlation between the estimated parameters across the benchmarked packages. In both cases, we emphasise the differences between them by choosing the most discriminative scenario, which reveals to be the one featuring the most unbalanced and overlapping components (scenario U9, Table \@ref(tab:parameter-configuration-univariate) in the univariate setting and scenario B11, Table \@ref(tab:parameter-configuration-univariate), for the bivariate simulation), and the most discriminative initialisation method, namely the random method.
 
 
 
@@ -1027,25 +1013,23 @@ metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "globa
 <!-- ``` -->
 
 
-```{r dichotomy-package-conclusion, fig.cap="Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. Panel C represents a tree summarising the main differences betweent the benchmarked packages in terms of the EM implementation."}
+```{r dichotomy-package-conclusion, fig.cap="Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. The correlation matrix was computed using the function
+`r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink('stats::cor'),   '\\code{'stats::cor'}'))`, with option *complete* to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{Complexheatmap}. Panel C represents a tree summarising the main differences between the benchmarked packages in terms of the EM implementation."}
 
 knitr::include_graphics("./figs/dichotomy_package_conclusion.png")
 ```
 
 
-We further identified with this representation minor differences for the estimation of the parameters
-between \pkg{Rmixmod} and \pkg{mixtools} among the first class of packages, while three subgroups can be discriminated in the second class of packages: minor differences between subset composed of packages \pkg{bgmm} and \pkg{mclust} on the one hand and \pkg{EMCluster} and \pkg{GMKMcharlie} packages on the other hand (hardly noticeable with a small number of components) while the
-\pkg{flexmix} package clearly sets apart, being the most likely to be trapped in the boundaries of the parameter space. After examining the source codes of the packages, we attribute this differences to implementation choices of the EM algorithm, such as the method to deal with numerical underflow or the choice of a relative or absolute scale to compare consecutive computed log-likelihoods (detailed in [EM-implementation differences across reviewed packages]). Of note, in both the univariate and multivariate setting (Figure \@ref(fig:heatmap-all-correlation-plots-univariate)), the quantiles and *k*-means initialisation methods tend to smooth the differences between the packages and followed by the MBHC method. Conversely, the rebmix and random initialisation tend to emphasise them.
+We further identified with this representation minor differences for the estimation of the parameters between \pkg{Rmixmod} and \pkg{mixtools}, while three subgroups can be identified in the second class of packages: the first subset with \pkg{bgmm} and \pkg{mclust}, the second subset with \pkg{EMCluster} and \pkg{GMKMcharlie} packages (the difference between them is hardly noticeable with a small number of components) and the \pkg{flexmix} package, which clearly stands out from the others, as being the one most likely to be trapped at the boundaries of the parameter space. After examining the source codes of the packages, we attribute this differences to custom implementation choices of the EM algorithm, such as the way numerical underflow is managed or the choice of a relative or absolute scale to compare consecutive computed log-likelihoods (detailed in [EM-implementation differences across reviewed packages]). Of note, in both the univariate and multivariate setting (Figure \@ref(fig:heatmap-all-correlation-plots-univariate)), the quantiles and *k*-means initialisation methods tend to smooth out the differences between the packages, followed by the MBHC method while the rebmix and random initialisation methods tend to increase them.
 
 
 **Failed estimations**
 
-Finally, in some cases, the package or the initialization method could not return an estimate with the expected number of components or fell into a degenerate case (e.g., with infinite or zero variances).  In that case, we considered the estimation to have failed and accordingly not include it into the visualizations and the summary metric tables. Most of the failed estimations occurred with the rebmix initialisation, as its non-optional automatic method to estimate the number of components in the mixture results in an over or under-estimation of the true number of components, see [Methods].
+Finally, in some cases, neither the specific EM algorithm implemented by each package nor the initialization method were able to return an estimate with the expected number of components, or even worse fell into a degenerate case (e.g., with infinite or zero variances).  In that case, we considered the estimation failed and accordingly we did not include it into the visualizations and the summary metric tables. Most of the failed estimations occurred with the rebmix initialisation, because its mandatory automatic method to estimate the number of components sometimes results in an over or under-estimation of the true number of components, see [Methods].
 
 In most cases, this phenomenon occurs with mixtures featuring both strongly unbalanced and highly-overlapping components, with up to $20\%$ initialisations failed for the most difficult scenario B11 (Table \@ref(tab:parameter-configuration-bivariate)), $10\%$ for the second most difficult one, namely scenario B15 and on average, an over-estimation of three components in $4\%$ of the estimations.
 
-Removing failures proceeding from the initialisation method, only the \pkg{flexmix} package failed in returning an estimate across some scenarios in the univariate and in the bivariate setting. In both cases, the strong assumption that any that a cluster with less than $5\%$ of the observations is irrelevant results in trimming one or more components^[With a two-components mixture like our bivariate scenario, this even implies an unimodal distribution of the dataset]. This constraint on component proportions led to failures in scenarios featuring strongly overlapping clusters, with up to $20\%$ failed estimations with the random initialisation method in scenario
-B11 (Table \@ref(tab:parameter-configuration-bivariate)) and $80\%$ failed estimations in the univariate setting^[the gap proceeds from the stronger level of imbalance and the greater number of components] with the rebmix initialisation with scenario 9, Table \@ref(tab:parameter-configuration-univariate).
+Removing errors proceeding from the initialisation method, only the \pkg{flexmix} package failed in returning an estimate matching the user criterias in some scenarios of the univariate and  bivariate settings. In both cases, the strong assumption that any cluster with less than $5\%$ of the observations is irrelevant, results in trimming one or more components^[With a two-components mixture like our bivariate scenario, this even implies to consider an unimodal distribution of the dataset]. This strong agnostic constraint on component proportions led to failures in scenarios featuring strongly overlapping clusters, with up to $20\%$ failed estimations with the random initialisation method in scenario B11 (Table \@ref(tab:parameter-configuration-bivariate)) and $80\%$ failed estimations in the univariate setting^[the gap proceeds from the stronger level of imbalance and the greater number of components] with the rebmix initialisation with scenario 9, Table \@ref(tab:parameter-configuration-univariate).
 
 
 # Conclusions
@@ -1092,7 +1076,7 @@ to a given class, which explains its rather bad performances with
 overlapping components. Overall, there is always an initialisation
 algorithm performing better than the hierarchical clustering, whereas it
 is by far the slowest and most computationally intensive initialisation
-method, as best illustrated in supplementary Figure .
+method, as best illustrated in supplementary Figure \@ref(fig:univariate-initialisation-time-computations).
 
 Our study reveals differences in the estimates obtained across different packages.
 Yet,  the EM algorithm is supposed to be deterministic but we could relate distinct estimates to differences in implementations and global design.
@@ -1186,7 +1170,7 @@ equation for any mixture model (Equation \@ref(eq:ratios-derivative)):
 ```{=tex}
 \begin{equation}
 \begin{split}
-Q(\theta|\theta_{q-1}) & := \mathbb{E}_{S_{1:n}| X_{1:n}, \hat{\theta}_{q-1}} \left[\ell(\theta | X_{1:n}, S_{1:n})\right] \\
+Q(\theta|\hat{\theta}_{q-1}) & := \mathbb{E}_{S_{1:n}| X_{1:n}, \hat{\theta}_{q-1}} \left[\ell(\theta | X_{1:n}, S_{1:n})\right] \\
 &=\sum_{i=1}^n \sum_{j=1}^k \eta_{i}(j) \left( \log (p_j) +  \log (\mathbb{P}(X_i|S_i=j, \theta)) \right)
 \end{split}
 (\#eq:8)
@@ -1195,7 +1179,7 @@ Q(\theta|\theta_{q-1}) & := \mathbb{E}_{S_{1:n}| X_{1:n}, \hat{\theta}_{q-1}} \l
 ```{=tex}
 \begin{equation}
 \begin{split}
-\frac{\partial Q(\theta|\theta_{q-1})}{\partial p_j} &=0 \\
+\frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial p_j} &=0 \\
  \Longleftrightarrow &\\
 p_j&=\frac{\sum_{i=1}^n \eta_{i}(j)}{\lambda}
 \end{split}
@@ -1220,7 +1204,7 @@ component parametric distribution $\zeta_j$, is given by (Equation
 
 ```{=tex}
 \begin{equation}
-\frac{\partial Q(\theta|\theta_{q-1})}{\partial \zeta_j}=\sum_{i=1}^n  \eta_{i}(j) \frac{\partial \log (f_{\zeta_j}(X_i|S_i=j))}{\partial \zeta_j}
+\frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial \zeta_j}=\sum_{i=1}^n  \eta_{i}(j) \frac{\partial \log (f_{\zeta_j}(X_i|S_i=j))}{\partial \zeta_j}
 (\#eq:parameter-component-derivative)
 \end{equation}
 ```
@@ -1234,7 +1218,7 @@ Plug-in the corresponding parametric distribution in the auxiliary function  \@r
 
 ```{=tex}
 \begin{equation}
-Q(\theta| \theta_{q-1}) = \sum_{i=1}^n \sum_{j=1}^k \eta_i(j) \left( \log (p_j) - \log (\sigma_j) - \frac{(X_i-\mu_j)^2}{2\sigma_j^2} \right) + K
+Q(\theta| \hat{\theta}_{q-1}) = \sum_{i=1}^n \sum_{j=1}^k \eta_i(j) \left( \log (p_j) - \log (\sigma_j) - \frac{(X_i-\mu_j)^2}{2\sigma_j^2} \right) + K
 (\#eq:univariate-auxiliary)
 \end{equation}
 ```
@@ -1243,7 +1227,7 @@ and (Equation \@ref(eq:multivariate-auxiliary)) for the multivariate GMM:
 
 ```{=tex}
 \begin{equation}
-Q(\theta| \theta_{q-1}) = \sum_{i=1}^n \sum_{j=1}^k \eta_i(j) \left[] \log (p_j) - \frac{1}{2} \left( \log(\operatorname{det}(\boldsymbol{\Sigma}_j)) + (x_i - \boldsymbol{\mu}_j)^\top \boldsymbol{\Sigma}_j^{-1}(x_i - \boldsymbol{\mu}_j)\right) \right] + K
+Q(\theta| \hat{\theta}_{q-1}) = \sum_{i=1}^n \sum_{j=1}^k \eta_i(j) \left[] \log (p_j) - \frac{1}{2} \left( \log(\operatorname{det}(\boldsymbol{\Sigma}_j)) + (x_i - \boldsymbol{\mu}_j)^\top \boldsymbol{\Sigma}_j^{-1}(x_i - \boldsymbol{\mu}_j)\right) \right] + K
 (\#eq:multivariate-auxiliary)
 \end{equation}
 ```
@@ -1336,7 +1320,7 @@ We directly retrieve from it the individual mean and variance estimates
 
 ```{=tex}
 \begin{equation}
- \frac{\partial Q(\theta|\theta_{q-1})}{\partial \mu_j} = 0
+ \frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial \mu_j} = 0
  \Leftrightarrow
   \mu_j = \frac{\sum_{i=1}^n \eta_i(j) X_i}{\sum_{i=1}^n \eta_i(j)}
 (\#eq:mean-univariate)
@@ -1344,7 +1328,7 @@ We directly retrieve from it the individual mean and variance estimates
 ```
 ```{=tex}
 \begin{equation}
- \frac{\partial Q(\theta|\theta_{q-1})}{\partial \sigma_j} = 0
+ \frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial \sigma_j} = 0
  \Leftrightarrow
 \sigma_j^2  =  \frac{\sum_{i=1}^n \eta_i(j) (x_i - \mu_j)^2 }{\sum_{i=1}^n \eta_i(j)}
 (\#eq:sigma-univariate)
@@ -1358,7 +1342,7 @@ $\boldsymbol{\Sigma}_j$ (Equations \@ref(eq:mean-multivariate) -
 
 ```{=tex}
 \begin{equation}
-\frac{\partial Q(\theta|\theta_{q-1})}{\partial \boldsymbol{\mu}_j} =
+\frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial \boldsymbol{\mu}_j} =
 \sum_{i=1}^n \eta_i(j) \boldsymbol{\Sigma}_j^{-1}(x_i - \boldsymbol{\mu}_j) =0
  \Rightarrow
   \mu_j = \frac{\sum_{i=1}^n \eta_i(j) \boldsymbol{x}_i}{\sum_{i=1}^n \eta_i(j)}
@@ -1367,7 +1351,7 @@ $\boldsymbol{\Sigma}_j$ (Equations \@ref(eq:mean-multivariate) -
 ```
 ```{=tex}
 \begin{equation}
- \frac{\partial Q(\theta|\theta_{q-1})}{\partial \boldsymbol{\Sigma}_j^{-1}}=\frac{1}{2} \sum_{i=1}^n \eta_i(j) \left[ \boldsymbol{\Sigma}_j  - (x_i - \boldsymbol{\mu}_j)(x_i - \boldsymbol{\mu}_j)^\top \right]= 0
+ \frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial \boldsymbol{\Sigma}_j^{-1}}=\frac{1}{2} \sum_{i=1}^n \eta_i(j) \left[ \boldsymbol{\Sigma}_j  - (x_i - \boldsymbol{\mu}_j)(x_i - \boldsymbol{\mu}_j)^\top \right]= 0
  \Rightarrow
   \boldsymbol{\Sigma}_j = \frac{\sum_{i=1}^n \eta_i(j) (x_i - \boldsymbol{\mu}_j)(x_i - \boldsymbol{\mu}_j)^\top }{\sum_{i=1}^n \eta_i(j)}
 (\#eq:sigma-multivariate)
@@ -1525,7 +1509,7 @@ and theoretical properties, can be found in @fonseca08, @celeux_etal18.
 
 In the second category, the most commonly implemented is the *ICL
 (integrated complete-data likelihood)*, a BIC criterion with an
-additional entropy penalty [@mclachlan_peel00] . As opposed to *BIC*,
+additional entropy penalty [@mclachlan_peel00]. As opposed to *BIC*,
 the entropy term reduces the number of components to a well-separated
 and readable clustering. Hence, it tends to underestimate their true
 number when components are overlapping. Alternative similar metrics are
@@ -1544,7 +1528,7 @@ can not be rejected anymore. Under standard regularity conditions of
 Cramer's theorem, Wilk's theorem states that the Likelihood Ratio
 distribution follows asymptotically a $\chi^2$ distribution, but
 unfortunately these conditions are not met in mixture models
-[@mclachlan_peel00] . To counterbalance it, bootstrap inference
+[@mclachlan_peel00]. To counterbalance it, bootstrap inference
 [@mclachlan_peel00] is often used to derive an empirical distribution of
 the Likelihood Ratio.
 
@@ -1559,9 +1543,9 @@ distribution or at least the variability of the estimated parameters,
 which can reveal useful to derive confidence intervals. However,
 obtaining the distribution or even an asymptotic approximation of the
 distribution of the parameters is not feasible in practice with mixture
-models [@mclachlan_peel00] . Hence, most authors recommend to use
+models [@mclachlan_peel00]. Hence, most authors recommend to use
 bootstrap methods for the generation of confidence intervals, as
-suggested in [@efron_tibshirani93; @basford_etal97] .
+suggested in [@efron_tibshirani93; @basford_etal97].
 
 Bootstrap distributions of the parameters are generally retrieved via
 *empirical* or *parametric* bootstrap, both available in the
@@ -1623,7 +1607,7 @@ $\mathcal{I}_\text{obs}(\theta)= -\frac{\partial^2}{\partial \theta_i \partial \
 Exact general formulas are provided for the univariate case in @louis82
 and for the multivariate case in @oakes99. Yet, it has to be noted that
 the expected FIM generally outperforms the observed FIM in estimating
-the covariance matrix of the MLE [@cao_spall12] .
+the covariance matrix of the MLE [@cao_spall12].
 
 However all these methods require to compute second derivatives of the
 log-likelihood leading to some disadvantages from a computational point
@@ -1903,7 +1887,7 @@ assigned to the maximum a posteriori (MAP) estimate Equation
 making no assumption of homoscedascity or equibalanced clusters. Its
 main drawback is to not take into account uncertainty of the cluster
 assignment, inducing *inconsistency* of the algorithm
-[@mclachlan_peel00] . EM\*, referred in @kurban_etal17 and implemented
+[@mclachlan_peel00]. EM\*, referred in @kurban_etal17 and implemented
 in the \CRANpkg{DCEM} package, is a faster implementation of the CEM
 algorithm, with roughly a twice smaller complexity. To do so, only the
 posterior distributions associated to the lower half of the most
@@ -1940,7 +1924,7 @@ proportions set in Equation \@ref(eq:2) are only guaranteed if the
 algorithm converges. Additionally, faster convergence is not
 theoretically proven for any situation. A list of general acceleration
 methods for the EM algorithm, not specific to GMMs, is available on
-\CRANpkg{turboEM} [@R-turboEM] .
+\CRANpkg{turboEM} [@R-turboEM].
 
 Other EM-inspired algorithms focus on counterbalancing the main
 limitations of the EM algorithm. The *Variational Bayesian EM* (VBEM)
@@ -1954,7 +1938,7 @@ Bayes' rule. Direct determination of the Bayesian posterior law of the
 parameters is generally an intractable problem, hence Variational Bayes
 only maximises an approximation of the true posterior, assuming that the
 parameters can be partitioned in independent distributions. This
-hypothesis is known as *mean-field approximation* [@murphy12] .
+hypothesis is known as *mean-field approximation* [@murphy12].
 
 The minimum message length (MML) EM algorithm, implemented in the
 \pkg{GMKMcharlie} package, is a completely unsupervised algorithm as it
@@ -1966,7 +1950,7 @@ optimisation procedure. However, its implementation is close from a
 Bayesian estimation of the parameters of the model, setting a
 non-informative Dirichlet prior distribution on the ratios and the
 higher expected performances of the algorithm are not demonstrated on
-real use cases [@figueiredo_jain02] .
+real use cases [@figueiredo_jain02].
 
 The Expectation/Conditional Maximisation (ECM) [@meng_rubin93] is a GEM
 (general EM) algorithm used when the maximisation of the auxiliary
@@ -1985,7 +1969,7 @@ outliers. A naive solution consists in assigning null weights to
 observations suspected to be outliers, so that they do not contribute
 [^5]. Trimming aberrant observations from the distribution is justified
 theoretically by the principle of the *spurious outlier model*
-[@gallegos_ritter05] . However, this method is quite stringent,
+[@gallegos_ritter05]. However, this method is quite stringent,
 requiring human expertise or the use of general outlier detection tools
 not necessarily adapted to GMM estimation.
 
@@ -2003,7 +1987,7 @@ Notably, the \pkg{mclust} [@R-mclust] and \CRANpkg{otrimle} [@R-otrimle]
 packages use an improper uniform distribution to model the distribution
 of outliers. Unlike \pkg{mclust}, the \pkg{otrimle} package does not
 require the user to set in advance the proportion of outliers in the
-mixture [@otrimle2016b] . As opposed, in the *trimming approach*,
+mixture [@otrimle2016b]. As opposed, in the *trimming approach*,
 outliers are first removed before the complete estimation of parameters.
 Such methods are implemented in \CRANpkg{tclust} [@R-tclust] and
 \CRANpkg{oclust} [@R-oclust] packages.
@@ -2188,7 +2172,7 @@ criteria:
 -   We assume that our original data is continuous. However, some
     packages are dedicated to deal with discrete data, for instance
     binned size distributions of medical patients. This led to the
-    exclusion of \CRANpkg{mixdist} [@R-mixdist] .
+    exclusion of \CRANpkg{mixdist} [@R-mixdist].
 
 -   We restrained our review to packages that use the classic EM
     algorithm, using maximum likelihood estimation to retrieve the
@@ -2196,7 +2180,7 @@ criteria:
     estimation of the parameters of the model using MCMC methods, such
     as \CRANpkg{bmixture} @R-bmixture], \CRANpkg{bpgmm} [@R-bpgmm], \CRANpkg{DPP} [@R-DPP]
    , \CRANpkg{dppmix} [@R-dppmix], \CRANpkg{BayesCR} [@R-BayesCR] and
-    \BIOpkg{Melissa} [@R-Melissa] . \CRANpkg{polySegratioMM} [@R-polySegratioMM] uses the Bayesian
+    \BIOpkg{Melissa} [@R-Melissa]. \CRANpkg{polySegratioMM} [@R-polySegratioMM] uses the Bayesian
     framework JAGS's interface in R. Alternatively, other algorithms
     focusing on maximising the likelihood do exist, but rely on
     different statistical methods, such as \CRANpkg{RPMM} [@R-RPMM]
@@ -2296,7 +2280,7 @@ download_trends
 
 ## Practical details for the implementation of our benchmark {.appendix}
 
-First, the number of observations ($n=200$ and $n=500$) was chosen enough high to both lower the probability of generating a sample without drawing any observation from one of the components in case of highly-unbalanced clusters and decreases the *margin of error* related to the random sampling error. Specifically, the probability of generating at least one simulation among the $N$ generated fo which less than two observations proceed from component $j$ (the minimal number of elements required to estimate both the mean and the variance of the corresponding cluster), with a two-components mixture of $n$ observations, is given by the following formula (Equation
+First, the number of observations ($n=200$ and $n=500$ respectively in the univariate and bivariate setting) was chosen enough high to both lower the probability of generating a sample without drawing any observation from one of the components in case of highly-unbalanced clusters and decreases the *margin of error* related to the random sampling error. Specifically, the probability of generating at least one simulation among the $N$ generated fo which less than two observations proceed from component $j$ (the minimal number of elements required to estimate both the mean and the variance of the corresponding cluster), with a two-components mixture of $n$ observations, is given by the following formula (Equation
 \@ref(eq:random-sampling-risk)):
 
 \begin{equation}
@@ -2327,7 +2311,7 @@ In the multivariate scenario, several practical implementation reasons led us to
 
 * Lots of parsimonious parametrisations can be considered in multivariate dimension (Table \@ref(tab:parameter-configuration-bivariate)), but studying them thoroughly would largely go beyond the main scope of our paper. Additionally, only two packages, namely \pkg{Rmixmod} and \pkg{mclust}, implement the canonical 14 parametrisations of the covariance matrix, making a complete comparison between the 7 benchmarked packages obsolete. Performing a benchmark in a bivariate setting already extends many existing Gaussian benchmarks whose scope is the univariate setting [@nityasuddhi_bohning03; @lourens_etal13; @leytham84; @xu_knight10].
 
-* The results in the univariate setting could be generalised to a low dimensional setting. Indeed, as detailed in [Results] section, the dichotomy observed between the behaviours of the packages related to parameters' estimation of GMMs proceed on choices over the global customisation of the EM algorithm, shared by any parametric distribution derived from the exponential family. Accordingly, customised implementations of the EM algorithm by the developers (cf .[Application of the EM algorithm to GMMs]) yield similar issues in the univariate and in the multivariate setting.
+* The results in the univariate setting could be generalised to a low dimensional setting. Indeed, as detailed in [Results] section, the dichotomy observed between the behaviours of the packages related to parameters' estimation of GMMs proceed on choices over the global customisation of the EM algorithm, shared by any parametric distribution derived from the exponential family. Accordingly, customised implementations of the EM algorithm by the developers (see [Application of the EM algorithm to GMMs]) yield similar issues in the univariate and in the multivariate setting.
 
 * It is much easier to represent visually and compare the distributions, isodensities and performance estimations in a bivariate setting rather than in a high-dimensional setting.
 
@@ -3496,7 +3480,7 @@ knitr::include_graphics("./figs/multivariate/heatmap_multivariate.png", dpi = 30
 Most of the distinct behaviours between the packages result from additional choices external to the EM algorithm itself, aiming at partly overcoming its main limitations (Panel B, Figure \@ref(fig:heatmap-all-correlation-plots-univariate)). We detail below their differences, by decreasing order of leverage on the final estimate:
 
 1. Most of the differences between the two classes of packages (Figure \@ref(fig:dichotomy-package-conclusion)) are
-related to the either relative or absolute choice for the termination criterion of the EM algorithm. Given an user-defined threshold, the *absolute method* early stops the estimation by comparing the difference between two consecutive log-likelihoods, $|\ell(\theta_{q}|X) - \ell(\theta_{q-1}|X)|$, while the *relative method* examines the variation rate, $\left\lvert\frac{\ell(\theta_{q}|X) - \ell(\theta_{q-1}|X)}{\ell(\theta_{q-1}|X)}\right\lvert$.
+related to the either relative or absolute choice for the termination criterion of the EM algorithm. Given an user-defined threshold, the *absolute method* early stops the estimation by comparing the difference between two consecutive log-likelihoods, $|\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)|$, while the *relative method* examines the variation rate, $\left\lvert\frac{\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)}{\ell(\hat{\theta}_{q-1}|X)}\right\lvert$.
 2. Several methods can be used to deal with numerical underflow, mostly happening with highly unlikely observations, distant from any centroid.
     +  The least elaborate feature is from \pkg{Rmixmod}, returning an error when either any of the posterior probabilities or any of the estimated parameters goes below to precision of the OS machine (`r .Machine[["double.eps"]]` for most common systems).
     + If the maximal value of any posterior probability is null, \pkg{bgmm} subtracts the minimal logarithm posterior probability to any log-computed probability. This method avoids numerical
