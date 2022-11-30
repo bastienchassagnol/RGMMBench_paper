@@ -245,7 +245,16 @@ multivariate_parameters_local_scores_summary <- multivariate_parameters_local_sc
 metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "global_bias_p", "global_bias_mu", "global_bias_sigma")
 
 
-## ----dichotomy-package-conclusion, fig.cap="Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. Panel C represents a tree summarising the main differences betweent the benchmarked packages in terms of the EM implementation."----
+## ----prepare-legend-final-figure----------------------------------------------
+html_ouput <- knitr::is_html_output()  
+html_final_legend <- paste("Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. The correlation matrix was computed using the function", downlit::autolink('stats::cor'), "with option *complete* to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \\BIOpkg{Complexheatmap}.
+
+Panel C represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix [EM-implementation differences across reviewed packages].")
+
+pdf_final_legend <- "Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. The correlation matrix was computed using the function \\code{stats::cor} with option \\textit{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \\BIOpkg{Complexheatmap}. Panel C represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix \\nameref{sec:em-differences}."
+
+
+## ----dichotomy-package-conclusion, fig.cap=if (html_ouput) html_final_legend else pdf_final_legend----
 
 knitr::include_graphics("./figs/dichotomy_package_conclusion.png")
 
@@ -971,7 +980,7 @@ The running times are displayed in Panel C with the \\textit{k}-means initialisa
 (x-axis) and the running time (y-axis) is in $\\log(10)$ scale. The points represent median
 running time. The coloured bands represent the $5^{\\text{th}}$ and $95^{\\text{th}}$ percentiles
 of the running time.
-The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1 \\footnote{More on the Hellinger distance as a quantifier of the similarity between two probability distributions in \\href{https://en.wikipedia.org/wiki/Hellinger_distance}{Hellinger distance}}. We represent them using boxplot representations in Panel D.
+The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1. We represent them using boxplot representations in Panel D.
 In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \\nameref{Supplementary Figures and Tables in the univariate simulation}. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2."
 
 

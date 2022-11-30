@@ -7,5 +7,6 @@
 *.pdf
 .RDataTmp
 *test*
-figs
-data
+figs/**
+data/**
+scripts/**
