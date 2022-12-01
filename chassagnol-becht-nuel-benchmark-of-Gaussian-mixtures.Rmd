@@ -496,7 +496,7 @@ The commonly-used initialisation methods are:
     binned in $\sqrt{n}^D$ intervals of equal lengths. Then, the mode of
     one of the components' distribution is given by the centre of the interval
     with the highest frequency. This interval is also used to define a
-    ``rough'' parameters' estimation of its associated component. All the
+    "rough" parameter estimation of its associated component. All the
     other observations and intervals are then iteratively assigned to
     the currently estimated component or to the residual components that
     were not estimated. The algorithm switches to the estimation of
@@ -507,12 +507,12 @@ The commonly-used initialisation methods are:
     frequency of the interval, a low value supporting the choice of the algorithm to
     assign the interval to the currently estimated component. Finally,
     all intervals assigned to the estimated component are used to
-    determine the parameters of the associated Gaussian distribution (computation of the first and second moments of the distribution). Since this step relies on a higher number of observations to estimate the parameters, @rebmix2015a refers to it as ``enhanced components parameter estimation''.
+    determine the parameters of the associated Gaussian distribution (computation of the first and second moments of the distribution). Since this step relies on a higher number of observations to estimate the parameters, @rebmix2015a refers to it as "enhanced" components parameter estimation.
     The algorithm stops when all intervals are assigned to a cluster and
     the parameters of the several distributions' components are
     estimated. Accordingly, the rebmix algorithm can be interpreted as a natural and more general extension of the quantile method with a more rigorous statistical support. Two drawbacks of the algorithm are the need of an intensive calibration of the hyperparameters and its inadequacy for the
     estimation of highly overlapping mixture distributions (uncertainty
-    of the cluster assignment is not taken into account).^[The method we describe here to preprocess the observations in order to estimate the empirical density estimation, namely the ``histogram method'' is not well suited for high dimensional data, as the exponential growth of the volume with respect to dimensionality leads to data sparsity, related to the well-known issue of the ``curse of dimensionality''. Indeed, $\sqrt{n}^D$ distinct intervals will be parsed by the method and the probability with an increasing number of features and decreasing number of observations that no clear local maximum emerges converges to 1. In high-dimensional context, the Parzen window or the KNN method should be favoured, see [@rebmix2015a], p. 16.].
+    of the cluster assignment is not taken into account).^[The method we describe here to preprocess the observations in order to estimate the empirical density estimation, namely the "histogram method" is not well suited for high dimensional data, as the exponential growth of the volume with respect to dimensionality leads to data sparsity, related to the well-known issue of the "curse of dimensionality". Indeed, $\sqrt{n}^D$ distinct intervals will be parsed by the method and the probability with an increasing number of features and decreasing number of observations that no clear local maximum emerges converges to 1. In high-dimensional context, the Parzen window or the KNN method should be favoured, see [@rebmix2015a], p. 16.].
 
 -   The *meta-methods* consist generally in short runs of EM-like
     algorithms, namely CEM, SEM and EM (see [Appendix B: Extensions of the EM algorithm to overcome its limitations]), with alleviated convergence criterion. The main idea is
@@ -1190,7 +1190,7 @@ Using the calculus formulas derived in the previous boxes, a closed form for the
 \begin{equation}
 \frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial \boldsymbol{\mu}_j} =
 \sum_{i=1}^n \eta_i(j) \boldsymbol{\Sigma}_j^{-1}(x_i - \boldsymbol{\mu}_j) =0
- \Rightarrow
+\Leftrightarrow
   \mu_j = \frac{\sum_{i=1}^n \eta_i(j) \boldsymbol{x}_i}{\sum_{i=1}^n \eta_i(j)}
 (\#eq:mean-multivariate)
 \end{equation}
@@ -1198,7 +1198,7 @@ Using the calculus formulas derived in the previous boxes, a closed form for the
 ```{=tex}
 \begin{equation}
  \frac{\partial Q(\theta|\hat{\theta}_{q-1})}{\partial \boldsymbol{\Sigma}_j^{-1}}=\frac{1}{2} \sum_{i=1}^n \eta_i(j) \left[ \boldsymbol{\Sigma}_j  - (x_i - \boldsymbol{\mu}_j)(x_i - \boldsymbol{\mu}_j)^\top \right]= 0
- \Rightarrow
+\Leftrightarrow
   \boldsymbol{\Sigma}_j = \frac{\sum_{i=1}^n \eta_i(j) (x_i - \boldsymbol{\mu}_j)(x_i - \boldsymbol{\mu}_j)^\top }{\sum_{i=1}^n \eta_i(j)}
 (\#eq:sigma-multivariate)
 \end{equation}
@@ -1348,7 +1348,7 @@ data %>% kbl(booktabs=T, caption = "The 14 canonical parametrisations of the wit
 * Last column displays the 14 most common GMMs parametrisations, by plotting the ellipses and centroids of a three components bivariate GMM parametrised by the mean vector and covariance of each component. For any additional detail, we refer the interested reader to \pkg{mclust} [@scrucca_etal16] and \pkg{Rmixmod} [@R-Rmixmod] vignettes for a general introduction to GMMs and to [@banfield_raftery93; @celeux_govaert92; @browne_mcnicholas14] for the closed formulas of the models.
 
 
-However, while parsimonious representations can largely reduce the computational burden, none of them in the general family is able to handle degenerate cases where the number of features, $D$, exceeds the number of observations $n$. Likewise situations, when the number of features is consequent, are referred to as high-dimensional, raising the well-known issue of the ``curse of the dimensionality''. Two distinct approaches have been developed in the literature to handle these degenerate cases:
+However, while parsimonious representations can largely reduce the computational burden, none of them in the general family is able to handle degenerate cases where the number of features, $D$, exceeds the number of observations $n$. Likewise situations, when the number of features is consequent, are referred to as high-dimensional, raising the well-known issue of the "curse of the dimensionality". Two distinct approaches have been developed in the literature to handle these degenerate cases:
 
 - The most naive approach aims to eliminate the least informative variables by applying a strong Lasso-type penalty on the parameters to be estimated. We only came across such an approach twice among the reviewed R packages, in the specific context of regressions of mixtures (see\pkg{RobMixReg} and \pkg{fmerPack} packages).
 
@@ -2116,7 +2116,7 @@ unconstrained GMM model was an ancillary task:
 
 -   We also removed packages that were limited in their functionalities
     or complex to install. Indeed, \CRANpkg{ClusterR} [@R-ClusterR]
-    (*k*-means), \pkg{rebmix} (REBMIX), \CRANpkg{norm1mix} (univariate
+    (*k*-means), \pkg{rebmix} (REBMIX), \CRANpkg{nor1mix} (univariate
     dimension only, wrong initialisation process), \CRANpkg{MixAll}
     [@R-MixAll] (random and small EM) do not allow to perform the EM
     algorithm with its own initial estimates. The function to provide its own initial estimates for the \pkg{DCEM] package is only internal, and not supposed to be available for the common user. \CRANpkg{pmclust} [@R-pmclust] depends on

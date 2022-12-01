@@ -1,5 +1,5 @@
 % !TeX root = RJwrapper.tex
-\title{Gaussian Mixtures in R}
+\title{Gaussian Mixture Models in R}
 \author{by Bastien Chassagnol, Antoine Bichat, Cheïma Boudjeniba, Pierre-Henri Wuillemin, Mickaël Guedj, Gregory Nuel, and Etienne Becht}
 
 \maketitle
@@ -2134,7 +2134,7 @@ unconstrained GMM model was an ancillary task:
 \item
   We also removed packages that were limited in their functionalities
   or complex to install. Indeed, \CRANpkg{ClusterR} (Mouselimis 2022)
-  (\emph{k}-means), \pkg{rebmix} (REBMIX), \CRANpkg{norm1mix} (univariate
+  (\emph{k}-means), \pkg{rebmix} (REBMIX), \CRANpkg{nor1mix} (univariate
   dimension only, wrong initialisation process), \CRANpkg{MixAll}
   (Iovleff 2019) (random and small EM) do not allow to perform the EM
   algorithm with its own initial estimates. The function to provide its own initial estimates for the \textbackslash pkg\{DCEM{]} package is only internal, and not supposed to be available for the common user. \CRANpkg{pmclust} (W.-C. Chen and Ostrouchov 2021) depends on
