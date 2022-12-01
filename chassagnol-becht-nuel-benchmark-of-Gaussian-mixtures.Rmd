@@ -1954,8 +1954,8 @@ outliers_plot <- gridExtra::arrangeGrob(outliers_time_computations,
                                           labs(tag="D")+ theme(plot.tag = element_text(size=18, face = "bold")),
                                         top="",nrow=3, padding = unit(1, "line"))
 
-ggsave("figs/univariate/outliers.png", outliers_plot, width = 18, height = 24,dpi = 300)
-knitr::include_graphics("figs/univariate/outliers.png", dpi = 300)
+ggsave("figs/univariate/outliers.png", outliers_plot, width = 18, height = 24,dpi = 75)
+knitr::include_graphics("figs/univariate/outliers.png", dpi = 75)
 
 ```
 
@@ -2396,8 +2396,8 @@ univariate_balanced_separated <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_balanced_separated.png", univariate_balanced_separated,
-       width = 24, height = 18,dpi = 300)
-knitr::include_graphics("./figs/univariate/univariate_balanced_separated.png", dpi=300)
+       width = 24, height = 18,dpi = 75)
+knitr::include_graphics("./figs/univariate/univariate_balanced_separated.png", dpi=75)
 ```
 
 
@@ -2479,8 +2479,8 @@ univariate_unbalanced_separated <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_unbalanced_separated.png", univariate_unbalanced_separated,
-       width = 24, height = 18,dpi = 300)
-knitr::include_graphics("./figs/univariate/univariate_unbalanced_separated.png", dpi=300)
+       width = 24, height = 18,dpi = 75)
+knitr::include_graphics("./figs/univariate/univariate_unbalanced_separated.png", dpi=75)
 ```
 
 
@@ -2567,8 +2567,8 @@ univariate_balanced_overlapping <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_balanced_overlapping.png", univariate_balanced_overlapping,
-       width = 24, height = 18,dpi = 300)
-knitr::include_graphics("./figs/univariate/univariate_balanced_overlapping.png", dpi=300)
+       width = 24, height = 18,dpi = 75)
+knitr::include_graphics("./figs/univariate/univariate_balanced_overlapping.png", dpi=75)
 ```
 
 
@@ -2652,8 +2652,8 @@ univariate_unbalanced_overlapping <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_unbalanced_overlapping.png", univariate_unbalanced_overlapping,
-       width = 24, height = 18,dpi = 300)
-knitr::include_graphics("./figs/univariate/univariate_unbalanced_overlapping.png", dpi=300)
+       width = 24, height = 18,dpi = 75)
+knitr::include_graphics("./figs/univariate/univariate_unbalanced_overlapping.png", dpi=75)
 ```
 
 
@@ -2677,8 +2677,8 @@ four_components_midbalanced_separated <- gridExtra::arrangeGrob(plot_univariate_
                                                                 top="", layout_matrix = matrix(c(1, 2, 3, 3, 4, 4), byrow = TRUE, nrow = 3), heights = c(2, 2.5, 2.5), padding = unit(1, "line"))
 
 ggsave("figs/univariate/univariate_midbalanced.png", four_components_midbalanced_separated,
-       width = 22, height = 26,dpi = 300)
-knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi=300)
+       width = 22, height = 26,dpi = 75)
+knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi=75)
 ```
 
 
@@ -2693,9 +2693,9 @@ univariate_correlation_heatmaps <- plot_correlation_Heatmap(discriminating_data)
 
 univariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=univariate_correlation_heatmaps %>% purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                           top="", ncol = 2)
-ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 300)
+ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
 
-knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
+knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 75)
 ```
 
 \newpage
@@ -2703,9 +2703,9 @@ knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
 
 initialisation_time_data <- readRDS("./tables/univariate/univariate_initialisation_time_computation.rds")
 inialisation_plot <- plot_initialisation_time_computations(initialisation_time_data, size=4, x = 2.6)
-ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 300)
+ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 75)
 
-knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 300)
+knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 75)
 ```
 
 
@@ -2934,9 +2934,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/multivariate/multivariate_unbalanced_overlapping_negatively_correlated.png",
-       global_figure, width = 20, height = 24, dpi=300)
+       global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi=300)
+knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi=75)
 ```
 
 
@@ -3031,9 +3031,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/multivariate/multivariate_unbalanced_overlapping_opposite_correlated.png",
-       global_figure, width = 20, height = 24, dpi=300)
+       global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi=300)
+knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi=75)
 ```
 
 
@@ -3127,9 +3127,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/multivariate/multivariate_unbalanced_overlapping_positive_correlated.png",
-       global_figure, width = 20, height = 24, dpi=300)
+       global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi=300)
+knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi=75)
 ```
 
 
@@ -3222,9 +3222,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/multivariate/multivariate_unbalanced_uncorrelated.png",
-       global_figure, width = 20, height = 24, dpi=300)
+       global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_uncorrelated.png", dpi=300)
+knitr::include_graphics("figs/multivariate/multivariate_unbalanced_uncorrelated.png", dpi=75)
 ```
 
 
@@ -3259,9 +3259,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/multivariate/multivariate_balanced_overlapping.png",
-       global_figure, width = 20, height = 24,dpi=300)
+       global_figure, width = 20, height = 24,dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_balanced_overlapping.png", dpi=300)
+knitr::include_graphics("figs/multivariate/multivariate_balanced_overlapping.png", dpi=75)
 ```
 
 \newpage
@@ -3291,9 +3291,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/multivariate/multivariate_balanced_well_separated.png",
-       global_figure, width = 20, height = 24,dpi=300)
+       global_figure, width = 20, height = 24,dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_balanced_well_separated.png", dpi=300)
+knitr::include_graphics("figs/multivariate/multivariate_balanced_well_separated.png", dpi=75)
 ```
 
 \newpage
@@ -3324,9 +3324,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/multivariate/multivariate_unbalanced_well_separated.png",
-       global_figure, width = 20, height = 24,dpi=300)
+       global_figure, width = 20, height = 24,dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_well_separated.png", dpi=300)
+knitr::include_graphics("figs/multivariate/multivariate_unbalanced_well_separated.png", dpi=75)
 ```
 
 ```{r heatmap-all-correlation-plots-multivariate, fig.cap= if (multivariate_html_ouput) html_global_heatmap_multivariate else pdf_global_heatmap_multivariate}
@@ -3337,8 +3337,8 @@ multivariate_correlation_heatmaps <- plot_correlation_Heatmap(multivariate_distr
 multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
                                                               purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                             top="", ncol = 2)
-ggsave("./figs/multivariate/heatmap_multivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 300)
-knitr::include_graphics("./figs/multivariate/heatmap_multivariate.png", dpi = 300)
+ggsave("./figs/multivariate/heatmap_multivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
+knitr::include_graphics("./figs/multivariate/heatmap_multivariate.png", dpi = 75)
 ```
 
 ## EM-implementation differences across reviewed packages
