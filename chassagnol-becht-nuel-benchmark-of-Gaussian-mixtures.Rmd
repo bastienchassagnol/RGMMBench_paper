@@ -518,8 +518,9 @@ The commonly-used initialisation methods are:
     algorithms, namely CEM, SEM and EM (see [Appendix B: Extensions of the EM algorithm to overcome its limitations]), with alleviated convergence criterion. The main idea is
     to use several random initial estimates with shorter runs of the
     algorithm to explore a larger parameter space, and avoid being
-    trapped in a local maximum. Yet, they highly depend on the choice of the initialisation
-    algorithm to start the optimisation [@biernacki_etal03].
+    trapped in a local maximum. Yet, they highly depend on the choice of the initialisation algorithm to start the optimisation [@biernacki_etal03].
+    
+-   \textcolour{blue}{In high-dimensional setting, especially when the number of dimensions $D$ exceeds the number of observations $n$, all previous methods must be adjusted. The general tip consists of first projecting globally the sampled dataset into a smaller, suitable subspace and then inferring prior parameters in it. In particular, \pkg{EMMIXmfa}, in the mixture of common factor analysers (MCFA) approach, initialises the shared projection matrix $\boldsymbol{Q}$ by either using optimisation approaches (keep the first $d$ eigen vectors generated from standard principal component analysis or from matrix factorisation) or using custom random initialisations (in that case, the individual inputs of the transition matrix are first initialised by drawing them from a standard univariate Gaussian distribution, and then multiplied by the upper triangular matrix resulting from its Cholesky decomposition, to make it unique and orthonormal, a process described in further details in the Appendix of @baek_etal10.)}
 
 After this theoretical introduction, we evaluate empirically the
 computational and statistical performances of the R packages in relation
@@ -622,7 +623,7 @@ readr::read_delim("./tables/package_comparison_low_level.csv", delim=";", show_c
 We further detail features specifically related to GMMs in Table
 `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`. We detail row after row its content below:
 
-- The parametrisations used to provide parsimonious estimation of the GMMs are reviewed in [Parameter estimation in finite mixtures models] and summarised in rows 1 and 2 (Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`) for the univariate and multivariate setting. We refer to them as *canonical* when both homoscedastic and heteroscedastic parametrisations in the univariate setting, and the 14 parametrisations listed in Table \@ref(tab:param-bivariate-gaussian) in the multivariate setting, are implemented. Adding the additional constraint of equi-balanced clusters results in a total to $14 \times 2=28$ distinct models and $2 \times 2=4$ parametrisations, respectively in the univariate and multivariate setting.
+- The parametrisations used to provide parsimonious estimation of the GMMs are reviewed in [Parameter estimation in finite mixtures models] and summarised in rows 1 and 2 (Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`) for the univariate and multivariate setting. We refer to them as *canonical* when both homoscedastic and heteroscedastic parametrisations in the univariate setting, and the 14 parametrisations listed in Table \@ref(tab:param-multivariate-gaussian) in the multivariate setting, are implemented. Adding the additional constraint of equi-balanced clusters results in a total to $14 \times 2=28$ distinct models and $2 \times 2=4$ parametrisations, respectively in the univariate and multivariate setting. \textcolor{blue}{Since \pkg{EMMIXmfa} and \pkg{HDclassif} project the observations in a smaller subspace, they are not available in the univariate setting. Given an user-defined or prior computed intrinsic dimension, we can imagine using any of the standard parametrisations available for instance in the \pkg{mclust} package, and listed in \nameref{subsec:parsimonious-parametrisation}. In addition, \pkg{HDclassif} allows to define an inner dimension $d_j$ specific to each subspace as we describe in further details in \nameref{subsec:high-dimensional}}.
 
 - [The EM algorithm] is the most commonly used
 algorithm to retrieve the parameters of the GMMs but faster or variants complementary of the EM algorithm are reviewed in [Appendix B: Extensions of the EM algorithm to overcome its limitations] and row 3 of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`. Especially, GMMs estimation is particularly impacted by the presence of outliers, justifying a specific benchmark ( see [A small simulation to evaluate the impact of outliers]).
@@ -632,32 +633,40 @@ We briefly review the most common initialisation algorithms in section [Initiali
 ([Model selection] and row 5). Due to the complexity of computing the true distribution of the parameters estimated, bootstrap methods are commonly used used to derive confidence intervals (see [Derivation of
 confidence intervals in GMMs] and row 6 in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`.
 
-- Four packages supply several visualisations, summarised in the last row of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`, to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction), with the additional possibility of integrating custom confidence intervals and critical regions, and finally boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
+- \textcolour{blue}{To generate random samples and build bootstrap confidence intervals of the estimated parameters, we first need to design a function that mimicks the effect of drawing a random observation from a GMM, given user defined parameters. Packages able to do so are gathered as parametric. An alternative way consists of providing the user either real or toy datasets, the last ones having the major advantage that we know the expected values of the parameters.
+However, especially in high-dimensional settings, it is rather cumbersome to provide each of the parameters required to uniquely identify a GMM. Indeed, without any constraint on the parameters and full covariance matrices, a multivariate GMM of dimension $D$ and with $k$ components requires $k - 1 +kD +\frac{D(D+1)}{2}$ free parameters. Among the benchmarked packages, only \pkg{bgmm} adresses this issue: in the absence of prior information from the user, the proportions are supposed to be all equal, the mean values are drawn independently from an univariate Normal distribution and the covariance matrix is set equal to the sample covariance of a $D$ independent-wise Normal draw^[Expecting the user to provide their own estimates is relatively expected in packages that only estimate parameters using variants of maximum likelihood techniques. Indeed, in such methods, no prior distribution of the parameters is assumed, in opposition to Bayesian approaches].}
+
+- Six packages supply several visualisations, summarised in the last row of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`, to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction), with the additional possibility of integrating custom confidence intervals and critical regions, and finally boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
+\textcolour{blue}{As expected, high-dimensional packages provide specific representations adjusted to high-dimensional settings, notably allowing the user to visualise the projected factorial representation of its dataset in a two or three-dimensional subspace. They come along as well with specialised performance plots, notably scree plots or BIC scatter plots to represent in a highly compact way numerous projections and parametrisations.}
 
 ```{r high-comparison-packages-html, layout="l-body-outset", eval = knitr::is_html_output()}
 data <- readr::read_delim("./tables/package_comparison_high_level.csv", delim=";", show_col_types = F) %>%
   filter(!(Column1 %in% c("Labelled data", "Weighted implementation"))) %>%
   tibble::column_to_rownames("Column1") %>%
   mutate(dplyr::across(.cols = everything(), ~ gsub(pattern = "redcross", "./figs/red_cross.png", .x)),
-         dplyr::across(.cols = everything(), ~ gsub(pattern = "greentick", "./figs/green_tick.png", .x)))
+         dplyr::across(.cols = everything(), ~ gsub(pattern = "greentick", "./figs/green_tick.png", .x))) %>% 
+  tibble::rownames_to_column("Package features")
 
-data %>% flextable() %>%
-  flextable::mk_par(i = "Bootstrap Confidence Intervals", value = as_paragraph(
-    flextable::as_image(src = data["Bootstrap Confidence Intervals", ] %>% unlist(), width = 0.5, height = 0.5, unit = "cm")))%>%
-  flextable::mk_par( j = grep("red_cross", data["Model or Cluster selection", ]),
-                     i = "Model or Cluster Selection", value = as_paragraph(
-                       flextable::as_image(src = "./figs/red_cross.png", width = 0.5, height = 0.5, unit = "cm"))) %>%
-  flextable::mk_par(j=grep("red_cross", data["Variants of the EM algorithm", ]) %>% unlist(),
-                    i = "Variants of the EM algorithm", value = as_paragraph(
-                      flextable::as_image(src = "./figs/red_cross.png", width = 0.5, height = 0.5, unit = "cm"))) %>%
-  flextable::mk_par(j=grep("red_cross", data["Visualisation", ]) %>% unlist(),
-                    i = "Visualisation", value = as_paragraph(
-                      flextable::as_image(src = "./figs/red_cross.png", width = 0.5, height = 0.5, unit = "cm"))) %>%
+flex_data <- data  %>%  flextable()
+for (i in 1:nrow(data)) {
+  green_index <- grep("green_tick", data[i, ] %>% unlist()); red_index <- grep("red_cross", data[i, ] %>% unlist())
+  flex_data <- flex_data %>%
+    flextable::mk_par(i = i, j=green_index,
+                      value = as_paragraph(flextable::as_image(src = "./figs/green_tick.png", 
+                                                               width = 0.5, height = 0.5, unit = "cm"))) %>% 
+    flextable::mk_par(i = i, j=red_index,
+                      value = as_paragraph(flextable::as_image(src = "./figs/red_cross.png", 
+                                                               width = 0.5, height = 0.5, unit = "cm"))) 
+    
+}
+
+flex_data %>%
   set_caption(caption = "Custom features associated to GMMs estimation for any of the benchmarked packages.",
               html_escape = F) %>%
   theme_vanilla() %>%
   align(align = "center", part = "header") %>%  # centre align header
-  flextable::autofit()
+  flextable::autofit() %>% 
+  flextable::vline(j=8, border = officer::fp_border(width = 2))
 ```
 
 ```{r high-comparison-packages-pdf, eval = knitr::is_latex_output()}
@@ -669,10 +678,12 @@ readr::read_delim("./tables/package_comparison_high_level.csv", delim=";", show_
   kbl(booktabs=T, caption = "Custom features associated to GMMs estimation for any of the benchmarked packages.", escape=F) %>%
   kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T, align = "c") %>%
-  row_spec(1:7, hline_after = T) %>%
-  column_spec(column = 1:8, latex_valign = "m", width = c("2.4cm", "4cm", rep("2.4cm", 6))) %>%
-  column_spec(column = 1, bold=T, border_right = T)
+  row_spec(1:8, hline_after = T) %>%
+  column_spec(column = 1:10, latex_valign = "m", width = rep("1.8cm", 11)) %>%
+  column_spec(column = 1, bold=T, border_right = T) %>% 
+  column_spec(column = 8, border_right = T)
 ```
+
 
 ## Methods
 
@@ -682,8 +693,7 @@ as baseline, referred to as *RGMMBench*. Its code is provided in [Application of
 
 
 For each experiment, we assign each observation to an unique cluster by drawing $n$ labels $S_{1:n}$ from a multinomial distribution whose parameters were the prior user-defined proportions $p=(p_1, \ldots, p_k)$. Then, each observation $x_i$ assigned to hidden component $j$ is drawn respectively using the R function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("stats::rnorm()"),   '\\code{stats::rnorm()}'))` for the univariate distribution and `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("MASS::mvrnorm"),   '\\code{MASS::mvrnorm}'))` for the multivariate distribution. The complete code used for simulating data is
-available on GitHub at
-[RGMMBench](https://github.com/bastienchassagnol-servier/RGMMBench). Finally, we obtain
+available on GitHub at [RGMMBench](https://github.com/bastienchassagnol-servier/RGMMBench). Finally, we obtain
 an empirical distribution of the estimated parameters by computing the MLE
 of each randomly generated sample.
 
@@ -697,7 +707,7 @@ initialisation methods: random, quantile, *k*-means, rebmix and
 hierarchical clustering in the univariate setting. We benchmarked the same initialisation methods in the multivariate setting, except for the quantile method which has no multivariate equivalent (see section [Initialisation of the EM algorithm]):
 
 
-  * We used the function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("EMCluster::simple.init()"),   '\\code{EMCluster::simple.init()}'))` with 10 random restarts for the random initialisation. The method implemented by \pkg{EMCluster} is the most commonly used, described in details in @biernacki_etal03 and in section [Initialisation of the EM algorithm].
+  * We used the function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("EMCluster::rand.EM()"),   '\\code{EMCluster::rand.EM()}'))` with 10 random restarts and required minimal individual cluster size of 2 for the random initialisation. The method implemented by \pkg{EMCluster} is the most commonly used, described in details in @biernacki_etal03 and in section [Initialisation of the EM algorithm].
 
   * We used the function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("stats::kmeans()"),   '\\code{stats::kmeans()}'))`  function with a $10^{-2}$ stopping criterion and 200 maximal number of iterations to implement the *k*-means initialisation method.
 The initial centroid and covariance matrix for each component are then computed by restricting to the sample observations assigned to the corresponding component. The approach is close to the one adopted by the CEM algorithm (see [Appendix B: Extensions of the EM algorithm to overcome its limitations]).
@@ -751,7 +761,7 @@ components:
 ```
 We may generalise this definition to $k$ components by averaging the
 individual components' overlap. We use the function
-`r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("MixSim::overlap"),   '\\code{MixSim::overlap}'))` from the \CRANpkg{MixSim} package [@R-MixSim] that approximates this quantity using a Monte-Carlo based method (see Section [An analytic formula of the overlap for univariate Gaussian mixtures]).
+`r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("MixSim::overlap"),   '\\code{MixSim::overlap}'))` from the \CRANpkg{MixSim} package [@R-MixSim] that approximates this quantity using a Monte-Carlo based method (see appendices [An analytic formula of the overlap for univariate Gaussian mixtures] and [Practical details for the implementation of our benchmark] for further details).
 
 
 The level of imbalance may be evaluated with the entropy measure Equation \@ref(eq:entropy), with equi-balanced clusters having an entropy of 1:
@@ -763,11 +773,10 @@ The level of imbalance may be evaluated with the entropy measure Equation \@ref(
 (\#eq:entropy)
 \end{equation}
 ```
-with $k$ the number of components and $p_j=\mathbb{P}(S=j)$ the
-frequency of class $j$.
+with $k$ the number of components and $p_j=\mathbb{P}(S=j)$ the frequency of class $j$.
 
 
-We considered 9 distinct configuration parameters, associated with distinct values of $\operatorname{OVL}$ and entropy in the univariate setting, and to 20 scenarios in the multivariate setting. Briefly, we compute any combination, with the same components means (0, 4, 8 and 12), three sets of ratio parametrisations $\left[(0.25, 0.25, 0.25, 0.25); (0.2, 0.4, 0.2, 0.2); (0.1, 0.7, 0.1, 0.1) \right]$ and three variances: $(0.3, 1, 2)$ in the univariate setting. In the multivariate setting, we consider two sets of proportions: $\left[(0.5, 0.5); (0.9, 0.1) \right]$, two sets of coordinate centroids: $\left[(0; 20), (20, 0) \right]$ and $\left[(0; 2), (2, 0) \right]$, the same variance of 1 for each feature and for each component for illustrative purposes of the direct relation linking the correlation and the level of OVL and five correlation sets: $\left[(-0.8, -0.8); (0.8, -0.8); (-0.8, 0.8); (0.8, 0.8); (0, 0)\right]$.
+We considered 9 distinct configuration parameters, associated with distinct values of $\operatorname{OVL}$ and entropy in the univariate setting, 20 scenarios in the bivariate setting and 16 scenarios in the high-dimensional setting. Briefly, we compute any combination, with the same components means (0, 4, 8 and 12), three sets of ratio parametrisations $\left[(0.25, 0.25, 0.25, 0.25); (0.2, 0.4, 0.2, 0.2); (0.1, 0.7, 0.1, 0.1) \right]$ and three variances: $(0.3, 1, 2)$ in the univariate setting. In the bivariate setting, we consider two sets of proportions: $\left[(0.5, 0.5); (0.9, 0.1) \right]$, two sets of coordinate centroids: $\left[(0; 20), (20, 0) \right]$ and $\left[(0; 2), (2, 0) \right]$, the same variance of 1 for each feature and for each component for illustrative purposes of the direct relation linking the correlation and the level of OVL and five correlation sets: $\left[(-0.8, -0.8); (0.8, -0.8); (-0.8, 0.8); (0.8, 0.8); (0, 0)\right]$.
 
 The complete list of parameters used is reported respectively in Table \@ref(tab:parameter-configuration-univariate) for the univariate setting, and Table \@ref(tab:parameter-configuration-bivariate) for the multivariate setting. We benchmarked simulations where the components were alternatively very distinct or instead very overlapping, as well as of equal proportions or instead very unbalanced. In the multivariate setting, we also benchmarked strongly negative, moderate and strongly positive correlation within features.
 
@@ -775,7 +784,7 @@ We report the most significant results and features and the associated recommend
 
 ## Results
 
-All the figures and performance overview tables are reported in [Supplementary Figures and Tables in the univariate simulation] for the univariate setting and [Supplementary Figures and Tables in the multivariate simulation] for the bivariate scenario.
+All the figures and performance overview tables are reported in [Supplementary Figures and Tables in the univariate simulation] for the univariate setting, [Supplementary Figures and Tables in the bivariate simulation] for the bivariate scenario and [Supplementary Figures and Tables in the HD simulation] for the high dimensional scenario. 
 
 **Balanced and non-overlapping components**
 
@@ -791,6 +800,7 @@ optimal estimate.
 
 
 Similar scenarios in the bivariate setting (scenarios B6-B10 in Table \@ref(tab:parameter-configuration-bivariate)), with a focus on B6, B7 and B10 visualised in Supplementary Figures \@ref(fig:general-balanced-well-separated-bivariate), feature well-separated and balanced components. Consistent with conclusions from the corresponding univariate scenarios, all benchmarked packages return the same estimates across initialisation methods.
+
 
 **Unbalanced and non-overlapping components**
 
@@ -809,6 +819,10 @@ originate from the choice of initialisation method, while the choice of
 the package has only small impact.
 
 We detail expensively in our bivariate simulations two scenarios featuring both strongly unbalanced and well-separated components, similarly to scenario U3 in Table \@ref(tab:parameter-configuration-univariate): the scenarios B12 (Figure \@ref(fig:multivariate-overlapping-unbalanced-opposite-correlated) and Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-pdf)'))`) and B14 (Figure \@ref(fig:multivariate-overlapping-unbalanced-positive-correlated) and Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-pdf)'))`). Similarly, scenarios B16, B17 and B20 (Table \@ref(tab:parameter-configuration-bivariate)) with similar characteristics are summarised in supplementary Figure \@ref(fig:general-unbalanced-well-separated-bivariate). For all these scenarios, neither the initialisation method nor the package have a statistical significant impact on the overall performance.
+
+\color{blue}
+Similarly,  scenarios 1a-4b in Table \@ref(tab:parameter-configuration-HD)) in the high dimensional setting, display well-separated and balanced clusters, with a representative outcome represented in Supplementary Figure \@ref(HD-separated-unbalanced-ellipsoidal-plot) and Table  `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:HD-separated-unbalanced-ellipsoidal-html)', '\\@ref(tab:HD-separated-unbalanced-ellipsoidal-pdf)'))`. Consistent with results from the corresponding univariate and bivariate scenarios, most of the previously benchmarked packages return sensibly the same estimates with the hierarchical clustering and *k*-means approach. However, \pgk{bgmm} and \pgk{EMCluster} clearly differentiate by lower performances with the rebmix initialisation method, even though rebmix is globally less performant, no matter the package or the type of parameter to estimate. Notably, initialisations with the rebmix package tend to display a much larger number of aberrant estimations, some of which can be identified with the local maxima associated with parameter switching between the two classes. Finally, the two additional packages dedicated to high-dimensional clustering display the worst performances, with \pgk{EMMIXmfa} returning the most biased parameters and \pkg{HDclassif} the most noisy estimates. We may mitigate this outcome for HDclassif by pointing out its comparable performances with the other benchmarked packages to identify and retrieve the individual proportions of each cluster, while \pgk{EMMIXmfa} tends to return proportions uniformly distributed on the 0-1 simplex, not doing any better than a naive oracle.
+\color{black}
 
 
 **Balanced and overlapping components**
@@ -927,13 +941,13 @@ bivariate_parameters_local_scores <- readRDS("./tables/bivariate/bivariate_local
   mutate(package=forcats::fct_recode(package, `Rmixmod / RGMMBench`="Rmixmod", `mclust / bgmm`="mclust", `EMCluster / GMKMcharlie`="EMCluster"))
 
 bivariate_parameters_local_scores_summary <- bivariate_parameters_local_scores %>% dplyr::filter(scores=="mse") %>%
-  rowwise() %>% mutate(global_mse_p = sum(dplyr::c_across(dplyr::matches("p[[:digit:]]+"))),
+  rowwise() %>% mutate(global_mse_p = sum(dplyr::c_across(dplyr::matches("^p[[:digit:]]+$"))),
                        global_mse_mu = sum(dplyr::c_across(dplyr::matches("mu"))),
                        global_mse_sigma=sum(dplyr::c_across(dplyr::matches("sd")))) %>%
   dplyr::group_by(ID, initialisation_method, package) %>%
   dplyr::summarise(global_mse_p=mean(global_mse_p), global_mse_mu=mean(global_mse_mu), global_mse_sigma=mean(global_mse_sigma)) %>%
   dplyr::inner_join(bivariate_parameters_local_scores %>% dplyr::filter(scores=="bias") %>%
-                      rowwise() %>% mutate(global_bias_p = sum(abs(dplyr::c_across(dplyr::matches("p[[:digit:]]+")))),
+                      rowwise() %>% mutate(global_bias_p = sum(abs(dplyr::c_across(dplyr::matches("^p[[:digit:]]+$")))),
                                            global_bias_mu = sum(abs(dplyr::c_across(dplyr::matches("mu")))),
                                            global_bias_sigma=sum(abs(dplyr::c_across(dplyr::matches("sd"))))) %>%
                       dplyr::group_by(ID, initialisation_method, package) %>%
@@ -942,7 +956,68 @@ bivariate_parameters_local_scores_summary <- bivariate_parameters_local_scores %
   dplyr::relocate(initialisation_method, .after = package) %>%
   dplyr::rename(Package=package, `Initialisation Method`=initialisation_method) %>%
   mutate(across(where(is.numeric), ~format(.x, digits=2, nsmall=0, ) %>% as.numeric)) %>% ungroup()
-metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "global_bias_p", "global_bias_mu", "global_bias_sigma")
+
+
+#################################################################
+##        prepare HD scores and distributions        ##
+#################################################################
+
+HD_distributions <- readRDS("./tables/HD/HD_distributions.rds")
+HD_configuration <- readRDS("./tables/HD/HD_configuration_scenario.rds")
+HD_time_computation <- readRDS("./tables/HD/HD_time_computation.rds")
+HD_parameters_local_scores <- readRDS("./tables/HD/HD_local_scores.rds") 
+
+
+formatted_HD_distributions <- HD_distributions %>% 
+  mutate(package=forcats::fct_relevel(package, "RGMMBench", "Rmixmod", "mixtools",
+                                      "GMKMcharlie", "mclust", "flexmix",
+                                      "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>% 
+  arrange(ID, initialisation_method, N.bootstrap, package) %>% 
+  mutate(color=dplyr::case_match(package, 
+                                 c("RGMMBench", "Rmixmod", "mixtools") ~ "red", 
+                                 c("HDclassif", "EMMIXmfa") ~"blue", .default = "green"), 
+         package=dplyr::case_match(package, 
+                                   c("flexmix", "mclust", "mixtools") ~ glue::glue("<b style='color:{color}; font-size:22pt'>{package}</b>"), 
+                                   c("HDclassif", "EMMIXmfa") ~ glue::glue("<i style='color:{color}'>{package}</i>"),
+                                   .default = glue::glue("<p style='color:{color}'>{package}</p>"))) 
+
+
+num_failed <- HD_distributions %>%
+  filter(package %in% c("Rmixmod", "mclust", "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>%
+  mutate(package=forcats::fct_recode(package, `mixtools / Rmixmod / RGMMBench`="Rmixmod",
+                                     `mclust / flexmix / GMKMcharlie`="mclust")) %>% 
+  group_by(ID, initialisation_method, package) %>% 
+  summarise(Success=n())
+
+HD_parameters_local_scores <- readRDS("./tables/HD/HD_local_scores.rds") %>% 
+  filter(package %in% c("Rmixmod", "mclust", "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>%
+  mutate(package=forcats::fct_relevel(package, "Rmixmod", "mclust", 
+                                      "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>% 
+  arrange(ID, initialisation_method, package) %>% 
+  mutate(package=forcats::fct_recode(package, `mixtools / Rmixmod / RGMMBench`="Rmixmod",
+                                     `mclust / flexmix / GMKMcharlie`="mclust"))
+
+HD_parameters_local_scores_summary <- HD_parameters_local_scores %>% dplyr::filter(scores=="mse") %>%
+  rowwise() %>% summarise(ID, initialisation_method, package, 
+                          global_mse_p = sum(dplyr::c_across(dplyr::matches("p[[:digit:]]+"))),
+                          global_mse_mu = sum(dplyr::c_across(dplyr::matches("mu"))),
+                          global_mse_sigma=sum(dplyr::c_across(dplyr::matches("sd")))) %>% 
+  dplyr::inner_join(HD_parameters_local_scores %>% dplyr::filter(scores=="bias") %>%
+                      rowwise() %>% summarise(ID, initialisation_method, package, 
+                                              global_bias_p = sum(abs(dplyr::c_across(dplyr::matches("^p[[:digit:]]+$")))),
+                                              global_bias_mu = sum(abs(dplyr::c_across(dplyr::matches("mu")))),
+                                              global_bias_sigma=sum(abs(dplyr::c_across(dplyr::matches("sd"))))),
+                    by = join_by(ID, initialisation_method, package)) %>%
+  dplyr::inner_join(num_failed, join_by(ID, initialisation_method, package)) %>% 
+  dplyr::filter(if_all(everything(), ~ !is.na(.))) %>% # remove columns with NULL values  
+  dplyr::arrange(ID, package, initialisation_method) %>%
+  dplyr::relocate(initialisation_method, .after = package) %>%
+  dplyr::rename(Package=package, `Initialisation Method`=initialisation_method) %>%
+  mutate(across(where(is.numeric), ~format(.x, digits=2, nsmall=0, ) %>% as.numeric)) 
+
+
+metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "global_bias_p",
+                        "global_bias_mu", "global_bias_sigma")
 ```
 
 ```{r prepare-legend-final-figure}
@@ -1314,7 +1389,8 @@ with `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("ba
 
 
 
-## Parameters estimation in a high-dimensional context {.appendix}
+## Parsimonious parametrisation of multivariate GMMs {.appendix}
+\label{subsec:parsimonious-parametrisation}
 
 Parsimonious parametrisation of GMMs models are provided by the following *eigenvalue* factorisation of the covariance matrix (Equation \@ref(eq:covariance-decomposition)):
 
@@ -1341,8 +1417,8 @@ Each of these matrices can be constrained to be equal or variable across cluster
 We detail the main characteristics of the 14 parametrisations (28 if we add for each model the equiproportional hypothesis) in Table (\@ref(tab:parameter-configuration-bivariate)):
 
 
-```{r param-bivariate-gaussian}
-data <- readr::read_delim("./tables/parametrisation_bivariate_gaussian.csv", delim=",", show_col_types = F) %>%
+```{r param-multivariate-gaussian}
+data <- readr::read_delim("./tables/parametrisation_multivariate_gaussian.csv", delim=",", show_col_types = F) %>%
   mutate(Representation="",
          dplyr::across(.cols = c("Notation", "Number of parameters"), ~ paste0("$", .x, "$")))
 Representation <- file.path("./tables", "gaussian_param",paste0(data$Model, ".png"))
@@ -1371,6 +1447,8 @@ data %>% kbl(booktabs=T, caption = "The 14 canonical parametrisations of the wit
 
 * Last column displays the 14 most common GMMs parametrisations, by plotting the ellipses and centroids of a three components bivariate GMM parametrised by the mean vector and covariance of each component. For any additional detail, we refer the interested reader to \pkg{mclust} [@scrucca_etal16] and \pkg{Rmixmod} [@R-Rmixmod] vignettes for a general introduction to GMMs and to [@banfield_raftery93; @celeux_govaert92; @browne_mcnicholas14] for the closed formulas of the models.
 
+## Parameters estimation in a high-dimensional context {.appendix}
+\label{subsec:high-dimensional}
 
 However, while parsimonious representations can largely reduce the computational burden, none of them in the general family is able to handle degenerate cases where the number of features, $D$, exceeds the number of observations $n$. Likewise situations, when the number of features is consequent, are referred to as high-dimensional, raising the well-known issue of the "curse of the dimensionality". Two distinct approaches have been developed in the literature to handle these degenerate cases:
 
@@ -2190,6 +2268,7 @@ download_trends
 ```
 
 ## Practical details for the implementation of our benchmark {.appendix}
+\label{subsec:benchmark-details}
 
 First, the number of observations ($n=200$ and $n=500$ respectively in the univariate and bivariate setting) was chosen enough high to both lower the probability of generating a sample without drawing any observation from one of the components in case of highly-unbalanced clusters and decreases the *margin of error* related to the random sampling error. Specifically, the probability of generating at least one simulation among the $N$ generated fo which less than two observations proceed from component $j$ (the minimal number of elements required to estimate both the mean and the variance of the corresponding cluster), with a two-components mixture of $n$ observations, is given by the following formula (Equation
 \@ref(eq:random-sampling-risk)):
@@ -2217,6 +2296,13 @@ We detail below some additional functions we implement to both homogenise input 
 
 + \pkg{flexmix} starts by the M-step of the EM algorithm instead of the E-step. Hence, it expects the posterior probabilities assigned to each cluster $j$ for each observation $i$, $\eta_i(j)$ (Equation \@ref(eq:posteriori)), instead of the initial estimates. Both approaches are, however, equivalent.
 
+\color{blue}
+On the contrary, none of the packages we evaluated that were dedicated to high-dimensional datasets allow the user to provide its own estimates. Thus, when one of the compared initialization methods, as listed in the table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\@ref(tab:general-parameter-description-html)', '\@ref(tab: general-parameter-description-pdf)'))`, was inherently available in the package, we use it, if possible using the same initial hyperparameters described in [Initialization of the EM algorithm]. If this is not the case, we provide a vector containing the prior classes deduced from the MAP estimation, with the parameters returned by the corresponding initialisation method, in a process similar to the one used with HC approach.
+\color{black}
+
+
+
+\color{yellow}
 In the multivariate scenario, several practical implementation reasons led us to restrain to a bivariate scenario:
 
 
@@ -2227,6 +2313,8 @@ In the multivariate scenario, several practical implementation reasons led us to
 * It is much easier to represent visually and compare the distributions, isodensities and performance estimations in a bivariate setting rather than in a high-dimensional setting.
 
  * Univariate or low dimensional settings are still largely used in a variety of clinical studies. In addition, we can always, at the cost of losing information, restricts to a lower dimensional space using one of the many dimensionality reduction techniques imported from the machine learning field.
+ 
+\color{black}
 
 
 In addition to the scenarios listed in
@@ -2240,7 +2328,7 @@ $\operatorname{Bias}(\hat{\theta})=\mathbb{E} [\hat{\theta}] - \theta$.
 estimator and its bias: $\operatorname{MSE} (\hat{\theta})=\mathbb{E} \left[ (\hat{\theta} - \theta)^2 \right] = \operatorname{var}(\hat{\theta}) + \operatorname{Bias}(\hat{\theta})^2$, where $\operatorname{var}(\hat{\theta})$ is the empiric variance of each
 estimator given by the diagonal terms of the empiric covariance matrix.
 
-* We enumerate the number of failed estimations (either an exception returned by a package or a non standardised parameter output). 
+* We enumerate the number of successes (either the package or the initial method returns an error, or fails in returning a set of parameters enforcing standard constraints of multivariate GMMs, namely the unit simplex constraint over the ratios, positive-definite covariance matrices and in general no missing or infinite value). 
 
 * For each scenario, we measured independently the running times taken by the initialisation step and by the estimation of the parameters by the EM
 algorithm. To do so, the \CRANpkg{microbenchmark} package
@@ -2254,6 +2342,50 @@ The main differences across packages as well as performance results obtained acr
 
 
 # Appendix D: comprehensive report from the univariate and multivariate benchmark {.appendix}
+
+## EM-implementation differences across reviewed packages
+\label{sec:em-differences}
+
+Most of the distinct behaviours between the packages result from additional choices external to the EM algorithm itself, aiming at partly overcoming its main limitations (Panel B, Figure \@ref(fig:heatmap-all-correlation-plots-univariate)). We detail below their differences ranked by decreasing order of their leverage effect on the final estimate:
+
+1. Most of the differences between the two classes of packages (Figure \@ref(fig:dichotomy-package-conclusion)) are
+related to the either relative or absolute choice for the termination criterion of the EM algorithm. Given an user-defined threshold, the *absolute method* early stops the estimation by comparing the difference between two consecutive log-likelihoods, $|\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)|$, while the *relative method* examines the variation rate, $\left\lvert\frac{\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)}{\ell(\hat{\theta}_{q-1}|X)}\right\lvert$.
+2. Several methods can be used to deal with numerical underflow, mostly happening with highly unlikely observations, distant from any centroid.
+    +  The least elaborate feature is from \pkg{Rmixmod}, returning an error when either any of the posterior probabilities or any of the estimated parameters goes below to the precision threshold of the machine (`r .Machine[["double.eps"]] %>% round(digits = 18)` for most OS).
+    
+    + If the maximal value of any posterior probability is null, \pkg{bgmm} subtracts the minimal logarithm posterior probability to any log-computed probability. This method avoids numerical
+underflow by preventing computation of null ratios but the correctness of the estimates is no longer enforced^[Additionally, \pkg{bgmm} does
+not update the estimated variances if any newly computed variance is
+below the criterion stop. A remarkable side-effect of these features, as
+shown in Figure \@ref(fig:outliers), is that the \pkg{bgmm} package is
+less sensitive to the presence of outliers.].
+
+    + The remaining packages handled numeric underflow in a more convincing
+manner as they guarantee to return the MLE estimate. The \pkg{flexmix}, \pkg{GMKMcharlie} and \pkg{EMCluster}
+packages use the same log-rescaling tip detailed in ([Application of the EM algorithm to GMMs]). The \pkg{mixtools} and
+\pkg{mclust} packages use a variant of this trick, taking profit of the factorisation
+by the greatest element (Equation \@ref(eq:trick-underflow), Equation 3 p.5 @mixtools2009), but without exploiting the tip of Taylor's development over $\log(1+x)$:
+
+```{=tex}
+\begin{equation}
+\eta_{i} (j) = \frac{p_{j} \, \varphi_{\zeta_j} (x)}{\sum_{j=1}^k p_{j} \, \varphi_{\zeta_j} (x)}=\frac{\frac{p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}{1+ \frac{\sum_{j\neq j_{\min}} p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}
+    (\#eq:trick-underflow)
+\end{equation}
+```
+
+In both cases, the computation of the smallest posterior probability, the most proned to be assigned a null value, is avoided, avoiding inconsistent ratios of type $0/0$.
+
+  + The previous two items deal with specific numeric limitations, but do not directly address one  of the main theoretical limitation of the EM algorithm, namely the risk of falling into a suboptimal maximum, plateau or getting trapped on the boundary space (occurs when the proportion of one of the component converges to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default $10^{-8}$). \pkg{flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{flexmix} removes any component whose associated weight is by default below $0.05$ (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)^[Indeed, at least one of the component was removed in $80\%$ of our estimations in the unbalanced and overlapping case (scenario U9 in \@ref(tab:parameter-configuration-univariate)) and in $20\%$ of the simulations in the unbalanced and well-separated case (scenario U3 in \@ref(tab:parameter-configuration-univariate)).], while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \@ref(eq:covariance-decomposition))^[These options are set respectively to 0 and $+\infty$ by default, thus they did not impact our simulations].
+
+
+We enumerate below some additional features supplied by the packages:
+
+- In addition to log rescaling, \pkg{GMKMcharlie} includes an additional argument, *embedNoise*, to avoid degenerate GMMs by adding a small constant to any diagonal term (by default $10^{-6}$). Besides, instead of controlling whether there was a relative change of the log-likelihood, the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations^[In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class. However, the use of an Euclidean distance criterion may be problematic when parameters are not on the same order of magnitude, requiring their prior normalisation]. Finally, since \pkg{GMKMcharlie} has implemented a parallelised version of the algorithm, it ensures using a a time limit that the algorithm indeed terminates (by default, set to one hour).
+
+- \pkg{flexmix} performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor $n-1$ instead of the number of observations $n$). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
+
+
+\newpage 
 
 ## Supplementary Figures and Tables in the univariate simulation {.appendix}
 
@@ -2808,7 +2940,7 @@ bivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, 
 ```
 
 ```{r prepare-legend-bivariate}
-multivariate_html_ouput <- knitr::is_html_output()  # change to TRUE for larger figures
+bivariate_html_output <- knitr::is_html_output()  # change to TRUE for larger figures
 
 html_caption_unbalanced_negative_correlated_bivariate <- "Benchmark plots of scenario B11 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components), organised as such:
 
@@ -2935,7 +3067,7 @@ specific_bivariate_parameters_local_scores_flex %>%
 
 \newpage
 
-```{r multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_negative_correlated_bivariate else pdf_caption_unbalanced_negative_correlated_bivariate, out.width="60%"}
+```{r multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_negative_correlated_bivariate else pdf_caption_unbalanced_negative_correlated_bivariate, out.width="60%"}
 true_theta <- bivariate_configuration %>% filter(ID=="B11") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -3031,7 +3163,7 @@ specific_bivariate_parameters_local_scores_flex %>%
 
 \newpage
 
-```{r multivariate-overlapping-unbalanced-opposite-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_opposite_correlated_bivariate else pdf_caption_unbalanced_opposite_correlated_bivariate}
+```{r multivariate-overlapping-unbalanced-opposite-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_opposite_correlated_bivariate else pdf_caption_unbalanced_opposite_correlated_bivariate}
 true_theta <- bivariate_configuration %>% filter(ID=="B12") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -3127,7 +3259,7 @@ specific_bivariate_parameters_local_scores_flex %>%
 
 \newpage
 
-```{r multivariate-overlapping-unbalanced-positive-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_positive_correlated_bivariate else pdf_caption_unbalanced_positive_correlated_bivariate}
+```{r multivariate-overlapping-unbalanced-positive-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_positive_correlated_bivariate else pdf_caption_unbalanced_positive_correlated_bivariate}
 true_theta <- bivariate_configuration %>% filter(ID=="B14") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -3222,7 +3354,7 @@ specific_bivariate_parameters_local_scores_flex %>%
 
 \newpage
 
-```{r multivariate-overlapping-unbalanced-uncorrelated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_uncorrelated_bivariate else pdf_caption_unbalanced_uncorrelated_bivariate}
+```{r multivariate-overlapping-unbalanced-uncorrelated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_uncorrelated_bivariate else pdf_caption_unbalanced_uncorrelated_bivariate}
 true_theta <- bivariate_configuration %>% filter(ID=="B15") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -3258,7 +3390,7 @@ In contrast to the univariate setting ([Supplementary Figures and Tables in the 
 
 Finally, Figures \@ref(fig:general-balanced-overlapping-bivariate), \@ref(fig:general-balanced-well-separated-bivariate) and \@ref(fig:general-unbalanced-well-separated-bivariate) represent in a synthetic way less interesting scenarios benchmarked with to the left, the contour maps and to the right the corresponding Hellinger boxplots, with one scenario being illustrated per row.
 
-```{r general-balanced-overlapping-bivariate, fig.cap=if (multivariate_html_ouput) html_balanced_overlapping_general_bivariate else pdf_balanced_overlapping_general_bivariate}
+```{r general-balanced-overlapping-bivariate, fig.cap=if (bivariate_html_output) html_balanced_overlapping_general_bivariate else pdf_balanced_overlapping_general_bivariate}
 true_theta_v1 <- bivariate_configuration %>% filter(ID=="B1") %>% pull(true_parameters) %>% magrittr::extract2(1)
 ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B1"), true_theta_v1) +
   theme(legend.title = element_blank())
@@ -3290,7 +3422,7 @@ knitr::include_graphics("figs/bivariate/multivariate_balanced_overlapping.png", 
 
 \newpage
 
-```{r general-balanced-well-separated-bivariate, fig.cap=if (multivariate_html_ouput) html_balanced_well_separated_general_bivariate else pdf_balanced_well_separated_general_bivariate}
+```{r general-balanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_balanced_well_separated_general_bivariate else pdf_balanced_well_separated_general_bivariate}
 true_theta_v1 <- bivariate_configuration %>% filter(ID=="B6") %>% pull(true_parameters) %>% magrittr::extract2(1)
 ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B6"), true_theta_v1) +
   theme(legend.title = element_blank())
@@ -3323,7 +3455,7 @@ knitr::include_graphics("figs/bivariate/multivariate_balanced_well_separated.png
 \newpage
 
 
-```{r general-unbalanced-well-separated-bivariate, fig.cap=if (multivariate_html_ouput) html_unbalanced_well_separated_general_bivariate else pdf_unbalanced_well_separated_general_bivariate}
+```{r general-unbalanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_unbalanced_well_separated_general_bivariate else pdf_unbalanced_well_separated_general_bivariate}
 true_theta_v1 <- bivariate_configuration %>% filter(ID=="B16") %>% pull(true_parameters) %>% magrittr::extract2(1)
 ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B16"), true_theta_v1) +
   theme(legend.title = element_blank())
@@ -3353,7 +3485,7 @@ ggsave("figs/bivariate/multivariate_unbalanced_well_separated.png",
 knitr::include_graphics("figs/bivariate/multivariate_unbalanced_well_separated.png", dpi=75)
 ```
 
-```{r heatmap-all-correlation-plots-bivariate, fig.cap= if (multivariate_html_ouput) html_global_heatmap_bivariate else pdf_global_heatmap_bivariate}
+```{r heatmap-all-correlation-plots-bivariate, fig.cap= if (bivariate_html_output) html_global_heatmap_bivariate else pdf_global_heatmap_bivariate}
 bivariate_parameters <- readRDS("./tables/bivariate/bivariate_distributions.rds")%>%
   dplyr::group_by(ID, package, initialisation_method) %>%
   dplyr::mutate(N.bootstrap=dplyr::row_number()) %>% dplyr::ungroup()
@@ -3365,49 +3497,752 @@ ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatma
 knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 75)
 ```
 
-## EM-implementation differences across reviewed packages
-\label{sec:em-differences}
 
-Most of the distinct behaviours between the packages result from additional choices external to the EM algorithm itself, aiming at partly overcoming its main limitations (Panel B, Figure \@ref(fig:heatmap-all-correlation-plots-univariate)). We detail below their differences ranked by decreasing order of their leverage effect on the final estimate:
 
-1. Most of the differences between the two classes of packages (Figure \@ref(fig:dichotomy-package-conclusion)) are
-related to the either relative or absolute choice for the termination criterion of the EM algorithm. Given an user-defined threshold, the *absolute method* early stops the estimation by comparing the difference between two consecutive log-likelihoods, $|\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)|$, while the *relative method* examines the variation rate, $\left\lvert\frac{\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)}{\ell(\hat{\theta}_{q-1}|X)}\right\lvert$.
-2. Several methods can be used to deal with numerical underflow, mostly happening with highly unlikely observations, distant from any centroid.
-    +  The least elaborate feature is from \pkg{Rmixmod}, returning an error when either any of the posterior probabilities or any of the estimated parameters goes below to the precision threshold of the machine (`r .Machine[["double.eps"]] %>% round(digits = 18)` for most OS).
-    
-    + If the maximal value of any posterior probability is null, \pkg{bgmm} subtracts the minimal logarithm posterior probability to any log-computed probability. This method avoids numerical
-underflow by preventing computation of null ratios but the correctness of the estimates is no longer enforced^[Additionally, \pkg{bgmm} does
-not update the estimated variances if any newly computed variance is
-below the criterion stop. A remarkable side-effect of these features, as
-shown in Figure \@ref(fig:outliers), is that the \pkg{bgmm} package is
-less sensitive to the presence of outliers.].
 
-    + The remaining packages handled numeric underflow in a more convincing
-manner as they guarantee to return the MLE estimate. The \pkg{flexmix}, \pkg{GMKMcharlie} and \pkg{EMCluster}
-packages use the same log-rescaling tip detailed in ([Application of the EM algorithm to GMMs]). The \pkg{mixtools} and
-\pkg{mclust} packages use a variant of this trick, taking profit of the factorisation
-by the greatest element (Equation \@ref(eq:trick-underflow), Equation 3 p.5 @mixtools2009), but without exploiting the tip of Taylor's development over $\log(1+x)$:
 
-```{=tex}
-\begin{equation}
-\eta_{i} (j) = \frac{p_{j} \, \varphi_{\zeta_j} (x)}{\sum_{j=1}^k p_{j} \, \varphi_{\zeta_j} (x)}=\frac{\frac{p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}{1+ \frac{\sum_{j\neq j_{\min}} p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}
-    (\#eq:trick-underflow)
-\end{equation}
+
+## Supplementary Figures and Tables in the HD simulation {.appendix}
+
+Table below (\@ref(tab:parameter-configuration-HD)) lists the complete set of parameters used to simulate Gaussian distributions in a rather high dimension context:
+
+```{r parameter-configuration-HD}
+HD_configuration_formatted <- HD_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, ~paste(round(.x$p, digits = 2), collapse = " / "))) %>%
+  select(-c("true_parameters")) %>%
+  rename(Entropy=entropy, Spherical=is_diagonal) %>% 
+  dplyr::relocate(Spherical, .after = Proportions) 
+
+
+HD_configuration_formatted %>% 
+  kbl(booktabs=T, caption = "The 16 parameter configurations tested to generate the samples in a high dimensional context. The first digit of each ID index refers
+      to an unique parameter configuration (uniquely identified by its level of overlap, entropy and topological structure, either circular or ellippsoidal, 
+      of the covariance matrix, while the lowercase letter depicts the number of observations, a) with $n=200$ and b) with $n=2000$.",
+      escape=F, align = "c") %>%
+  kable_styling(latex_options=c("hold_position", "scale_down")) %>%
+  row_spec(0,bold=T) %>% row_spec(1:16, hline_after = T) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed")) %>% 
+  column_spec(6, color="white", background = ifelse(HD_configuration_formatted$Spherical,
+                                                       "green", "red"))
 ```
 
-In both cases, the computation of the smallest posterior probability, the most proned to be assigned a null value, is avoided, avoiding inconsistent ratios of type $0/0$.
-
-  + The previous two items deal with specific numeric limitations, but do not directly address one  of the main theoretical limitation of the EM algorithm, namely the risk of falling into a suboptimal maximum, plateau or getting trapped on the boundary space (occurs when the proportion of one of the component converges to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default $10^{-8}$). \pkg{flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{flexmix} removes any component whose associated weight is by default below $0.05$ (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)^[Indeed, at least one of the component was removed in $80\%$ of our estimations in the unbalanced and overlapping case (scenario U9 in \@ref(tab:parameter-configuration-univariate)) and in $20\%$ of the simulations in the unbalanced and well-separated case (scenario U3 in \@ref(tab:parameter-configuration-univariate)).], while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \@ref(eq:covariance-decomposition))^[These options are set respectively to 0 and $+\infty$ by default, thus they did not impact our simulations].
+\newpage
 
 
-We enumerate below some additional features supplied by the packages:
+```{r prepare-legend-HD}
+HD_html_output <- knitr::is_html_output()  # change to TRUE for larger figures
 
-- In addition to log rescaling, \pkg{GMKMcharlie} includes an additional argument, *embedNoise*, to avoid degenerate GMMs by adding a small constant to any diagonal term (by default $10^{-6}$). Besides, instead of controlling whether there was a relative change of the log-likelihood, the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations^[In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class. However, the use of an Euclidean distance criterion may be problematic when parameters are not on the same order of magnitude, requiring their prior normalisation]. Finally, since \pkg{GMKMcharlie} has implemented a parallelised version of the algorithm, it ensures using a a time limit that the algorithm indeed terminates (by default, set to one hour).
+html_caption_HD_separated_unbalanced_ellipsoidal <- paste("Benchmark plots of scenario 4a) in Table \\@ref(tab:parameter-configuration-HD) (unbalanced, overlapping and negative correlated components), organised as such:
 
-- \pkg{flexmix} performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor $n-1$ instead of the number of observations $n$). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
+ - The panel A displays at the top the **scree plot**, namely the barplot of the eigenvalues resulting from the factor decomposition of a multivariate sample. Eigenvalues are traditionally sorted by decreasing order and normalised to one, such that each of them represents the percentage of within-components variability captured. The scree test consists then in determining the *elbow* of the graph and keep only components to the left of this point (we generally assume that the number of components retained as significant matches the intrinsic dimension of the problem).
+ At the bottom is represented the bivariate factorial projection of a random sample drawn from the 10-dimensional multivariate Gaussian distribution parametrised by Table \\@ref(tab:parameter-configuration-HD), each individual point corresponding to the projection induced by a two-dimensional *transition matrix*. This change-of-basis matrix is built from the coordintates of the two eigen vectors associated to the two larger eigen values (to make them unique, the resulting basis is supposed to be orthonormal, implying that that the two vectors are orthogonal and of norm 1). Each component is associated to a specific color, a centroid whose coordinates are given by the mean components' elements in the bivariate projected space and a $95\\%$ confidence ellipse. Finally, we represent on the same graph the correlation circle of the dimensional variables. The longer and redder are the vectors, the more they have contributed to the factor analysis, while their angle with each axis reflects their level of correlation with one of the projected dimension. For instance, we note in this projection that most higher dimensional variables align with the first axis, implying that they their individual distribution is mostly captured by the first dimension. This trend is confirmed by the layout of the scree plot, in which we can note that most of the variability is well captured by the first dimension (up to $85\\%$).
+ Both panels were displayed respectively using functions",  downlit::autolink('factoextra::fviz_eig()') , "and", downlit::autolink('factoextra::fviz_pca_biplot()'), "while the underlying computations proceed from the principal component analysis performed by", downlit::autolink('ade4::dudi.pca()'), "package preceded by standard scaling of the sampling dataset.
+ 
+- The panel B pictures the *parallel distribution plots* associated to a random sampling of $n=100$ observations, in the same proportions and using the parameters from scenario 4a) in Table \\@ref(tab:parameter-configuration-HD). A parallel coordinate plot maps each row, corresponding to one random draw of the multivariate GMM distribution, as a line profile, with each attribute, corresponding to one of the $D=10$ dimensions, being represented by an individual point. The color depicts the component origin of each observation. The two PDPs represented were respectively computed with no scaling (on the top) and with univariate standard scaling (each individual variable has a null mean and variance of 1, on the bottom), using the",
+downlit::autolink('GGally::ggparcoord()'), "function.
+
+- The running times are displayed in Panel C with the *k*-means initialisation, since it was the only method natively implemented in all the packages benchmarked. The number of observations (x-axis) and the running time (y-axis) is in $\\log(10)$ scale. The points represent median running time. 
+
+- The distributions of the Hellinger distances are computed for each component in Panel D, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1. 
+
+- In panel E we represent the boxplots associated with the distribution of some of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in [Supplementary Figures and Tables in the univariate simulation]. Since it was incovenient to represent the whole set of parameters ($k + kD + k\\frac{D \\times (D+1)}{2}$ with $k=2$ and $D=10$ in our example), we subset some relevant parameters for visualisation, namely the two individual proportions, the means of the first dimension of each component and their associated variances on the first two dimensions, as well as their correlation level. Indeed, the protocol we use to generate relevant parameters imply that no dimension prevails on others, as characterised by the parallel distribution plots (only small differences between the unscaled and normalised parallel representations). Each column is associated to one of the two components, while each row is associated to the distribution of a parameter in a given dimension, namely on the first line the estimated ratios, on the second the distributions of the mean vector on the first dimension, and on the remaining rows the individual variances in dimension 1 and 2 and the pairwise correlation between them.")
 
 
-\newpage 
+pdf_caption_HD_separated_unbalanced_ellipsoidal <- "Benchmark plots of scenario 4a) in Table \\ref{tab:parameter-configuration-HD} (unbalanced, overlapping and negative correlated components), organised as such:
+
+ - The panel A displays at the top the \\textbf{scree plot}, namely the barplot of the eigenvalues resulting from the factor decomposition of a multivariate sample. Eigenvalues are traditionally sorted by decreasing order and normalised to one, such that each of them represents the percentage of within-components variability captured. The scree test consists then in determining the \\textit{elbow} of the graph and keep only components to the left of this point (we generally assume that the number of components retained as significant matches the intrinsic dimension of the problem). At the bottom is represented the bivariate factorial projection of a random sample drawn from the 10-dimensional multivariate Gaussian distribution parametrised by Table \\ref{tab:parameter-configuration-HD}, each individual point corresponding to the projection induced by a two-dimensional \\textit{transition matrix}. This change-of-basis matrix is built from the coordintates of the two eigen vectors associated to the two larger eigen values (to make them unique, the resulting basis is supposed to be orthonormal, implying that that the two vectors are orthogonal and of norm 1). Each component is associated to a specific color, a centroid whose coordinates are given by the mean components' elements in the bivariate projected space and a $95\\%$ confidence ellipse. Finally, we represent on the same graph the correlation circle of the dimensional variables. The longer and redder are the vectors, the more they have contributed to the factor analysis, while their angle with each axis reflects their level of correlation with one of the projected dimension. For instance, we note in this projection that most higher dimensional variables align with the first axis, implying that they their individual distribution is mostly captured by the first dimension. This trend is confirmed by the layout of the scree plot, in which we can note that most of the variability is well captured by the first dimension (up to $85\\%$). Both panels were displayed respectively using functions \\code{factoextra::fviz\\_eig} and \\code{factoextra::fviz\\_pca\\_biplot}, while the underlying computations proceed from the principal component analysis performed by \\code{ade4::dudi.pca} package preceded by standard scaling of the sampling dataset.
+
+ 
+- The panel B pictures the \\textit{parallel distribution plots} associated to a random sampling of $n=100$ observations, in the same proportions and using the parameters from scenario 4a) in Table \\ref{tab:parameter-configuration-HD}. A parallel coordinate plot maps each row, corresponding to one random draw of the multivariate GMM distribution, as a line profile, with each attribute, corresponding to one of the $D=10$ dimensions, being represented by an individual point. The color depicts the component origin of each observation. The two PDPs represented were respectively computed with no scaling (on the top) and with univariate standard scaling (each individual variable has a null mean and variance of 1, on the bottom), using the \\code{GGally::ggparcoord} function.
+
+- The running times are displayed in Panel C with the \\textit{k}-means initialisation, since it was the only method natively implemented in all the packages benchmarked. The number of observations (x-axis) and the running time (y-axis) is in $\\log(10)$ scale. The points represent median running time. The coloured bands represent the $5^{\\text{th}}$ and $95^{\\text{th}}$ percentiles of the running time.
+
+- The distributions of the Hellinger distances are computed for each component in Panel D, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1. 
+
+- In panel E we represent the boxplots associated with the distribution of some of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \\nameref{Supplementary Figures and Tables in the univariate simulation}. Since it was incovenient to represent the whole set of parameters ($k + kD + k \\frac{D \\times (D+1)}{2}$ with $k=2$ and $D=10$ in our example), we subset some relevant parameters for visualisation, namely the two individual proportions, the means of the first dimension of each component and their associated variances on the first two dimensions, as well as their correlation level. Indeed, the protocol we use to generate relevant parameters imply that no dimension prevails on others, as characterised by the parallel distribution plots (only small differences between the unscaled and normalised parallel representations). Each column is associated to one of the two components, while each row is associated to the distribution of a parameter in a given dimension, namely on the first line the estimated ratios, on the second the distributions of the mean vector on the first dimension, and on the remaining rows the individual variances in dimension 1 and 2 and the pairwise correlation between them."
+
+
+
+html_caption_HD_overlapping_balanced_ellipsoidal<- "Benchmark plots of scenario 7a) in Table \\@ref(tab:parameter-configuration-HD)  (balanced and overlapping components, with full covariance structure), with the same layout as Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot)."
+pdf_caption_HD_overlapping_balanced_ellipsoidal <- "Benchmark plots of scenario 7a) in Table \\ref{tab:parameter-configuration-HD} (balanced and overlapping components, with full covariance structure), with the same layout as Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}."
+
+html_caption_HD_overlapping_unbalanced_ellipsoidal<- "Benchmark plots of scenario 8a) in Table \\@ref(tab:parameter-configuration-HD)  (unbalanced and overlapping components, with full covariance structure), with the same layout as Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot)."
+pdf_caption_HD_overlapping_unbalanced_ellipsoidal <- "Benchmark plots of scenario 8a) in Table \\ref{tab:parameter-configuration-HD} (unbalanced and overlapping components, with full covariance structure), with the same layout as Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}."
+
+html_caption_HD_overlapping_spherical<- "We gathered on the same plot two multivariate benchmark scenarios, in which we consider a strictly spherical structure of the covariance matrix, but without forcing explictly the benchmarked packages to return parameters asserting this constraint:
+- We represent in Panel A the bivariate projection associated to scenario 5a) in Table \\@ref(tab:parameter-configuration-HD)  (balanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), with the same layout as Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot).
+
+- In Panel B, we display the boxplots associated to scenario 5a), computing them similarly as in Panel E of Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot).
+
+- In Panel C, we display the boxplots associated to scenario 6a) (unbalanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), computing them similarly as in Panel E of Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot)."
+
+pdf_caption_HD_overlapping_spherical <- "We gathered on the same plot two multivariate benchmark scenarios, in which we consider a strictly spherical structure of the covariance matrix, but without forcing explictly the benchmarked packages to return parameters asserting this constraint:
+- We represent in Panel A the bivariate projection associated to scenario 5a) in Table \\ref{tab:parameter-configuration-HD}  (balanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), with the same layout as Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.
+
+- In Panel B, we display the boxplots associated to scenario 5a), computing them similarly as in Panel E of Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.
+
+- In Panel C, we display the boxplots associated to scenario 6a) (unbalanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), computing them similarly as in Panel E of Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}."
+
+
+
+html_caption_HD_impact_num_observations <- "Benchmark summary plots of respectively scenarios 1 and 8 in Table \\@ref(tab:parameter-configuration-HD) comparing the performance of the algorithms in respectvely the easiest scenario (equi-balanced clusters, with no overlap and spherical covariance structure)  and the most complex one (highly-overlapping and unblanced clusters, with full covariance structure without specific latent structure). The idea was to compare the performance of the algorithms with respect to the number of observations avalaible. Indeed, from the asymptotic properties of the estimate returned by the EM algorithm, we expect the simulated intervals to get narrower and closer to the true estimate with an increasing number of observations.
+Each scenario is pictured on each row, with the left column displaying the boxplots of the estimated parameters from simulations with $n=200$ obervations to the left, and $n=2000$ observations to the right."
+pdf_caption_HD_impact_num_observations <- "Benchmark summary plots of respectively scenarios 1 and 8 in Table \\ref{tab:parameter-configuration-HD} comparing the performance of the algorithms in respectvely the easiest scenario (equi-balanced clusters, with no overlap and spherical covariance structure)  and the most complex one (highly-overlapping and unblanced clusters, with full covariance structure without specific latent structure). The idea was to compare the performance of the algorithms with respect to the number of observations avalaible. Indeed, from the asymptotic properties of the estimate returned by the EM algorithm, we expect the simulated intervals to get narrower and closer to the true estimate with an increasing number of observations.
+Each scenario is pictured on each row, with the left column displaying the boxplots of the estimated parameters from simulations with $n=200$ obervations to the left, and $n=2000$ observations to the right."
+
+
+
+html_global_heatmap_HD <- "Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, k-means and rebmix) in the most discriminating scenario 8a), using the same process described in Figure \\@ref(fig:dichotomy-package-conclusion)."
+pdf_global_heatmap_HD <- "Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, k-means and rebmix) in the most discriminating scenario 8a), using the same process described in Figure \\ref{fig:dichotomy-package-conclusion}."
+```
+
+```{r compute-HD-separated-unbalanced-ellipsoidal}
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="4a") %>% select(-ID)
+nrow_summary <- nrow(specific_HD_parameters_local_scores)
+```
+
+```{r HD-separated-unbalanced-ellipsoidal-pdf, eval=knitr::is_latex_output()}
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenario 4a, in Table
+      \\ref{tab:parameter-configuration-HD} (unbalanced, separated and ellipsoidal components).", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in metric_colnames) {
+  # define col vector
+  col_vector <- rep("black", nrow_summary)
+  metric_vector <- specific_HD_parameters_local_scores %>% pull(metric_col)
+  col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
+    col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
+    specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+      column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  column_spec(9, color="white",
+              background = spec_color( specific_HD_parameters_local_scores$Success, alpha=0.8, end = 0.7, option="A")) %>% 
+  row_spec(10,  bold=TRUE, hline_after = T)
+```
+
+```{r HD-separated-unbalanced-ellipsoidal-html, eval=knitr::is_html_output(), layout = "l-body-outset"}
+specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+  set_caption(caption = "MSE and Bias associated to scenario 4a, in Table
+      \\ref{tab:parameter-configuration-HD} (unbalanced, separated and ellipsoidal components).", html_escape = F)
+
+for (metric_col in metric_colnames) {
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body",
+                     i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
+  
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body",
+                     i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
+}
+
+
+colourer_flextable <- scales::col_numeric(palette = c("magma"), domain = c(80, 100), alpha = 0.8)
+
+specific_HD_parameters_local_scores_flex %>%
+  flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+  flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+  # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
+  flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+  flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+  flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+  flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+  set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+  theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+  merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>% 
+  flextable::bg(j = c("Success"),bg = colourer_flextable) %>% 
+  color(j = "Success", color = "black") %>% 
+  flextable::autofit()
+
+```
+
+\newpage
+
+```{r HD-separated-unbalanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_separated_unbalanced_ellipsoidal else pdf_caption_HD_separated_unbalanced_ellipsoidal, out.width="60%"}
+true_theta <- HD_configuration %>% filter(ID=="4a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta, n = 200, k = 2, ade_plot = F)
+computation_time <- plot_time_computations(HD_time_computation %>% filter(ID == "4"))
+hellinger <- plot_Hellinger(formatted_HD_distributions %>% filter(ID == "4a"), true_theta) +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "4a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+upper_part <- cowplot::plot_grid(computation_time + labs(tag="C") + theme(plot.tag = element_text(size=24, face = "bold")),
+                                 hellinger + labs(tag = "D") + theme(plot.tag = element_text(size=24, face = "bold")) ,
+                                 ncol = 2, align = 'hv', axis="tblr")
+global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
+                                        boxplot_parameter_HD +
+                                          theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
+                                        top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
+ggsave("figs/HD/HD-separated-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-separated-unbalanced-ellipsoidal.png", dpi=300)
+```
+
+\newpage
+
+
+```{r compute-HD-overlapping-balanced-ellipsoidal}
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="7a") %>% select(-ID)
+nrow_summary <- nrow(specific_HD_parameters_local_scores)
+```
+
+\newpage
+```{r HD-overlapping-balanced-ellipsoidal-pdf, eval=knitr::is_latex_output()}
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenario 7a, in Table
+      \\ref{tab:parameter-configuration-HD} (balanced, overlapping and ellipsoidal components).", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in metric_colnames) {
+  # define col vector
+  col_vector <- rep("black", nrow_summary)
+  metric_vector <- specific_HD_parameters_local_scores %>% pull(metric_col)
+  col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
+    col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
+    specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+      column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  column_spec(9, color="white",
+              background = spec_color( specific_HD_parameters_local_scores$Success, alpha=0.8, end = 0.7, option="A")) %>% 
+  row_spec(10,  bold=TRUE, hline_after = T)
+```
+
+```{r HD-overlapping-balanced-ellipsoidal-html, eval=knitr::is_html_output(), layout = "l-body-outset"}
+specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+  set_caption(caption = "MSE and Bias associated to scenario 7a, in Table
+      \\ref{tab:parameter-configuration-HD} (balanced, overlapping and ellipsoidal components).", html_escape = F)
+
+for (metric_col in metric_colnames) {
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body",
+                     i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
+  
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body",
+                     i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
+}
+
+
+colourer_flextable <- scales::col_numeric(palette = c("magma"), domain = c(80, 100), alpha = 0.8)
+
+specific_HD_parameters_local_scores_flex %>%
+  flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+  flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+  # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
+  flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+  flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+  flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+  flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+  set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+  theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+  merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>% 
+  flextable::bg(j = c("Success"),bg = colourer_flextable) %>% 
+  color(j = "Success", color = "black") %>% 
+  flextable::autofit()
+
+```
+
+\newpage
+
+```{r HD-overlapping-balanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_balanced_ellipsoidal else pdf_caption_HD_overlapping_balanced_ellipsoidal, out.width="90%"}
+true_theta <- HD_configuration %>% filter(ID=="7a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta, n = 200, k = 2, ade_plot = F)
+computation_time <- plot_time_computations(HD_time_computation %>% filter(ID == "4"))
+hellinger <- plot_Hellinger(formatted_HD_distributions %>% filter(ID == "7a"), true_theta) +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "7a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+upper_part <- cowplot::plot_grid(computation_time + labs(tag="C") + theme(plot.tag = element_text(size=24, face = "bold")),
+                                 hellinger + labs(tag = "D") + theme(plot.tag = element_text(size=24, face = "bold")) ,
+                                 ncol = 2, align = 'hv', axis="tblr")
+global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
+                                        boxplot_parameter_HD +
+                                          theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
+                                        top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
+ggsave("figs/HD/HD-overlapping-balanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-overlapping-balanced-ellipsoidal.png", dpi=300)
+```
+
+\newpage
+
+```{r HD-overlapping-unbalanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_unbalanced_ellipsoidal else pdf_caption_HD_overlapping_unbalanced_ellipsoidal, out.width="90%"}
+true_theta <- HD_configuration %>% filter(ID=="8a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta, n = 200, k = 2, ade_plot = F)
+computation_time <- plot_time_computations(HD_time_computation %>% filter(ID == "4"))
+hellinger <- plot_Hellinger(formatted_HD_distributions %>% filter(ID == "8a"), true_theta) +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "8a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+upper_part <- cowplot::plot_grid(computation_time + labs(tag="C") + theme(plot.tag = element_text(size=24, face = "bold")),
+                                 hellinger + labs(tag = "D") + theme(plot.tag = element_text(size=24, face = "bold")) ,
+                                 ncol = 2, align = 'hv', axis="tblr")
+global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
+                                        boxplot_parameter_HD +
+                                          theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
+                                        top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
+ggsave("figs/HD/HD-overlapping-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-overlapping-unbalanced-ellipsoidal.png", dpi=300)
+```
+
+
+\newpage
+
+
+```{r compute-HD-overlapping-spherical-balanced}
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="5a") %>% select(-ID)
+nrow_summary <- nrow(specific_HD_parameters_local_scores)
+```
+
+```{r HD-overlapping-spherical-balanced-pdf, eval=knitr::is_latex_output()}
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenario 5a, in Table
+      \\ref{tab:parameter-configuration-HD} (balanced, overlapping and spherical-distributed components).", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in metric_colnames) {
+  # define col vector
+  col_vector <- rep("black", nrow_summary)
+  metric_vector <- specific_HD_parameters_local_scores %>% pull(metric_col)
+  col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
+    col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
+    specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+      column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  column_spec(9, color="white",
+              background = spec_color( specific_HD_parameters_local_scores$Success, alpha=0.8, end = 0.7, option="A")) %>% 
+  row_spec(10,  bold=TRUE, hline_after = T)
+```
+
+```{r HD-overlapping-spherical-balanced-html, eval=knitr::is_html_output(), layout = "l-body-outset"}
+specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+  set_caption(caption = "MSE and Bias associated to scenario 5a, in Table
+      \\ref{tab:parameter-configuration-HD} (balanced, overlapping and spherical-distributed components).", html_escape = F)
+
+for (metric_col in metric_colnames) {
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body",
+                     i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
+  
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body",
+                     i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
+}
+
+
+colourer_flextable <- scales::col_numeric(palette = c("magma"), domain = c(80, 100), alpha = 0.8)
+
+specific_HD_parameters_local_scores_flex %>%
+  flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+  flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+  # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
+  flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+  flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+  flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+  flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+  set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+  theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+  merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>% 
+  flextable::bg(j = c("Success"),bg = colourer_flextable) %>% 
+  color(j = "Success", color = "black") %>% 
+  flextable::autofit()
+
+```
+
+
+
+
+\newpage
+
+```{r compute-HD-overlapping-spherical}
+HD_parameters_local_scores_balanced <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="5a") %>% select(-ID) 
+HD_parameters_local_scores_unbalanced <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="6a") %>% select(-ID)
+
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_balanced  %>% 
+  dplyr::mutate(global_mse_p=paste(global_mse_p,HD_parameters_local_scores_unbalanced$global_mse_p, sep=" // "),
+                global_mse_mu=paste(global_mse_mu,HD_parameters_local_scores_unbalanced$global_mse_mu, sep=" // "),
+                global_mse_sigma=paste(global_mse_sigma,HD_parameters_local_scores_unbalanced$global_mse_sigma, sep=" // "),
+                global_bias_p=paste(global_bias_p,HD_parameters_local_scores_unbalanced$global_bias_p, sep=" // "),
+                global_bias_mu=paste(global_bias_mu,HD_parameters_local_scores_unbalanced$global_bias_mu, sep=" // "),
+                global_bias_sigma=paste(global_bias_sigma,HD_parameters_local_scores_unbalanced$global_bias_sigma, sep=" // "),
+                Success=paste(Success,HD_parameters_local_scores_unbalanced$Success, sep=" // "))
+```
+
+```{r HD-overlapping-spherical-pdf, eval=knitr::is_latex_output()}
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenarios 5a) and 6a), in Table
+\\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). We delimite each scenario by doubled backslashes with respectively balanced and unbalanced clusters.", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  col_vector <- rep("black", nrow(specific_HD_parameters_local_scores))
+  col_vector[min_index] <- "green"; col_vector[max_index] <- "red" 
+  specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+        column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  row_spec(12,  hline_after = T)
+```
+
+```{r HD-overlapping-spherical-html, eval=knitr::is_html_output(), layout = "l-body-outset"}
+specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+  set_caption(caption = "MSE and Bias associated to scenarios 5a) and 6a), in Table
+\\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). We delimite each scenario by doubled backslashes with respectively balanced and unbalanced clusters.", html_escape = F)
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body", i = min_index,color = "green")
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body", i = max_index,color = "red")
+}
+
+
+specific_HD_parameters_local_scores_flex %>%
+  flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+  flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+  flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+  flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+  flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+  flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+  set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+  theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+  merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>% 
+  flextable::autofit()
+
+```
+\newpage
+
+
+```{r HD-overlapping-spherical-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_spherical else pdf_caption_HD_overlapping_spherical, out.width="90%"}
+true_theta_balanced <- HD_configuration %>% filter(ID=="5a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+true_theta_unbalanced <- HD_configuration %>% filter(ID=="6a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta_balanced, n = 200, k = 2, ade_plot = F)
+boxplot_parameter_HD_balanced <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "5a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD_unbalanced <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "6a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+global_figure <- cowplot::plot_grid(HD_density, boxplot_parameter_HD_balanced +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "C"),
+                                    boxplot_parameter_HD_unbalanced +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "D"),
+                                    nrow = 3, align = 'hv', axis="tblr")
+ggsave("figs/HD/HD-overlapping-spherical.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-overlapping-spherical.png", dpi=300)
+```
+
+\newpage
+
+```{r compute-HD-impact-num-observations-tab1}
+HD_parameters_local_scores_smalln <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="1a") %>% select(-ID) 
+HD_parameters_local_scores_highn <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="1b") %>% select(-ID)
+
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_smalln  %>% 
+  dplyr::mutate(global_mse_p=paste(global_mse_p,HD_parameters_local_scores_highn$global_mse_p, sep=" // "),
+                global_mse_mu=paste(global_mse_mu,HD_parameters_local_scores_highn$global_mse_mu, sep=" // "),
+                global_mse_sigma=paste(global_mse_sigma,HD_parameters_local_scores_highn$global_mse_sigma, sep=" // "),
+                global_bias_p=paste(global_bias_p,HD_parameters_local_scores_highn$global_bias_p, sep=" // "),
+                global_bias_mu=paste(global_bias_mu,HD_parameters_local_scores_highn$global_bias_mu, sep=" // "),
+                global_bias_sigma=paste(global_bias_sigma,HD_parameters_local_scores_highn$global_bias_sigma, sep=" // "),
+                Success=paste(Success,HD_parameters_local_scores_highn$Success, sep=" // "))
+```
+
+```{r HD-impact-num-observations-pdf-tab1, eval=knitr::is_latex_output()}
+
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenarios 1a) and 1b), in Table
+      \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
+      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+              $n=2000$ observations.", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  col_vector <- rep("black", nrow(specific_HD_parameters_local_scores))
+  col_vector[min_index] <- "green"; col_vector[max_index] <- "red" 
+  specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+        column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  row_spec(12,  hline_after = T)
+```
+
+```{r HD-impact-num-observations-html-tab1, eval=knitr::is_html_output(), layout = "l-body-outset"}
+specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+  set_caption(caption = "MSE and Bias associated to scenarios 1a) and 1b), in Table
+      \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
+      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+              $n=2000$ observations.", html_escape = F)
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body", i = min_index,color = "green")
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body", i = max_index,color = "red")
+}
+
+
+specific_HD_parameters_local_scores_flex %>%
+  flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+  flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+  flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+  flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+  flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+  flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+  set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+  theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+  merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>% 
+  flextable::autofit()
+```
+
+
+\newpage
+
+```{r compute-HD-impact-num-observations-tab2}
+HD_parameters_local_scores_smalln <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="8a") %>% select(-ID) %>% filter(Package!="EMMIXmfa")
+HD_parameters_local_scores_highn <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="8b") %>% select(-ID)
+
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_smalln  %>% 
+  dplyr::mutate(global_mse_p=paste(global_mse_p,HD_parameters_local_scores_highn$global_mse_p, sep=" // "),
+                global_mse_mu=paste(global_mse_mu,HD_parameters_local_scores_highn$global_mse_mu, sep=" // "),
+                global_mse_sigma=paste(global_mse_sigma,HD_parameters_local_scores_highn$global_mse_sigma, sep=" // "),
+                global_bias_p=paste(global_bias_p,HD_parameters_local_scores_highn$global_bias_p, sep=" // "),
+                global_bias_mu=paste(global_bias_mu,HD_parameters_local_scores_highn$global_bias_mu, sep=" // "),
+                global_bias_sigma=paste(global_bias_sigma,HD_parameters_local_scores_highn$global_bias_sigma, sep=" // "),
+                Success=paste(Success,HD_parameters_local_scores_highn$Success, sep=" // "))
+```
+
+```{r HD-impact-num-observations-pdf-tab2, eval=knitr::is_latex_output()}
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenarios 8a) and 8b), in Table
+      \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
+      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+              $n=2000$ observations.", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  col_vector <- rep("black", nrow(specific_HD_parameters_local_scores))
+  col_vector[min_index] <- "green"; col_vector[max_index] <- "red" 
+  specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+        column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  row_spec(12,  hline_after = T)
+
+
+```
+
+```{r HD-impact-num-observations-html-tab2, eval=knitr::is_html_output(), layout = "l-body-outset"}
+specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+  set_caption(caption = "MSE and Bias associated to scenarios 8a) and 8b), in Table
+      \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
+      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+              $n=2000$ observations.", html_escape = F)
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body", i = min_index,color = "green")
+  specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+    flextable::color(j=metric_col, part = "body", i = max_index,color = "red")
+}
+
+
+specific_HD_parameters_local_scores_flex %>%
+  flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+  flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+  flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+  flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+  flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+  flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+  set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+  theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+  merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>% 
+  flextable::autofit()
+```
+\newpage
+
+```{r HD-impact-num-observations, fig.cap=if (HD_html_output) html_caption_HD_impact_num_observations else pdf_caption_HD_impact_num_observations, out.width="90%"}
+easy_theta_small_n <- HD_configuration %>% filter(ID=="1a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+easy_theta_high_n <- HD_configuration %>% filter(ID=="1b") %>% pull(true_parameters) %>% magrittr::extract2(1)
+boxplot_parameter_easy_small <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1a"), 
+                                                 num_col = 2, true_theta = easy_theta_small_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_easy_high <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1b"), 
+                                                 num_col = 2, true_theta = easy_theta_high_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+hard_theta_small_n <- HD_configuration %>% filter(ID=="8a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+hard_theta_high_n <- HD_configuration %>% filter(ID=="8b") %>% pull(true_parameters) %>% magrittr::extract2(1)
+boxplot_parameter_hard_small <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1a"), 
+                                                 num_col = 2, true_theta = hard_theta_small_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_hard_high <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1b"), 
+                                                 num_col = 2, true_theta = hard_theta_high_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+# concatenate plots together
+global_figure <- cowplot::plot_grid(boxplot_parameter_easy_small +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "A"),
+                                    boxplot_parameter_easy_high +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "B"),
+                                    boxplot_parameter_hard_small +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "C"),
+                                    boxplot_parameter_hard_high +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "D"),
+                                    nrow = 2, ncol=2, align = 'hv', axis="tblr")
+
+ggsave("figs/HD/HD-impact-nobservations.png",global_figure, width = 30, height = 40, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-impact-nobservations.png", dpi=300)
+```
+
+
+```{r heatmap-all-correlation-plots-HD, fig.cap= if (HD_html_output) html_global_heatmap_HD else pdf_global_heatmap_HD}
+multivariate_correlation_heatmaps <- plot_correlation_Heatmap(HD_distributions %>% filter(ID=="7a"), row_km = 3)
+multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
+                                                              purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
+                                                            top="", ncol = 3, nrow = 1)
+ggsave("./figs/HD/heatmap_global_HD.png", multivariate_correlation_heatmaps, width = 18, height = 6,dpi = 150)
+knitr::include_graphics("./figs/HD/heatmap_global_HD.png", dpi = 150)
+```
+
+
 # Additional files {.appendix}
 
 

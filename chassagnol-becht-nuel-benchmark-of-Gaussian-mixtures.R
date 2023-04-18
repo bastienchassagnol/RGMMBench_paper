@@ -68,6 +68,29 @@ options(dplyr.summarise.inform = FALSE) # remove the override .groups argument
 knitr::include_graphics("figs/flowchart_packages_selection.png")
 
 
+## ----retrieve-general-information, echo=FALSE, eval=FALSE---------------------
+#> 
+#> relevant_packages <- c("EMMIXmfa", "HDclassif")
+#> info_package <- relevant_packages %>%
+#>   purrr::map_dfr(function(x)   {
+#>     description <- utils::packageDescription(pkg=x,
+#>                               fields = c("Package", "Version", "Date", "Maintainer",
+#>                                          "License", "Imports", "Depends","LinkingTo"))
+#>     description_tibble=tibble::tibble(Package=description$Package, Version=description$Version,Date=description$Date,
+#>                                       Maintainer=description$Maintainer, License=description$License, Imports=description$Imports,
+#>                                       Depends=description$Depends, LinkingTo=description$LinkingTo)
+#>     return(description_tibble)})
+#> 
+#> info_package <- cranlogs::cran_downloads(package = relevant_packages,
+#>                                        from = "2019-04-01", to = "2023-04-01") %>%
+#>   dplyr::group_by(package) %>% dplyr::summarise(Popularity=round(mean(count))) %>%
+#>   dplyr::inner_join(info_package, by = c("package"="Package"))
+#> 
+#> info_package <- info_package %>% dplyr::inner_join(
+#>   purrr::imap_dfr(tools::package_dependencies(packages = relevant_packages, recursive = TRUE),
+#>                   ~ tibble::tibble(package=.y, recursive_deps=list(.x))))
+
+
 ## ----low-comparison-package-html, layout="l-body-outset", eval = knitr::is_html_output()----
 #> readr::read_delim("./tables/package_comparison_low_level.csv", delim=";", show_col_types = F) %>%
 #>   mutate(Imports=stringr::str_replace(Imports, ">=", "\U2265"),
@@ -75,15 +98,16 @@ knitr::include_graphics("figs/flowchart_packages_selection.png")
 #>          dplyr::across(.cols = c("Regression", "Implemented models"), ~ gsub(pattern = "greentick", "./figs/green_tick.png", .x)),
 #>          across(.cols = where(is.character), stringr::str_replace_all, "\\\\n", " ")) %>%
 #>   flextable() %>%
-#>   flextable::mk_par(i = 1:7, j = 3, value = as_paragraph(
+#>   flextable::mk_par(i = 1:9, j = 3, value = as_paragraph(
 #>     flextable::as_image(src = Regression, width = 0.5, height = 0.5, unit = "cm"))) %>%
-#>   flextable::mk_par( i = c(1, 4:7), j = 4, value = as_paragraph(
+#>   flextable::mk_par( i = c(1, 4:9), j = 4, value = as_paragraph(
 #>     flextable::as_image(src = "./figs/red_cross.png", width = 0.5, height = 0.5, unit = "cm"))) %>%
 #>   set_caption(caption = "Main features of the reviewed packages, sorted by decreasing number
 #> of daily downloads. *Downloads per day* returns the daily average number of downloads for each package on the last 2 years.
 #>  *Recursive dependencies* column counts the complete set of non-base packages required, as first-order dependencies
 #>                     may require as well installation of other packages.", html_escape = F) %>%
-#>   theme_vanilla() %>% align(align = "center", part = "header") %>%   flextable::autofit()
+#>   theme_vanilla() %>% align(align = "center", part = "header") %>%   flextable::autofit() %>%
+#>   flextable::hline(i = 7)
 
 
 ## ----low-comparison-package-pdf, eval = knitr::is_latex_output()--------------
@@ -100,8 +124,7 @@ readr::read_delim("./tables/package_comparison_low_level.csv", delim=";", show_c
                               "Regression", "Implemented \n models", "Downloads \n per day",
                               "Last \n update", "Imports", "Recursive \n dependencies", "Language"))) %>%
   row_spec(0,bold=T, align = "c", hline_after = T) %>%
-  row_spec(1:7, hline_after = T, align = "c") %>%
-  column_spec(column = 1:9, latex_valign = "m") %>%
+  row_spec(7,  bold=TRUE, hline_after = T) %>% 
   kable_styling(latex_options=c("hold_position", "scale_down"))
 
 
@@ -110,25 +133,29 @@ readr::read_delim("./tables/package_comparison_low_level.csv", delim=";", show_c
 #>   filter(!(Column1 %in% c("Labelled data", "Weighted implementation"))) %>%
 #>   tibble::column_to_rownames("Column1") %>%
 #>   mutate(dplyr::across(.cols = everything(), ~ gsub(pattern = "redcross", "./figs/red_cross.png", .x)),
-#>          dplyr::across(.cols = everything(), ~ gsub(pattern = "greentick", "./figs/green_tick.png", .x)))
+#>          dplyr::across(.cols = everything(), ~ gsub(pattern = "greentick", "./figs/green_tick.png", .x))) %>%
+#>   tibble::rownames_to_column("Package features")
 #> 
-#> data %>% flextable() %>%
-#>   flextable::mk_par(i = "Bootstrap Confidence Intervals", value = as_paragraph(
-#>     flextable::as_image(src = data["Bootstrap Confidence Intervals", ] %>% unlist(), width = 0.5, height = 0.5, unit = "cm")))%>%
-#>   flextable::mk_par( j = grep("red_cross", data["Model or Cluster selection", ]),
-#>                      i = "Model or Cluster Selection", value = as_paragraph(
-#>                        flextable::as_image(src = "./figs/red_cross.png", width = 0.5, height = 0.5, unit = "cm"))) %>%
-#>   flextable::mk_par(j=grep("red_cross", data["Variants of the EM algorithm", ]) %>% unlist(),
-#>                     i = "Variants of the EM algorithm", value = as_paragraph(
-#>                       flextable::as_image(src = "./figs/red_cross.png", width = 0.5, height = 0.5, unit = "cm"))) %>%
-#>   flextable::mk_par(j=grep("red_cross", data["Visualisation", ]) %>% unlist(),
-#>                     i = "Visualisation", value = as_paragraph(
-#>                       flextable::as_image(src = "./figs/red_cross.png", width = 0.5, height = 0.5, unit = "cm"))) %>%
+#> flex_data <- data  %>%  flextable()
+#> for (i in 1:nrow(data)) {
+#>   green_index <- grep("green_tick", data[i, ] %>% unlist()); red_index <- grep("red_cross", data[i, ] %>% unlist())
+#>   flex_data <- flex_data %>%
+#>     flextable::mk_par(i = i, j=green_index,
+#>                       value = as_paragraph(flextable::as_image(src = "./figs/green_tick.png",
+#>                                                                width = 0.5, height = 0.5, unit = "cm"))) %>%
+#>     flextable::mk_par(i = i, j=red_index,
+#>                       value = as_paragraph(flextable::as_image(src = "./figs/red_cross.png",
+#>                                                                width = 0.5, height = 0.5, unit = "cm")))
+#> 
+#> }
+#> 
+#> flex_data %>%
 #>   set_caption(caption = "Custom features associated to GMMs estimation for any of the benchmarked packages.",
 #>               html_escape = F) %>%
 #>   theme_vanilla() %>%
 #>   align(align = "center", part = "header") %>%  # centre align header
-#>   flextable::autofit()
+#>   flextable::autofit() %>%
+#>   flextable::vline(j=8, border = officer::fp_border(width = 2))
 
 
 ## ----high-comparison-packages-pdf, eval = knitr::is_latex_output()------------
@@ -140,9 +167,10 @@ readr::read_delim("./tables/package_comparison_high_level.csv", delim=";", show_
   kbl(booktabs=T, caption = "Custom features associated to GMMs estimation for any of the benchmarked packages.", escape=F) %>%
   kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T, align = "c") %>%
-  row_spec(1:7, hline_after = T) %>%
-  column_spec(column = 1:8, latex_valign = "m", width = c("2.4cm", "4cm", rep("2.4cm", 6))) %>%
-  column_spec(column = 1, bold=T, border_right = T)
+  row_spec(1:8, hline_after = T) %>%
+  column_spec(column = 1:10, latex_valign = "m", width = rep("1.8cm", 11)) %>%
+  column_spec(column = 1, bold=T, border_right = T) %>% 
+  column_spec(column = 8, border_right = T)
 
 
 ## ----general-parameter-description-html, eval=knitr::is_html_output()---------
@@ -206,34 +234,34 @@ univariate_parameters_local_scores_summary <- univariate_parameters_local_scores
 
 
 #################################################################
-##        prepare multivariate scores and distributions        ##
+##        prepare bivariate scores and distributions        ##
 #################################################################
 
-multivariate_distribution_parameters <- readRDS("./tables/multivariate/bivariate_distributions.rds")%>%
+bivariate_parameters <- readRDS("./tables/bivariate/bivariate_distributions.rds")%>%
   dplyr::group_by(ID, package, initialisation_method) %>%
   dplyr::mutate(N.bootstrap=dplyr::row_number()) %>% dplyr::ungroup()
-multivariate_time_computations <- readRDS("./tables/multivariate/bivariate_time_computation.rds")
-multivariate_configuration <- readRDS("./tables/multivariate/bivariate_configuration_scenario.rds")
+bivariate_time_computation <- readRDS("./tables/bivariate/bivariate_time_computation.rds")
+bivariate_configuration <- readRDS("./tables/bivariate/bivariate_configuration_scenario.rds")
 
-formatted_multivariate_distribution_parameters <- multivariate_distribution_parameters %>%
+formatted_bivariate_parameters <- bivariate_parameters %>%
   mutate(color=dplyr::if_else(package %in% c("RGMMBench", "Rmixmod", "mixtools"), 'red', 'green'),
          package=dplyr::if_else(package %in% c("flexmix", "mclust", "mixtools"),
                                 glue::glue("<b style='color:{color}; font-size:22pt'>{package}</b>"),
                                 glue::glue("<p style='color:{color}'>{package}</p>")))
 
 
-multivariate_parameters_local_scores <- readRDS("./tables/multivariate/bivariate_local_scores.rds") %>%
+bivariate_parameters_local_scores <- readRDS("./tables/bivariate/bivariate_local_scores.rds") %>%
   filter(package %in% c("mixtools", "Rmixmod", "mclust", "EMCluster", "flexmix")) %>%
   mutate(package=forcats::fct_recode(package, `Rmixmod / RGMMBench`="Rmixmod", `mclust / bgmm`="mclust", `EMCluster / GMKMcharlie`="EMCluster"))
 
-multivariate_parameters_local_scores_summary <- multivariate_parameters_local_scores %>% dplyr::filter(scores=="mse") %>%
-  rowwise() %>% mutate(global_mse_p = sum(dplyr::c_across(dplyr::matches("p[[:digit:]]+"))),
+bivariate_parameters_local_scores_summary <- bivariate_parameters_local_scores %>% dplyr::filter(scores=="mse") %>%
+  rowwise() %>% mutate(global_mse_p = sum(dplyr::c_across(dplyr::matches("^p[[:digit:]]+$"))),
                        global_mse_mu = sum(dplyr::c_across(dplyr::matches("mu"))),
                        global_mse_sigma=sum(dplyr::c_across(dplyr::matches("sd")))) %>%
   dplyr::group_by(ID, initialisation_method, package) %>%
   dplyr::summarise(global_mse_p=mean(global_mse_p), global_mse_mu=mean(global_mse_mu), global_mse_sigma=mean(global_mse_sigma)) %>%
-  dplyr::inner_join(multivariate_parameters_local_scores %>% dplyr::filter(scores=="bias") %>%
-                      rowwise() %>% mutate(global_bias_p = sum(abs(dplyr::c_across(dplyr::matches("p[[:digit:]]+")))),
+  dplyr::inner_join(bivariate_parameters_local_scores %>% dplyr::filter(scores=="bias") %>%
+                      rowwise() %>% mutate(global_bias_p = sum(abs(dplyr::c_across(dplyr::matches("^p[[:digit:]]+$")))),
                                            global_bias_mu = sum(abs(dplyr::c_across(dplyr::matches("mu")))),
                                            global_bias_sigma=sum(abs(dplyr::c_across(dplyr::matches("sd"))))) %>%
                       dplyr::group_by(ID, initialisation_method, package) %>%
@@ -242,7 +270,68 @@ multivariate_parameters_local_scores_summary <- multivariate_parameters_local_sc
   dplyr::relocate(initialisation_method, .after = package) %>%
   dplyr::rename(Package=package, `Initialisation Method`=initialisation_method) %>%
   mutate(across(where(is.numeric), ~format(.x, digits=2, nsmall=0, ) %>% as.numeric)) %>% ungroup()
-metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "global_bias_p", "global_bias_mu", "global_bias_sigma")
+
+
+#################################################################
+##        prepare HD scores and distributions        ##
+#################################################################
+
+HD_distributions <- readRDS("./tables/HD/HD_distributions.rds")
+HD_configuration <- readRDS("./tables/HD/HD_configuration_scenario.rds")
+HD_time_computation <- readRDS("./tables/HD/HD_time_computation.rds")
+HD_parameters_local_scores <- readRDS("./tables/HD/HD_local_scores.rds") 
+
+
+formatted_HD_distributions <- HD_distributions %>% 
+  mutate(package=forcats::fct_relevel(package, "RGMMBench", "Rmixmod", "mixtools",
+                                      "GMKMcharlie", "mclust", "flexmix",
+                                      "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>% 
+  arrange(ID, initialisation_method, N.bootstrap, package) %>% 
+  mutate(color=dplyr::case_match(package, 
+                                 c("RGMMBench", "Rmixmod", "mixtools") ~ "red", 
+                                 c("HDclassif", "EMMIXmfa") ~"blue", .default = "green"), 
+         package=dplyr::case_match(package, 
+                                   c("flexmix", "mclust", "mixtools") ~ glue::glue("<b style='color:{color}; font-size:22pt'>{package}</b>"), 
+                                   c("HDclassif", "EMMIXmfa") ~ glue::glue("<i style='color:{color}'>{package}</i>"),
+                                   .default = glue::glue("<p style='color:{color}'>{package}</p>"))) 
+
+
+num_failed <- HD_distributions %>%
+  filter(package %in% c("Rmixmod", "mclust", "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>%
+  mutate(package=forcats::fct_recode(package, `mixtools / Rmixmod / RGMMBench`="Rmixmod",
+                                     `mclust / flexmix / GMKMcharlie`="mclust")) %>% 
+  group_by(ID, initialisation_method, package) %>% 
+  summarise(Success=n())
+
+HD_parameters_local_scores <- readRDS("./tables/HD/HD_local_scores.rds") %>% 
+  filter(package %in% c("Rmixmod", "mclust", "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>%
+  mutate(package=forcats::fct_relevel(package, "Rmixmod", "mclust", 
+                                      "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>% 
+  arrange(ID, initialisation_method, package) %>% 
+  mutate(package=forcats::fct_recode(package, `mixtools / Rmixmod / RGMMBench`="Rmixmod",
+                                     `mclust / flexmix / GMKMcharlie`="mclust"))
+
+HD_parameters_local_scores_summary <- HD_parameters_local_scores %>% dplyr::filter(scores=="mse") %>%
+  rowwise() %>% summarise(ID, initialisation_method, package, 
+                          global_mse_p = sum(dplyr::c_across(dplyr::matches("p[[:digit:]]+"))),
+                          global_mse_mu = sum(dplyr::c_across(dplyr::matches("mu"))),
+                          global_mse_sigma=sum(dplyr::c_across(dplyr::matches("sd")))) %>% 
+  dplyr::inner_join(HD_parameters_local_scores %>% dplyr::filter(scores=="bias") %>%
+                      rowwise() %>% summarise(ID, initialisation_method, package, 
+                                              global_bias_p = sum(abs(dplyr::c_across(dplyr::matches("^p[[:digit:]]+$")))),
+                                              global_bias_mu = sum(abs(dplyr::c_across(dplyr::matches("mu")))),
+                                              global_bias_sigma=sum(abs(dplyr::c_across(dplyr::matches("sd"))))),
+                    by = join_by(ID, initialisation_method, package)) %>%
+  dplyr::inner_join(num_failed, join_by(ID, initialisation_method, package)) %>% 
+  dplyr::filter(if_all(everything(), ~ !is.na(.))) %>% # remove columns with NULL values  
+  dplyr::arrange(ID, package, initialisation_method) %>%
+  dplyr::relocate(initialisation_method, .after = package) %>%
+  dplyr::rename(Package=package, `Initialisation Method`=initialisation_method) %>%
+  mutate(across(where(is.numeric), ~format(.x, digits=2, nsmall=0, ) %>% as.numeric)) 
+
+
+metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "global_bias_p",
+                        "global_bias_mu", "global_bias_sigma")
 
 
 ## ----prepare-legend-final-figure----------------------------------------------
@@ -942,7 +1031,7 @@ knitr::include_graphics("./figs/univariate_initialisation_time_computations.png"
 
 
 ## ----parameter-configuration-bivariate----------------------------------------
-multivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, ~paste(.x$p, collapse = " / ")),
+bivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, ~paste(.x$p, collapse = " / ")),
                                        Means=purrr::map_chr(true_parameters, ~paste0("(", paste0(.x$mu[,1], collapse = ","), ");(", paste0(.x$mu[,2], collapse = ","), ")")),
                                        Correlations=purrr::map_chr(true_parameters, ~paste(c(.x$sigma[1, 2, 1], .x$sigma[1, 2, 2]), collapse = " / "))) %>%
   select(-c("OVL", "nobservations", "prop_outliers", "true_parameters", "formatted_true_parameters", "true_parameters_factor")) %>%
@@ -954,10 +1043,10 @@ multivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameter
   kable_styling(bootstrap_options = c("hover", "condensed"))
 
 
-## ----prepare-legend-multivariate----------------------------------------------
-multivariate_html_ouput <- knitr::is_html_output()  # change to TRUE for larger figures
+## ----prepare-legend-bivariate-------------------------------------------------
+bivariate_html_output <- knitr::is_html_output()  # change to TRUE for larger figures
 
-html_caption_unbalanced_negative_correlated_multivariate <- "Benchmark plots of scenario B11 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components), organised as such:
+html_caption_unbalanced_negative_correlated_bivariate <- "Benchmark plots of scenario B11 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components), organised as such:
 
  - The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
 
@@ -973,7 +1062,7 @@ of the running time.
 - In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same convenstions detailed in [Supplementary Figures and Tables in the univariate simulation]. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2."
 
 
-pdf_caption_unbalanced_negative_correlated_multivariate <- "Benchmark plots of scenario B11 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such: 
+pdf_caption_unbalanced_negative_correlated_bivariate <- "Benchmark plots of scenario B11 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such: 
 The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
 In both Panels A and B, the ellipsoids correspond to the $95\\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the \\code{mixtools::ellipse()} and website \\href{https://cookierobotics.com/007/}{How to draw ellipses}. To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
 The running times are displayed in Panel C with the \\textit{k}-means initialisation. The number of observations
@@ -985,38 +1074,38 @@ In panel E we represent the boxplots associated with the distribution of the est
 
 
 
-html_caption_unbalanced_opposite_correlated_multivariate <- "Benchmark plots of scenario B12 in Table \\@ref(tab:parameter-configuration-bivariate)  (unbalanced, overlapping and opposite correlated components), with the same layout as Figure \\@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)."
-pdf_caption_unbalanced_opposite_correlated_multivariate <- "Benchmark plots of scenario B12 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and opposite correlated components), with the same layout as Figure \\ref{fig:multivariate-overlapping-unbalanced-negative-correlated}."
+html_caption_unbalanced_opposite_correlated_bivariate <- "Benchmark plots of scenario B12 in Table \\@ref(tab:parameter-configuration-bivariate)  (unbalanced, overlapping and opposite correlated components), with the same layout as Figure \\@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)."
+pdf_caption_unbalanced_opposite_correlated_bivariate <- "Benchmark plots of scenario B12 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and opposite correlated components), with the same layout as Figure \\ref{fig:multivariate-overlapping-unbalanced-negative-correlated}."
 
-html_caption_unbalanced_positive_correlated_multivariate <- "Benchmark plots of scenario B14 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and positive correlated components), with the same layout as Figure \\@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)."
-pdf_caption_unbalanced_positive_correlated_multivariate <- "Benchmark plots of scenario B14 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and positive correlated components), with the same layout as Figure \\ref{fig:multivariate-overlapping-unbalanced-negative-correlated}."
+html_caption_unbalanced_positive_correlated_bivariate <- "Benchmark plots of scenario B14 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and positive correlated components), with the same layout as Figure \\@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)."
+pdf_caption_unbalanced_positive_correlated_bivariate <- "Benchmark plots of scenario B14 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and positive correlated components), with the same layout as Figure \\ref{fig:multivariate-overlapping-unbalanced-negative-correlated}."
 
-html_caption_unbalanced_uncorrelated_multivariate <- "Benchmark plots of scenario B15 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and uncorrelated components), with the same layout as Figure \\@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)."
-pdf_caption_unbalanced_uncorrelated_multivariate <- "Benchmark plots of scenario B15 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and uncorrelated components), with the same layout as Figure \\ref{fig:multivariate-overlapping-unbalanced-negative-correlated}."
-
-
-
-html_balanced_overlapping_general_multivariate <- "Benchmark summary plots of scenarios B1, B2 and B5 in Table \\@ref(tab:parameter-configuration-bivariate) featuring balanced and overlapping clusters. Summary plots of B1, B2 and B5 are represented in this order on each row, with the left column displaying the 95% confidence ellipsoidal regions associated to the mean estimated parameters across each package and the right column the distribution of the Hellinger distances."
-pdf_balanced_overlapping_general_multivariate <- "Benchmark summary plots of respectively scenarios B1, B2 and B5 in Table \\ref{tab:parameter-configuration-bivariate} featuring balanced and overlapping clusters. Summary plots of B1, B2 and B5 are represented in this order on each row, with the left column displaying the $95\\%$ confidence ellipsoidal regions associated to the mean estimated parameters across each package and the right column the distribution of the Hellinger distances."
-
-html_balanced_well_separated_general_multivariate <- "Benchmark summary plots of respectively scenarios B6, B7 and B10 in Table \\@ref(tab:parameter-configuration-bivariate) featuring balanced and well-separated clusters, with the same layout as Figure @\\ref(fig:general-balanced-overlapping-multivariate)."
-pdf_balanced_well_separated_general_multivariate <- "Benchmark summary plots of respectively scenarios B6, B7 and B10 in Table \\ref{tab:parameter-configuration-bivariate} featuring balanced and well-separated clusters, with the same layout as Figure \\ref{fig:general-balanced-overlapping-multivariate}."
-
-html_unbalanced_well_separated_general_multivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\@ref(tab:parameter-configuration-bivariate) featuring unbalanced and well-separated clusters, with the same layout as Figure @\\ref(fig:general-balanced-overlapping-multivariate).."
-pdf_unbalanced_well_separated_general_multivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\ref{tab:parameter-configuration-bivariate} featuring unbalanced and well-separated clusters, with the same layout as Figure \\ref{fig:general-balanced-overlapping-multivariate}."
-
-html_global_heatmap_multivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure \\@ref(fig:dichotomy-package-conclusion)."
-pdf_global_heatmap_multivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure \\ref{fig:dichotomy-package-conclusion}."
+html_caption_unbalanced_uncorrelated_bivariate <- "Benchmark plots of scenario B15 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and uncorrelated components), with the same layout as Figure \\@ref(fig:multivariate-overlapping-unbalanced-negative-correlated)."
+pdf_caption_unbalanced_uncorrelated_bivariate <- "Benchmark plots of scenario B15 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and uncorrelated components), with the same layout as Figure \\ref{fig:multivariate-overlapping-unbalanced-negative-correlated}."
 
 
-## ----compute-multivariate-overlapping-unbalanced-negative-correlated----------
-specific_multivariate_parameters_local_scores <- multivariate_parameters_local_scores_summary %>%
+
+html_balanced_overlapping_general_bivariate <- "Benchmark summary plots of scenarios B1, B2 and B5 in Table \\@ref(tab:parameter-configuration-bivariate) featuring balanced and overlapping clusters. Summary plots of B1, B2 and B5 are represented in this order on each row, with the left column displaying the 95% confidence ellipsoidal regions associated to the mean estimated parameters across each package and the right column the distribution of the Hellinger distances."
+pdf_balanced_overlapping_general_bivariate <- "Benchmark summary plots of respectively scenarios B1, B2 and B5 in Table \\ref{tab:parameter-configuration-bivariate} featuring balanced and overlapping clusters. Summary plots of B1, B2 and B5 are represented in this order on each row, with the left column displaying the $95\\%$ confidence ellipsoidal regions associated to the mean estimated parameters across each package and the right column the distribution of the Hellinger distances."
+
+html_balanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B6, B7 and B10 in Table \\@ref(tab:parameter-configuration-bivariate) featuring balanced and well-separated clusters, with the same layout as Figure @\\ref(fig:general-balanced-overlapping-bivariate)."
+pdf_balanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B6, B7 and B10 in Table \\ref{tab:parameter-configuration-bivariate} featuring balanced and well-separated clusters, with the same layout as Figure \\ref{fig:general-balanced-overlapping-bivariate}."
+
+html_unbalanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\@ref(tab:parameter-configuration-bivariate) featuring unbalanced and well-separated clusters, with the same layout as Figure @\\ref(fig:general-balanced-overlapping-bivariate).."
+pdf_unbalanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\ref{tab:parameter-configuration-bivariate} featuring unbalanced and well-separated clusters, with the same layout as Figure \\ref{fig:general-balanced-overlapping-bivariate}."
+
+html_global_heatmap_bivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure \\@ref(fig:dichotomy-package-conclusion)."
+pdf_global_heatmap_bivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure \\ref{fig:dichotomy-package-conclusion}."
+
+
+## ----compute-bivariate-overlapping-unbalanced-negative-correlated-------------
+specific_bivariate_parameters_local_scores <- bivariate_parameters_local_scores_summary %>%
   dplyr::filter(ID=="B11") %>% select(-ID)
-nrow_summary <- nrow(specific_multivariate_parameters_local_scores)
+nrow_summary <- nrow(specific_bivariate_parameters_local_scores)
 
 
 ## ----multivariate-overlapping-unbalanced-negative-correlated-pdf, eval=knitr::is_latex_output()----
-specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores %>%
+specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores %>%
   kbl(booktabs=T, caption = "MSE and Bias associated to scenario B11, in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components).", escape=F,
       col.names = linebreak(c("Package", "Initialisation\nMethod",
                               "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
@@ -1029,31 +1118,31 @@ specific_multivariate_parameters_local_scores_kable <- specific_multivariate_par
 
 for (metric_col in metric_colnames) {
   # define col vector
-  col_vector <- rep("black", nrow_summary); metric_vector <- specific_multivariate_parameters_local_scores %>% pull(metric_col)
+  col_vector <- rep("black", nrow_summary); metric_vector <- specific_bivariate_parameters_local_scores %>% pull(metric_col)
   col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
   col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
   # set colours
-  specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores_kable %>%
-    column_spec(match(metric_col, names(specific_multivariate_parameters_local_scores)),color=col_vector)
+  specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores_kable %>%
+    column_spec(match(metric_col, names(specific_bivariate_parameters_local_scores)),color=col_vector)
 }
-specific_multivariate_parameters_local_scores_kable
+specific_bivariate_parameters_local_scores_kable
 
 
 ## ----multivariate-overlapping-unbalanced-negative-correlated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
-#> specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores %>% flextable() %>%
+#> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
 #>   set_caption(caption = "MSE and Bias associated to scenario B11, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
 #> 
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
 #> }
 #> 
-#> specific_multivariate_parameters_local_scores_flex %>%
+#> specific_bivariate_parameters_local_scores_flex %>%
 #>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
 #>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
 #>   # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
@@ -1067,16 +1156,16 @@ specific_multivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_negative_correlated_multivariate else pdf_caption_unbalanced_negative_correlated_multivariate, out.width="60%"----
-true_theta <- multivariate_configuration %>% filter(ID=="B11") %>% pull(true_parameters) %>% magrittr::extract2(1)
+## ----multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_negative_correlated_bivariate else pdf_caption_unbalanced_negative_correlated_bivariate, out.width="60%"----
+true_theta <- bivariate_configuration %>% filter(ID=="B11") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
 bivariate_density <- plot_bivariate_normal_density_distribution(true_theta=true_theta, n = 2000)
-computation_time <- plot_time_computations(multivariate_time_computations %>% filter(ID == "B11"))
-ellipse <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID == "B11"), true_theta)
-hellinger <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID == "B11"), true_theta) +
+computation_time <- plot_time_computations(bivariate_time_computation %>% filter(ID == "B11"))
+ellipse <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID == "B11"), true_theta)
+hellinger <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID == "B11"), true_theta) +
   theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
-boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_multivariate_distribution_parameters %>% filter(ID == "B11"), true_theta) + theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_bivariate_parameters %>% filter(ID == "B11"), true_theta) + theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
 
 
 # concatenate plots together
@@ -1089,20 +1178,20 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                         boxplot_parameter_bivariate +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
-ggsave("figs/multivariate/multivariate_unbalanced_overlapping_negatively_correlated.png",
+ggsave("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png",
        global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi=75)
 
 
-## ----compute-multivariate-overlapping-unbalanced-opposite-correlated----------
-specific_multivariate_parameters_local_scores <- multivariate_parameters_local_scores_summary %>%
+## ----compute-bivariate-overlapping-unbalanced-opposite-correlated-------------
+specific_bivariate_parameters_local_scores <- bivariate_parameters_local_scores_summary %>%
   dplyr::filter(ID=="B12") %>% select(-ID)
-nrow_summary <- nrow(specific_multivariate_parameters_local_scores)
+nrow_summary <- nrow(specific_bivariate_parameters_local_scores)
 
 
 ## ----multivariate-overlapping-unbalanced-opposite-correlated-pdf, eval=knitr::is_latex_output()----
-specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores %>%
+specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores %>%
   kbl(booktabs=T, caption = "MSE and Bias associated to scenario B12, in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and opposite correlated components).", escape=F,
       col.names = linebreak(c("Package", "Initialisation\nMethod",
                               "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
@@ -1115,31 +1204,31 @@ specific_multivariate_parameters_local_scores_kable <- specific_multivariate_par
 
 for (metric_col in metric_colnames) {
   # define col vector
-  col_vector <- rep("black", nrow_summary); metric_vector <- specific_multivariate_parameters_local_scores %>% pull(metric_col)
+  col_vector <- rep("black", nrow_summary); metric_vector <- specific_bivariate_parameters_local_scores %>% pull(metric_col)
   col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
   col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
   # set colours
-  specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores_kable %>%
-    column_spec(match(metric_col, names(specific_multivariate_parameters_local_scores)),color=col_vector)
+  specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores_kable %>%
+    column_spec(match(metric_col, names(specific_bivariate_parameters_local_scores)),color=col_vector)
 }
-specific_multivariate_parameters_local_scores_kable
+specific_bivariate_parameters_local_scores_kable
 
 
 ## ----multivariate-overlapping-unbalanced-opposite-correlated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
-#> specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores %>% flextable() %>%
+#> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
 #>   set_caption(caption = "MSE and Bias associated to scenario B12, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate)(unbalanced, overlapping and opposite correlated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
 #> 
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
 #> }
 #> 
-#> specific_multivariate_parameters_local_scores_flex %>%
+#> specific_bivariate_parameters_local_scores_flex %>%
 #>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
 #>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
 #>   # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
@@ -1153,16 +1242,16 @@ specific_multivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-opposite-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_opposite_correlated_multivariate else pdf_caption_unbalanced_opposite_correlated_multivariate----
-true_theta <- multivariate_configuration %>% filter(ID=="B12") %>% pull(true_parameters) %>% magrittr::extract2(1)
+## ----multivariate-overlapping-unbalanced-opposite-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_opposite_correlated_bivariate else pdf_caption_unbalanced_opposite_correlated_bivariate----
+true_theta <- bivariate_configuration %>% filter(ID=="B12") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
 bivariate_density <- plot_bivariate_normal_density_distribution(true_theta=true_theta, n = 2000)
-computation_time <- plot_time_computations(multivariate_time_computations %>% filter(ID == "B13"))
-ellipse <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID == "B13"), true_theta)
-hellinger <- plot_Hellinger(formatted_multivariate_distribution_parameters%>% filter(ID == "B13"), true_theta) +
+computation_time <- plot_time_computations(bivariate_time_computation %>% filter(ID == "B13"))
+ellipse <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID == "B13"), true_theta)
+hellinger <- plot_Hellinger(formatted_bivariate_parameters%>% filter(ID == "B13"), true_theta) +
   theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
-boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_multivariate_distribution_parameters %>% filter(ID == "B13"), true_theta) +
+boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_bivariate_parameters %>% filter(ID == "B13"), true_theta) +
   theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
 
 
@@ -1176,20 +1265,20 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                         boxplot_parameter_bivariate +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
-ggsave("figs/multivariate/multivariate_unbalanced_overlapping_opposite_correlated.png",
+ggsave("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png",
        global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi=75)
 
 
-## ----compute-multivariate-overlapping-unbalanced-positive-correlated----------
-specific_multivariate_parameters_local_scores <- multivariate_parameters_local_scores_summary %>%
+## ----compute-bivariate-overlapping-unbalanced-positive-correlated-------------
+specific_bivariate_parameters_local_scores <- bivariate_parameters_local_scores_summary %>%
   dplyr::filter(ID=="B14") %>% select(-ID)
-nrow_summary <- nrow(specific_multivariate_parameters_local_scores)
+nrow_summary <- nrow(specific_bivariate_parameters_local_scores)
 
 
 ## ----multivariate-overlapping-unbalanced-positive-correlated-pdf, eval=knitr::is_latex_output()----
-specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores %>%
+specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores %>%
   kbl(booktabs=T, caption = "MSE and Bias associated to scenario B14, in Table \\ref{tab:parameter-configuration-bivariate}  (unbalanced, overlapping and positive correlated components).", escape=F,
       col.names = linebreak(c("Package", "Initialisation\nMethod",
                               "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
@@ -1202,31 +1291,31 @@ specific_multivariate_parameters_local_scores_kable <- specific_multivariate_par
 
 for (metric_col in metric_colnames) {
   # define col vector
-  col_vector <- rep("black", nrow_summary); metric_vector <- specific_multivariate_parameters_local_scores %>% pull(metric_col)
+  col_vector <- rep("black", nrow_summary); metric_vector <- specific_bivariate_parameters_local_scores %>% pull(metric_col)
   col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
   col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
   # set colours
-  specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores_kable %>%
-    column_spec(match(metric_col, names(specific_multivariate_parameters_local_scores)),color=col_vector)
+  specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores_kable %>%
+    column_spec(match(metric_col, names(specific_bivariate_parameters_local_scores)),color=col_vector)
 }
-specific_multivariate_parameters_local_scores_kable
+specific_bivariate_parameters_local_scores_kable
 
 
 ## ----multivariate-overlapping-unbalanced-positive-correlated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
-#> specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores %>% flextable() %>%
+#> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
 #>   set_caption(caption = "MSE and Bias associated to scenario B14, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate) (unbalanced, overlapping and positive correlated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
 #> 
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
 #> }
 #> 
-#> specific_multivariate_parameters_local_scores_flex %>%
+#> specific_bivariate_parameters_local_scores_flex %>%
 #>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
 #>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
 #>   # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
@@ -1240,16 +1329,16 @@ specific_multivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-positive-correlated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_positive_correlated_multivariate else pdf_caption_unbalanced_positive_correlated_multivariate----
-true_theta <- multivariate_configuration %>% filter(ID=="B14") %>% pull(true_parameters) %>% magrittr::extract2(1)
+## ----multivariate-overlapping-unbalanced-positive-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_positive_correlated_bivariate else pdf_caption_unbalanced_positive_correlated_bivariate----
+true_theta <- bivariate_configuration %>% filter(ID=="B14") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
 bivariate_density <- plot_bivariate_normal_density_distribution(true_theta=true_theta, n = 2000)
-computation_time <- plot_time_computations(multivariate_time_computations %>% filter(ID == "B14"))
-ellipse <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID == "B14"), true_theta)
-hellinger <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID == "B14"), true_theta) +
+computation_time <- plot_time_computations(bivariate_time_computation %>% filter(ID == "B14"))
+ellipse <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID == "B14"), true_theta)
+hellinger <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID == "B14"), true_theta) +
   theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
-boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_multivariate_distribution_parameters %>% filter(ID == "B14"), true_theta) +
+boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_bivariate_parameters %>% filter(ID == "B14"), true_theta) +
   theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
 
 
@@ -1263,20 +1352,20 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                         boxplot_parameter_bivariate +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
-ggsave("figs/multivariate/multivariate_unbalanced_overlapping_positive_correlated.png",
+ggsave("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png",
        global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi=75)
 
 
-## ----compute-multivariate-overlapping-unbalanced-uncorrelated-----------------
-specific_multivariate_parameters_local_scores <- multivariate_parameters_local_scores_summary %>%
+## ----compute-bivariate-overlapping-unbalanced-uncorrelated--------------------
+specific_bivariate_parameters_local_scores <- bivariate_parameters_local_scores_summary %>%
   dplyr::filter(ID=="B15") %>% select(-ID)
-nrow_summary <- nrow(specific_multivariate_parameters_local_scores)
+nrow_summary <- nrow(specific_bivariate_parameters_local_scores)
 
 
 ## ----multivariate-overlapping-unbalanced-uncorrelated-pdf, eval=knitr::is_latex_output()----
-specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores %>%
+specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores %>%
   kbl(booktabs=T, caption = "MSE and Bias associated to scenario B15, in Table \\ref{tab:parameter-configuration-bivariate}   (unbalanced, overlapping and uncorrelated components).", escape=F,
       col.names = linebreak(c("Package", "Initialisation\nMethod",
                               "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
@@ -1289,31 +1378,31 @@ specific_multivariate_parameters_local_scores_kable <- specific_multivariate_par
 
 for (metric_col in metric_colnames) {
   # define col vector
-  col_vector <- rep("black", nrow_summary); metric_vector <- specific_multivariate_parameters_local_scores %>% pull(metric_col)
+  col_vector <- rep("black", nrow_summary); metric_vector <- specific_bivariate_parameters_local_scores %>% pull(metric_col)
   col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
   col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
   # set colours
-  specific_multivariate_parameters_local_scores_kable <- specific_multivariate_parameters_local_scores_kable %>%
-    column_spec(match(metric_col, names(specific_multivariate_parameters_local_scores)),color=col_vector)
+  specific_bivariate_parameters_local_scores_kable <- specific_bivariate_parameters_local_scores_kable %>%
+    column_spec(match(metric_col, names(specific_bivariate_parameters_local_scores)),color=col_vector)
 }
-specific_multivariate_parameters_local_scores_kable
+specific_bivariate_parameters_local_scores_kable
 
 
 ## ----multivariate-overlapping-unbalanced-uncorrelated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
-#> specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores %>% flextable() %>%
+#> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
 #>   set_caption(caption = "MSE and Bias associated to scenario B15, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate) (unbalanced, overlapping and uncorrelated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
 #> 
-#>   specific_multivariate_parameters_local_scores_flex <- specific_multivariate_parameters_local_scores_flex %>%
+#>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
 #>     flextable::color(j=metric_col, part = "body",
 #>                      i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
 #> }
 #> 
-#> specific_multivariate_parameters_local_scores_flex %>%
+#> specific_bivariate_parameters_local_scores_flex %>%
 #>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
 #>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
 #>   # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
@@ -1327,16 +1416,16 @@ specific_multivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-uncorrelated, fig.cap=if (multivariate_html_ouput) html_caption_unbalanced_uncorrelated_multivariate else pdf_caption_unbalanced_uncorrelated_multivariate----
-true_theta <- multivariate_configuration %>% filter(ID=="B15") %>% pull(true_parameters) %>% magrittr::extract2(1)
+## ----multivariate-overlapping-unbalanced-uncorrelated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_uncorrelated_bivariate else pdf_caption_unbalanced_uncorrelated_bivariate----
+true_theta <- bivariate_configuration %>% filter(ID=="B15") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
 bivariate_density <- plot_bivariate_normal_density_distribution(true_theta=true_theta, n = 2000)
-computation_time <- plot_time_computations(multivariate_time_computations %>% filter(ID == "B15"))
-ellipse <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID == "B15"), true_theta)
-hellinger <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID == "B15"), true_theta) +
+computation_time <- plot_time_computations(bivariate_time_computation %>% filter(ID == "B15"))
+ellipse <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID == "B15"), true_theta)
+hellinger <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID == "B15"), true_theta) +
   theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
-boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_multivariate_distribution_parameters %>% filter(ID == "B15"), true_theta) +
+boxplot_parameter_bivariate <- plot_boxplots_parameters(formatted_bivariate_parameters %>% filter(ID == "B15"), true_theta) +
   theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
 
 
@@ -1350,27 +1439,27 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                         boxplot_parameter_bivariate +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
-ggsave("figs/multivariate/multivariate_unbalanced_uncorrelated.png",
+ggsave("figs/bivariate/multivariate_unbalanced_uncorrelated.png",
        global_figure, width = 20, height = 24, dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_uncorrelated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_uncorrelated.png", dpi=75)
 
 
-## ----general-balanced-overlapping-multivariate, fig.cap=if (multivariate_html_ouput) html_balanced_overlapping_general_multivariate else pdf_balanced_overlapping_general_multivariate----
-true_theta_v1 <- multivariate_configuration %>% filter(ID=="B1") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v1 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B1"), true_theta_v1) +
+## ----general-balanced-overlapping-bivariate, fig.cap=if (bivariate_html_output) html_balanced_overlapping_general_bivariate else pdf_balanced_overlapping_general_bivariate----
+true_theta_v1 <- bivariate_configuration %>% filter(ID=="B1") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B1"), true_theta_v1) +
   theme(legend.title = element_blank())
-hellinger_v1 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B1"), true_theta_v1)
+hellinger_v1 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B1"), true_theta_v1)
 
-true_theta_v2 <- multivariate_configuration %>% filter(ID=="B2") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v2 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B2"), true_theta_v2) +
+true_theta_v2 <- bivariate_configuration %>% filter(ID=="B2") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v2 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B2"), true_theta_v2) +
   theme(legend.title = element_blank())
-hellinger_v2 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B2"), true_theta_v2)
+hellinger_v2 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B2"), true_theta_v2)
 
-true_theta_v3 <- multivariate_configuration %>% filter(ID=="B5") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v3 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B5"), true_theta_v3) +
+true_theta_v3 <- bivariate_configuration %>% filter(ID=="B5") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v3 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B5"), true_theta_v3) +
   theme(legend.title = element_blank())
-hellinger_v3 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B5"), true_theta_v3)
+hellinger_v3 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B5"), true_theta_v3)
 
 # concatenate all plots
 global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + theme(plot.tag = element_text(size=24, face = "bold")),
@@ -1380,27 +1469,27 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     ellipse_v3 + labs(tag="E") + theme(plot.tag = element_text(size=24, face = "bold")),
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
-ggsave("figs/multivariate/multivariate_balanced_overlapping.png",
+ggsave("figs/bivariate/multivariate_balanced_overlapping.png",
        global_figure, width = 20, height = 24,dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_balanced_overlapping.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_balanced_overlapping.png", dpi=75)
 
 
-## ----general-balanced-well-separated-multivariate, fig.cap=if (multivariate_html_ouput) html_balanced_well_separated_general_multivariate else pdf_balanced_well_separated_general_multivariate----
-true_theta_v1 <- multivariate_configuration %>% filter(ID=="B6") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v1 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B6"), true_theta_v1) +
+## ----general-balanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_balanced_well_separated_general_bivariate else pdf_balanced_well_separated_general_bivariate----
+true_theta_v1 <- bivariate_configuration %>% filter(ID=="B6") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B6"), true_theta_v1) +
   theme(legend.title = element_blank())
-hellinger_v1 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B6"), true_theta_v1)
+hellinger_v1 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B6"), true_theta_v1)
 
-true_theta_v2 <- multivariate_configuration %>% filter(ID=="B7") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v2 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B7"), true_theta_v2) +
+true_theta_v2 <- bivariate_configuration %>% filter(ID=="B7") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v2 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B7"), true_theta_v2) +
   theme(legend.title = element_blank())
-hellinger_v2 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B7"), true_theta_v2)
+hellinger_v2 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B7"), true_theta_v2)
 
-true_theta_v3 <- multivariate_configuration %>% filter(ID=="B10") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v3 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B10"), true_theta_v3) +
+true_theta_v3 <- bivariate_configuration %>% filter(ID=="B10") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v3 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B10"), true_theta_v3) +
   theme(legend.title = element_blank())
-hellinger_v3 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B10"), true_theta_v3)
+hellinger_v3 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B10"), true_theta_v3)
 
 # concatenate all plots
 global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + theme(plot.tag = element_text(size=24, face = "bold")),
@@ -1410,27 +1499,27 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     ellipse_v3 + labs(tag="E") + theme(plot.tag = element_text(size=24, face = "bold")),
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
-ggsave("figs/multivariate/multivariate_balanced_well_separated.png",
+ggsave("figs/bivariate/multivariate_balanced_well_separated.png",
        global_figure, width = 20, height = 24,dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_balanced_well_separated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_balanced_well_separated.png", dpi=75)
 
 
-## ----general-unbalanced-well-separated-multivariate, fig.cap=if (multivariate_html_ouput) html_unbalanced_well_separated_general_multivariate else pdf_unbalanced_well_separated_general_multivariate----
-true_theta_v1 <- multivariate_configuration %>% filter(ID=="B16") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v1 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B16"), true_theta_v1) +
+## ----general-unbalanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_unbalanced_well_separated_general_bivariate else pdf_unbalanced_well_separated_general_bivariate----
+true_theta_v1 <- bivariate_configuration %>% filter(ID=="B16") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B16"), true_theta_v1) +
   theme(legend.title = element_blank())
-hellinger_v1 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B16"), true_theta_v1)
+hellinger_v1 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B16"), true_theta_v1)
 
-true_theta_v2 <- multivariate_configuration %>% filter(ID=="B17") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v2 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B17"), true_theta_v2) +
+true_theta_v2 <- bivariate_configuration %>% filter(ID=="B17") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v2 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B17"), true_theta_v2) +
   theme(legend.title = element_blank())
-hellinger_v2 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B17"), true_theta_v2)
+hellinger_v2 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B17"), true_theta_v2)
 
-true_theta_v3 <- multivariate_configuration %>% filter(ID=="B20") %>% pull(true_parameters) %>% magrittr::extract2(1)
-ellipse_v3 <- plot_ellipses_bivariate(multivariate_distribution_parameters %>% filter(ID=="B20"), true_theta_v3) +
+true_theta_v3 <- bivariate_configuration %>% filter(ID=="B20") %>% pull(true_parameters) %>% magrittr::extract2(1)
+ellipse_v3 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B20"), true_theta_v3) +
   theme(legend.title = element_blank())
-hellinger_v3 <- plot_Hellinger(formatted_multivariate_distribution_parameters %>% filter(ID=="B20"), true_theta_v3)
+hellinger_v3 <- plot_Hellinger(formatted_bivariate_parameters %>% filter(ID=="B20"), true_theta_v3)
 
 # concatenate all plots
 global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + theme(plot.tag = element_text(size=24, face = "bold")),
@@ -1440,20 +1529,725 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     ellipse_v3 + labs(tag="E") + theme(plot.tag = element_text(size=24, face = "bold")),
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
-ggsave("figs/multivariate/multivariate_unbalanced_well_separated.png",
+ggsave("figs/bivariate/multivariate_unbalanced_well_separated.png",
        global_figure, width = 20, height = 24,dpi=75)
 
-knitr::include_graphics("figs/multivariate/multivariate_unbalanced_well_separated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_well_separated.png", dpi=75)
 
 
-## ----heatmap-all-correlation-plots-multivariate, fig.cap= if (multivariate_html_ouput) html_global_heatmap_multivariate else pdf_global_heatmap_multivariate----
-multivariate_distribution_parameters <- readRDS("./tables/multivariate/bivariate_distributions.rds")%>%
+## ----heatmap-all-correlation-plots-bivariate, fig.cap= if (bivariate_html_output) html_global_heatmap_bivariate else pdf_global_heatmap_bivariate----
+bivariate_parameters <- readRDS("./tables/bivariate/bivariate_distributions.rds")%>%
   dplyr::group_by(ID, package, initialisation_method) %>%
   dplyr::mutate(N.bootstrap=dplyr::row_number()) %>% dplyr::ungroup()
-multivariate_correlation_heatmaps <- plot_correlation_Heatmap(multivariate_distribution_parameters %>% filter(ID=="B11"))
+multivariate_correlation_heatmaps <- plot_correlation_Heatmap(bivariate_parameters %>% filter(ID=="B11"))
 multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
                                                               purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                             top="", ncol = 2)
-ggsave("./figs/multivariate/heatmap_multivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
-knitr::include_graphics("./figs/multivariate/heatmap_multivariate.png", dpi = 75)
+ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
+knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 75)
+
+
+## ----parameter-configuration-HD-----------------------------------------------
+HD_configuration_formatted <- HD_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, ~paste(round(.x$p, digits = 2), collapse = " / "))) %>%
+  select(-c("true_parameters")) %>%
+  rename(Entropy=entropy, Spherical=is_diagonal) %>% 
+  dplyr::relocate(Spherical, .after = Proportions) 
+
+
+HD_configuration_formatted %>% 
+  kbl(booktabs=T, caption = "The 16 parameter configurations tested to generate the samples in a high dimensional context. The first digit of each ID index refers
+      to an unique parameter configuration (uniquely identified by its level of overlap, entropy and topological structure, either circular or ellippsoidal, 
+      of the covariance matrix, while the lowercase letter depicts the number of observations, a) with $n=200$ and b) with $n=2000$.",
+      escape=F, align = "c") %>%
+  kable_styling(latex_options=c("hold_position", "scale_down")) %>%
+  row_spec(0,bold=T) %>% row_spec(1:16, hline_after = T) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed")) %>% 
+  column_spec(6, color="white", background = ifelse(HD_configuration_formatted$Spherical,
+                                                       "green", "red"))
+
+
+## ----prepare-legend-HD--------------------------------------------------------
+HD_html_output <- knitr::is_html_output()  # change to TRUE for larger figures
+
+html_caption_HD_separated_unbalanced_ellipsoidal <- paste("Benchmark plots of scenario 4a) in Table \\@ref(tab:parameter-configuration-HD) (unbalanced, overlapping and negative correlated components), organised as such:
+
+ - The panel A displays at the top the **scree plot**, namely the barplot of the eigenvalues resulting from the factor decomposition of a multivariate sample. Eigenvalues are traditionally sorted by decreasing order and normalised to one, such that each of them represents the percentage of within-components variability captured. The scree test consists then in determining the *elbow* of the graph and keep only components to the left of this point (we generally assume that the number of components retained as significant matches the intrinsic dimension of the problem).
+ At the bottom is represented the bivariate factorial projection of a random sample drawn from the 10-dimensional multivariate Gaussian distribution parametrised by Table \\@ref(tab:parameter-configuration-HD), each individual point corresponding to the projection induced by a two-dimensional *transition matrix*. This change-of-basis matrix is built from the coordintates of the two eigen vectors associated to the two larger eigen values (to make them unique, the resulting basis is supposed to be orthonormal, implying that that the two vectors are orthogonal and of norm 1). Each component is associated to a specific color, a centroid whose coordinates are given by the mean components' elements in the bivariate projected space and a $95\\%$ confidence ellipse. Finally, we represent on the same graph the correlation circle of the dimensional variables. The longer and redder are the vectors, the more they have contributed to the factor analysis, while their angle with each axis reflects their level of correlation with one of the projected dimension. For instance, we note in this projection that most higher dimensional variables align with the first axis, implying that they their individual distribution is mostly captured by the first dimension. This trend is confirmed by the layout of the scree plot, in which we can note that most of the variability is well captured by the first dimension (up to $85\\%$).
+ Both panels were displayed respectively using functions",  downlit::autolink('factoextra::fviz_eig()') , "and", downlit::autolink('factoextra::fviz_pca_biplot()'), "while the underlying computations proceed from the principal component analysis performed by", downlit::autolink('ade4::dudi.pca()'), "package preceded by standard scaling of the sampling dataset.
+ 
+- The panel B pictures the *parallel distribution plots* associated to a random sampling of $n=100$ observations, in the same proportions and using the parameters from scenario 4a) in Table \\@ref(tab:parameter-configuration-HD). A parallel coordinate plot maps each row, corresponding to one random draw of the multivariate GMM distribution, as a line profile, with each attribute, corresponding to one of the $D=10$ dimensions, being represented by an individual point. The color depicts the component origin of each observation. The two PDPs represented were respectively computed with no scaling (on the top) and with univariate standard scaling (each individual variable has a null mean and variance of 1, on the bottom), using the",
+downlit::autolink('GGally::ggparcoord()'), "function.
+
+- The running times are displayed in Panel C with the *k*-means initialisation, since it was the only method natively implemented in all the packages benchmarked. The number of observations (x-axis) and the running time (y-axis) is in $\\log(10)$ scale. The points represent median running time. 
+
+- The distributions of the Hellinger distances are computed for each component in Panel D, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1. 
+
+- In panel E we represent the boxplots associated with the distribution of some of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in [Supplementary Figures and Tables in the univariate simulation]. Since it was incovenient to represent the whole set of parameters ($k + kD + k\\frac{D \\times (D+1)}{2}$ with $k=2$ and $D=10$ in our example), we subset some relevant parameters for visualisation, namely the two individual proportions, the means of the first dimension of each component and their associated variances on the first two dimensions, as well as their correlation level. Indeed, the protocol we use to generate relevant parameters imply that no dimension prevails on others, as characterised by the parallel distribution plots (only small differences between the unscaled and normalised parallel representations). Each column is associated to one of the two components, while each row is associated to the distribution of a parameter in a given dimension, namely on the first line the estimated ratios, on the second the distributions of the mean vector on the first dimension, and on the remaining rows the individual variances in dimension 1 and 2 and the pairwise correlation between them.")
+
+
+pdf_caption_HD_separated_unbalanced_ellipsoidal <- "Benchmark plots of scenario 4a) in Table \\ref{tab:parameter-configuration-HD} (unbalanced, overlapping and negative correlated components), organised as such:
+
+ - The panel A displays at the top the \\textbf{scree plot}, namely the barplot of the eigenvalues resulting from the factor decomposition of a multivariate sample. Eigenvalues are traditionally sorted by decreasing order and normalised to one, such that each of them represents the percentage of within-components variability captured. The scree test consists then in determining the \\textit{elbow} of the graph and keep only components to the left of this point (we generally assume that the number of components retained as significant matches the intrinsic dimension of the problem). At the bottom is represented the bivariate factorial projection of a random sample drawn from the 10-dimensional multivariate Gaussian distribution parametrised by Table \\ref{tab:parameter-configuration-HD}, each individual point corresponding to the projection induced by a two-dimensional \\textit{transition matrix}. This change-of-basis matrix is built from the coordintates of the two eigen vectors associated to the two larger eigen values (to make them unique, the resulting basis is supposed to be orthonormal, implying that that the two vectors are orthogonal and of norm 1). Each component is associated to a specific color, a centroid whose coordinates are given by the mean components' elements in the bivariate projected space and a $95\\%$ confidence ellipse. Finally, we represent on the same graph the correlation circle of the dimensional variables. The longer and redder are the vectors, the more they have contributed to the factor analysis, while their angle with each axis reflects their level of correlation with one of the projected dimension. For instance, we note in this projection that most higher dimensional variables align with the first axis, implying that they their individual distribution is mostly captured by the first dimension. This trend is confirmed by the layout of the scree plot, in which we can note that most of the variability is well captured by the first dimension (up to $85\\%$). Both panels were displayed respectively using functions \\code{factoextra::fviz\\_eig} and \\code{factoextra::fviz\\_pca\\_biplot}, while the underlying computations proceed from the principal component analysis performed by \\code{ade4::dudi.pca} package preceded by standard scaling of the sampling dataset.
+
+ 
+- The panel B pictures the \\textit{parallel distribution plots} associated to a random sampling of $n=100$ observations, in the same proportions and using the parameters from scenario 4a) in Table \\ref{tab:parameter-configuration-HD}. A parallel coordinate plot maps each row, corresponding to one random draw of the multivariate GMM distribution, as a line profile, with each attribute, corresponding to one of the $D=10$ dimensions, being represented by an individual point. The color depicts the component origin of each observation. The two PDPs represented were respectively computed with no scaling (on the top) and with univariate standard scaling (each individual variable has a null mean and variance of 1, on the bottom), using the \\code{GGally::ggparcoord} function.
+
+- The running times are displayed in Panel C with the \\textit{k}-means initialisation, since it was the only method natively implemented in all the packages benchmarked. The number of observations (x-axis) and the running time (y-axis) is in $\\log(10)$ scale. The points represent median running time. The coloured bands represent the $5^{\\text{th}}$ and $95^{\\text{th}}$ percentiles of the running time.
+
+- The distributions of the Hellinger distances are computed for each component in Panel D, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1. 
+
+- In panel E we represent the boxplots associated with the distribution of some of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \\nameref{Supplementary Figures and Tables in the univariate simulation}. Since it was incovenient to represent the whole set of parameters ($k + kD + k \\frac{D \\times (D+1)}{2}$ with $k=2$ and $D=10$ in our example), we subset some relevant parameters for visualisation, namely the two individual proportions, the means of the first dimension of each component and their associated variances on the first two dimensions, as well as their correlation level. Indeed, the protocol we use to generate relevant parameters imply that no dimension prevails on others, as characterised by the parallel distribution plots (only small differences between the unscaled and normalised parallel representations). Each column is associated to one of the two components, while each row is associated to the distribution of a parameter in a given dimension, namely on the first line the estimated ratios, on the second the distributions of the mean vector on the first dimension, and on the remaining rows the individual variances in dimension 1 and 2 and the pairwise correlation between them."
+
+
+
+html_caption_HD_overlapping_balanced_ellipsoidal<- "Benchmark plots of scenario 7a) in Table \\@ref(tab:parameter-configuration-HD)  (balanced and overlapping components, with full covariance structure), with the same layout as Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot)."
+pdf_caption_HD_overlapping_balanced_ellipsoidal <- "Benchmark plots of scenario 7a) in Table \\ref{tab:parameter-configuration-HD} (balanced and overlapping components, with full covariance structure), with the same layout as Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}."
+
+html_caption_HD_overlapping_unbalanced_ellipsoidal<- "Benchmark plots of scenario 8a) in Table \\@ref(tab:parameter-configuration-HD)  (unbalanced and overlapping components, with full covariance structure), with the same layout as Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot)."
+pdf_caption_HD_overlapping_unbalanced_ellipsoidal <- "Benchmark plots of scenario 8a) in Table \\ref{tab:parameter-configuration-HD} (unbalanced and overlapping components, with full covariance structure), with the same layout as Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}."
+
+html_caption_HD_overlapping_spherical<- "We gathered on the same plot two multivariate benchmark scenarios, in which we consider a strictly spherical structure of the covariance matrix, but without forcing explictly the benchmarked packages to return parameters asserting this constraint:
+- We represent in Panel A the bivariate projection associated to scenario 5a) in Table \\@ref(tab:parameter-configuration-HD)  (balanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), with the same layout as Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot).
+
+- In Panel B, we display the boxplots associated to scenario 5a), computing them similarly as in Panel E of Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot).
+
+- In Panel C, we display the boxplots associated to scenario 6a) (unbalanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), computing them similarly as in Panel E of Figure \\@ref(fig:HD-separated-unbalanced-ellipsoidal-plot)."
+
+pdf_caption_HD_overlapping_spherical <- "We gathered on the same plot two multivariate benchmark scenarios, in which we consider a strictly spherical structure of the covariance matrix, but without forcing explictly the benchmarked packages to return parameters asserting this constraint:
+- We represent in Panel A the bivariate projection associated to scenario 5a) in Table \\ref{tab:parameter-configuration-HD}  (balanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), with the same layout as Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.
+
+- In Panel B, we display the boxplots associated to scenario 5a), computing them similarly as in Panel E of Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.
+
+- In Panel C, we display the boxplots associated to scenario 6a) (unbalanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), computing them similarly as in Panel E of Figure \\ref{fig:HD-separated-unbalanced-ellipsoidal-plot}."
+
+
+
+html_caption_HD_impact_num_observations <- "Benchmark summary plots of respectively scenarios 1 and 8 in Table \\@ref(tab:parameter-configuration-HD) comparing the performance of the algorithms in respectvely the easiest scenario (equi-balanced clusters, with no overlap and spherical covariance structure)  and the most complex one (highly-overlapping and unblanced clusters, with full covariance structure without specific latent structure). The idea was to compare the performance of the algorithms with respect to the number of observations avalaible. Indeed, from the asymptotic properties of the estimate returned by the EM algorithm, we expect the simulated intervals to get narrower and closer to the true estimate with an increasing number of observations.
+Each scenario is pictured on each row, with the left column displaying the boxplots of the estimated parameters from simulations with $n=200$ obervations to the left, and $n=2000$ observations to the right."
+pdf_caption_HD_impact_num_observations <- "Benchmark summary plots of respectively scenarios 1 and 8 in Table \\ref{tab:parameter-configuration-HD} comparing the performance of the algorithms in respectvely the easiest scenario (equi-balanced clusters, with no overlap and spherical covariance structure)  and the most complex one (highly-overlapping and unblanced clusters, with full covariance structure without specific latent structure). The idea was to compare the performance of the algorithms with respect to the number of observations avalaible. Indeed, from the asymptotic properties of the estimate returned by the EM algorithm, we expect the simulated intervals to get narrower and closer to the true estimate with an increasing number of observations.
+Each scenario is pictured on each row, with the left column displaying the boxplots of the estimated parameters from simulations with $n=200$ obervations to the left, and $n=2000$ observations to the right."
+
+
+
+html_global_heatmap_HD <- "Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, k-means and rebmix) in the most discriminating scenario 8a), using the same process described in Figure \\@ref(fig:dichotomy-package-conclusion)."
+pdf_global_heatmap_HD <- "Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, k-means and rebmix) in the most discriminating scenario 8a), using the same process described in Figure \\ref{fig:dichotomy-package-conclusion}."
+
+
+## ----compute-HD-separated-unbalanced-ellipsoidal------------------------------
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="4a") %>% select(-ID)
+nrow_summary <- nrow(specific_HD_parameters_local_scores)
+
+
+## ----HD-separated-unbalanced-ellipsoidal-pdf, eval=knitr::is_latex_output()----
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenario 4a, in Table
+      \\ref{tab:parameter-configuration-HD} (unbalanced, separated and ellipsoidal components).", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in metric_colnames) {
+  # define col vector
+  col_vector <- rep("black", nrow_summary)
+  metric_vector <- specific_HD_parameters_local_scores %>% pull(metric_col)
+  col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
+    col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
+    specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+      column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  column_spec(9, color="white",
+              background = spec_color( specific_HD_parameters_local_scores$Success, alpha=0.8, end = 0.7, option="A")) %>% 
+  row_spec(10,  bold=TRUE, hline_after = T)
+
+
+## ----HD-separated-unbalanced-ellipsoidal-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
+#> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+#>   set_caption(caption = "MSE and Bias associated to scenario 4a, in Table
+#>       \\ref{tab:parameter-configuration-HD} (unbalanced, separated and ellipsoidal components).", html_escape = F)
+#> 
+#> for (metric_col in metric_colnames) {
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body",
+#>                      i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
+#> 
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body",
+#>                      i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
+#> }
+#> 
+#> 
+#> colourer_flextable <- scales::col_numeric(palette = c("magma"), domain = c(80, 100), alpha = 0.8)
+#> 
+#> specific_HD_parameters_local_scores_flex %>%
+#>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+#>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+#>   # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
+#>   flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+#>   flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+#>   flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+#>   flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+#>   set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+#>   theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+#>   merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>%
+#>   flextable::bg(j = c("Success"),bg = colourer_flextable) %>%
+#>   color(j = "Success", color = "black") %>%
+#>   flextable::autofit()
+#> 
+
+
+## ----HD-separated-unbalanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_separated_unbalanced_ellipsoidal else pdf_caption_HD_separated_unbalanced_ellipsoidal, out.width="60%"----
+true_theta <- HD_configuration %>% filter(ID=="4a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta, n = 200, k = 2, ade_plot = F)
+computation_time <- plot_time_computations(HD_time_computation %>% filter(ID == "4"))
+hellinger <- plot_Hellinger(formatted_HD_distributions %>% filter(ID == "4a"), true_theta) +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "4a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+upper_part <- cowplot::plot_grid(computation_time + labs(tag="C") + theme(plot.tag = element_text(size=24, face = "bold")),
+                                 hellinger + labs(tag = "D") + theme(plot.tag = element_text(size=24, face = "bold")) ,
+                                 ncol = 2, align = 'hv', axis="tblr")
+global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
+                                        boxplot_parameter_HD +
+                                          theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
+                                        top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
+ggsave("figs/HD/HD-separated-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-separated-unbalanced-ellipsoidal.png", dpi=300)
+
+
+## ----compute-HD-overlapping-balanced-ellipsoidal------------------------------
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="7a") %>% select(-ID)
+nrow_summary <- nrow(specific_HD_parameters_local_scores)
+
+
+## ----HD-overlapping-balanced-ellipsoidal-pdf, eval=knitr::is_latex_output()----
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenario 7a, in Table
+      \\ref{tab:parameter-configuration-HD} (balanced, overlapping and ellipsoidal components).", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in metric_colnames) {
+  # define col vector
+  col_vector <- rep("black", nrow_summary)
+  metric_vector <- specific_HD_parameters_local_scores %>% pull(metric_col)
+  col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
+    col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
+    specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+      column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  column_spec(9, color="white",
+              background = spec_color( specific_HD_parameters_local_scores$Success, alpha=0.8, end = 0.7, option="A")) %>% 
+  row_spec(10,  bold=TRUE, hline_after = T)
+
+
+## ----HD-overlapping-balanced-ellipsoidal-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
+#> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+#>   set_caption(caption = "MSE and Bias associated to scenario 7a, in Table
+#>       \\ref{tab:parameter-configuration-HD} (balanced, overlapping and ellipsoidal components).", html_escape = F)
+#> 
+#> for (metric_col in metric_colnames) {
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body",
+#>                      i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
+#> 
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body",
+#>                      i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
+#> }
+#> 
+#> 
+#> colourer_flextable <- scales::col_numeric(palette = c("magma"), domain = c(80, 100), alpha = 0.8)
+#> 
+#> specific_HD_parameters_local_scores_flex %>%
+#>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+#>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+#>   # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
+#>   flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+#>   flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+#>   flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+#>   flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+#>   set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+#>   theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+#>   merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>%
+#>   flextable::bg(j = c("Success"),bg = colourer_flextable) %>%
+#>   color(j = "Success", color = "black") %>%
+#>   flextable::autofit()
+#> 
+
+
+## ----HD-overlapping-balanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_balanced_ellipsoidal else pdf_caption_HD_overlapping_balanced_ellipsoidal, out.width="90%"----
+true_theta <- HD_configuration %>% filter(ID=="7a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta, n = 200, k = 2, ade_plot = F)
+computation_time <- plot_time_computations(HD_time_computation %>% filter(ID == "4"))
+hellinger <- plot_Hellinger(formatted_HD_distributions %>% filter(ID == "7a"), true_theta) +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "7a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+upper_part <- cowplot::plot_grid(computation_time + labs(tag="C") + theme(plot.tag = element_text(size=24, face = "bold")),
+                                 hellinger + labs(tag = "D") + theme(plot.tag = element_text(size=24, face = "bold")) ,
+                                 ncol = 2, align = 'hv', axis="tblr")
+global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
+                                        boxplot_parameter_HD +
+                                          theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
+                                        top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
+ggsave("figs/HD/HD-overlapping-balanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-overlapping-balanced-ellipsoidal.png", dpi=300)
+
+
+## ----HD-overlapping-unbalanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_unbalanced_ellipsoidal else pdf_caption_HD_overlapping_unbalanced_ellipsoidal, out.width="90%"----
+true_theta <- HD_configuration %>% filter(ID=="8a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta, n = 200, k = 2, ade_plot = F)
+computation_time <- plot_time_computations(HD_time_computation %>% filter(ID == "4"))
+hellinger <- plot_Hellinger(formatted_HD_distributions %>% filter(ID == "8a"), true_theta) +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "8a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+upper_part <- cowplot::plot_grid(computation_time + labs(tag="C") + theme(plot.tag = element_text(size=24, face = "bold")),
+                                 hellinger + labs(tag = "D") + theme(plot.tag = element_text(size=24, face = "bold")) ,
+                                 ncol = 2, align = 'hv', axis="tblr")
+global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
+                                        boxplot_parameter_HD +
+                                          theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
+                                        top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
+ggsave("figs/HD/HD-overlapping-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-overlapping-unbalanced-ellipsoidal.png", dpi=300)
+
+
+## ----compute-HD-overlapping-spherical-balanced--------------------------------
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="5a") %>% select(-ID)
+nrow_summary <- nrow(specific_HD_parameters_local_scores)
+
+
+## ----HD-overlapping-spherical-balanced-pdf, eval=knitr::is_latex_output()-----
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenario 5a, in Table
+      \\ref{tab:parameter-configuration-HD} (balanced, overlapping and spherical-distributed components).", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in metric_colnames) {
+  # define col vector
+  col_vector <- rep("black", nrow_summary)
+  metric_vector <- specific_HD_parameters_local_scores %>% pull(metric_col)
+  col_vector[which(metric_vector==min(metric_vector))] <- "green" # set minimal values to green
+    col_vector[which(metric_vector==max(metric_vector))] <- "red" # set maximal values to red
+    specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+      column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  column_spec(9, color="white",
+              background = spec_color( specific_HD_parameters_local_scores$Success, alpha=0.8, end = 0.7, option="A")) %>% 
+  row_spec(10,  bold=TRUE, hline_after = T)
+
+
+## ----HD-overlapping-spherical-balanced-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
+#> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+#>   set_caption(caption = "MSE and Bias associated to scenario 5a, in Table
+#>       \\ref{tab:parameter-configuration-HD} (balanced, overlapping and spherical-distributed components).", html_escape = F)
+#> 
+#> for (metric_col in metric_colnames) {
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body",
+#>                      i = as.formula(paste0("~ `", metric_col, "`==min(`", metric_col, "`)")),color = "green")
+#> 
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body",
+#>                      i = as.formula(paste0("~ `", metric_col, "`==max(`", metric_col, "`)")),color = "red")
+#> }
+#> 
+#> 
+#> colourer_flextable <- scales::col_numeric(palette = c("magma"), domain = c(80, 100), alpha = 0.8)
+#> 
+#> specific_HD_parameters_local_scores_flex %>%
+#>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+#>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+#>   # flextable::compose(j="global_mse_ sigma", part = "header", value = as_paragraph("Global_mse_ ", as_equation("\\sigma"))) %>%
+#>   flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+#>   flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+#>   flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+#>   flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+#>   set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+#>   theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+#>   merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>%
+#>   flextable::bg(j = c("Success"),bg = colourer_flextable) %>%
+#>   color(j = "Success", color = "black") %>%
+#>   flextable::autofit()
+#> 
+
+
+## ----compute-HD-overlapping-spherical-----------------------------------------
+HD_parameters_local_scores_balanced <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="5a") %>% select(-ID) 
+HD_parameters_local_scores_unbalanced <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="6a") %>% select(-ID)
+
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_balanced  %>% 
+  dplyr::mutate(global_mse_p=paste(global_mse_p,HD_parameters_local_scores_unbalanced$global_mse_p, sep=" // "),
+                global_mse_mu=paste(global_mse_mu,HD_parameters_local_scores_unbalanced$global_mse_mu, sep=" // "),
+                global_mse_sigma=paste(global_mse_sigma,HD_parameters_local_scores_unbalanced$global_mse_sigma, sep=" // "),
+                global_bias_p=paste(global_bias_p,HD_parameters_local_scores_unbalanced$global_bias_p, sep=" // "),
+                global_bias_mu=paste(global_bias_mu,HD_parameters_local_scores_unbalanced$global_bias_mu, sep=" // "),
+                global_bias_sigma=paste(global_bias_sigma,HD_parameters_local_scores_unbalanced$global_bias_sigma, sep=" // "),
+                Success=paste(Success,HD_parameters_local_scores_unbalanced$Success, sep=" // "))
+
+
+## ----HD-overlapping-spherical-pdf, eval=knitr::is_latex_output()--------------
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenarios 5a) and 6a), in Table
+\\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). We delimite each scenario by doubled backslashes with respectively balanced and unbalanced clusters.", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  col_vector <- rep("black", nrow(specific_HD_parameters_local_scores))
+  col_vector[min_index] <- "green"; col_vector[max_index] <- "red" 
+  specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+        column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  row_spec(12,  hline_after = T)
+
+
+## ----HD-overlapping-spherical-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
+#> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+#>   set_caption(caption = "MSE and Bias associated to scenarios 5a) and 6a), in Table
+#> \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). We delimite each scenario by doubled backslashes with respectively balanced and unbalanced clusters.", html_escape = F)
+#> 
+#> for (metric_col in c(metric_colnames, "Success")) {
+#>   min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+#>                                 stringr::str_split(pattern = " // "),
+#>                               ~mean(as.numeric(.x))) %>% which.min()
+#>   max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+#>                                 stringr::str_split(pattern = " // "),
+#>                               ~mean(as.numeric(.x))) %>% which.max()
+#>   if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+#> 
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body", i = min_index,color = "green")
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body", i = max_index,color = "red")
+#> }
+#> 
+#> 
+#> specific_HD_parameters_local_scores_flex %>%
+#>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+#>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+#>   flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+#>   flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+#>   flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+#>   flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+#>   set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+#>   theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+#>   merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>%
+#>   flextable::autofit()
+#> 
+
+
+## ----HD-overlapping-spherical-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_spherical else pdf_caption_HD_overlapping_spherical, out.width="90%"----
+true_theta_balanced <- HD_configuration %>% filter(ID=="5a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+true_theta_unbalanced <- HD_configuration %>% filter(ID=="6a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+
+# generate plots
+HD_density <- plot_HD_density_distribution(true_theta=true_theta_balanced, n = 200, k = 2, ade_plot = F)
+boxplot_parameter_HD_balanced <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "5a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_HD_unbalanced <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "6a"), 
+                                                 num_col = 2, true_theta = true_theta,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+# concatenate plots together
+global_figure <- cowplot::plot_grid(HD_density, boxplot_parameter_HD_balanced +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "C"),
+                                    boxplot_parameter_HD_unbalanced +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "D"),
+                                    nrow = 3, align = 'hv', axis="tblr")
+ggsave("figs/HD/HD-overlapping-spherical.png",global_figure, width = 24, height = 32, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-overlapping-spherical.png", dpi=300)
+
+
+## ----compute-HD-impact-num-observations-tab1----------------------------------
+HD_parameters_local_scores_smalln <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="1a") %>% select(-ID) 
+HD_parameters_local_scores_highn <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="1b") %>% select(-ID)
+
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_smalln  %>% 
+  dplyr::mutate(global_mse_p=paste(global_mse_p,HD_parameters_local_scores_highn$global_mse_p, sep=" // "),
+                global_mse_mu=paste(global_mse_mu,HD_parameters_local_scores_highn$global_mse_mu, sep=" // "),
+                global_mse_sigma=paste(global_mse_sigma,HD_parameters_local_scores_highn$global_mse_sigma, sep=" // "),
+                global_bias_p=paste(global_bias_p,HD_parameters_local_scores_highn$global_bias_p, sep=" // "),
+                global_bias_mu=paste(global_bias_mu,HD_parameters_local_scores_highn$global_bias_mu, sep=" // "),
+                global_bias_sigma=paste(global_bias_sigma,HD_parameters_local_scores_highn$global_bias_sigma, sep=" // "),
+                Success=paste(Success,HD_parameters_local_scores_highn$Success, sep=" // "))
+
+
+## ----HD-impact-num-observations-pdf-tab1, eval=knitr::is_latex_output()-------
+
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenarios 1a) and 1b), in Table
+      \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
+      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+              $n=2000$ observations.", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  col_vector <- rep("black", nrow(specific_HD_parameters_local_scores))
+  col_vector[min_index] <- "green"; col_vector[max_index] <- "red" 
+  specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+        column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  row_spec(12,  hline_after = T)
+
+
+## ----HD-impact-num-observations-html-tab1, eval=knitr::is_html_output(), layout = "l-body-outset"----
+#> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+#>   set_caption(caption = "MSE and Bias associated to scenarios 1a) and 1b), in Table
+#>       \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components).
+#>       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+#>               $n=2000$ observations.", html_escape = F)
+#> 
+#> for (metric_col in c(metric_colnames, "Success")) {
+#>   min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+#>                                 stringr::str_split(pattern = " // "),
+#>                               ~mean(as.numeric(.x))) %>% which.min()
+#>   max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+#>                                 stringr::str_split(pattern = " // "),
+#>                               ~mean(as.numeric(.x))) %>% which.max()
+#>   if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+#> 
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body", i = min_index,color = "green")
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body", i = max_index,color = "red")
+#> }
+#> 
+#> 
+#> specific_HD_parameters_local_scores_flex %>%
+#>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+#>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+#>   flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+#>   flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+#>   flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+#>   flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+#>   set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+#>   theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+#>   merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>%
+#>   flextable::autofit()
+
+
+## ----compute-HD-impact-num-observations-tab2----------------------------------
+HD_parameters_local_scores_smalln <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="8a") %>% select(-ID) %>% filter(Package!="EMMIXmfa")
+HD_parameters_local_scores_highn <- HD_parameters_local_scores_summary %>%
+  dplyr::filter(ID=="8b") %>% select(-ID)
+
+specific_HD_parameters_local_scores <- HD_parameters_local_scores_smalln  %>% 
+  dplyr::mutate(global_mse_p=paste(global_mse_p,HD_parameters_local_scores_highn$global_mse_p, sep=" // "),
+                global_mse_mu=paste(global_mse_mu,HD_parameters_local_scores_highn$global_mse_mu, sep=" // "),
+                global_mse_sigma=paste(global_mse_sigma,HD_parameters_local_scores_highn$global_mse_sigma, sep=" // "),
+                global_bias_p=paste(global_bias_p,HD_parameters_local_scores_highn$global_bias_p, sep=" // "),
+                global_bias_mu=paste(global_bias_mu,HD_parameters_local_scores_highn$global_bias_mu, sep=" // "),
+                global_bias_sigma=paste(global_bias_sigma,HD_parameters_local_scores_highn$global_bias_sigma, sep=" // "),
+                Success=paste(Success,HD_parameters_local_scores_highn$Success, sep=" // "))
+
+
+## ----HD-impact-num-observations-pdf-tab2, eval=knitr::is_latex_output()-------
+specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
+  kbl(booktabs=T, caption = "MSE and Bias associated to scenarios 8a) and 8b), in Table
+      \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
+      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+              $n=2000$ observations.", escape=F,
+      col.names = linebreak(c("Package", "Initialisation\nMethod",
+                              "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
+                              "Global \n Bias $p$", "Global\nBias $\\mu$", "Global\nBias $\\sigma$", "$\\%$ Success"))) %>%
+  kable_styling(latex_options=c("hold_position", "scale_down"), full_width = T) %>%
+  row_spec(0,bold=T, align = "c") %>%
+  column_spec(column = 1:9, latex_valign = "m") %>%
+  column_spec(1, bold = T) %>% collapse_rows(columns = 1, valign = "middle")
+
+for (metric_col in c(metric_colnames, "Success")) {
+  min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.min()
+  max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+                                stringr::str_split(pattern = " // "),
+                              ~mean(as.numeric(.x))) %>% which.max()
+  if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+  
+  col_vector <- rep("black", nrow(specific_HD_parameters_local_scores))
+  col_vector[min_index] <- "green"; col_vector[max_index] <- "red" 
+  specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores_kable %>%
+        column_spec(match(metric_col, names(specific_HD_parameters_local_scores)),color=col_vector)
+}
+
+specific_HD_parameters_local_scores_kable %>% 
+  row_spec(12,  hline_after = T)
+
+
+
+
+## ----HD-impact-num-observations-html-tab2, eval=knitr::is_html_output(), layout = "l-body-outset"----
+#> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
+#>   set_caption(caption = "MSE and Bias associated to scenarios 8a) and 8b), in Table
+#>       \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components).
+#>       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
+#>               $n=2000$ observations.", html_escape = F)
+#> 
+#> for (metric_col in c(metric_colnames, "Success")) {
+#>   min_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
+#>                                 stringr::str_split(pattern = " // "),
+#>                               ~mean(as.numeric(.x))) %>% which.min()
+#>   max_index <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col)  %>%
+#>                                 stringr::str_split(pattern = " // "),
+#>                               ~mean(as.numeric(.x))) %>% which.max()
+#>   if (metric_col =="Success")  list2env(list(min_index = max_index, max_index = min_index), envir = .GlobalEnv)
+#> 
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body", i = min_index,color = "green")
+#>   specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores_flex %>%
+#>     flextable::color(j=metric_col, part = "body", i = max_index,color = "red")
+#> }
+#> 
+#> 
+#> specific_HD_parameters_local_scores_flex %>%
+#>   flextable::compose(j="global_mse_p", part = "header", value = as_paragraph("Global MSE \U0070")) %>%
+#>   flextable::compose(j="global_mse_mu", part = "header", value = as_paragraph("Global MSE \U03BC")) %>%
+#>   flextable::compose(j="global_mse_sigma", part = "header", value = as_paragraph("Global MSE \U03C3")) %>%
+#>   flextable::compose(j="global_bias_p", part = "header", value = as_paragraph("Global Bias \U0070")) %>%
+#>   flextable::compose(j="global_bias_mu", part = "header", value = as_paragraph("Global Bias \U03BC")) %>%
+#>   flextable::compose(j="global_bias_sigma", part = "header", value = as_paragraph("Global Bias \U03C3")) %>%
+#>   set_header_labels(package= "Package", `initialisation method`="Initialisation Method") %>%
+#>   theme_vanilla() %>% align(align = "center", part = "header") %>%  # centre align header
+#>   merge_v(j = "Package") %>%  flextable::hline(i = 12, border = officer::fp_border(width = 2)) %>%
+#>   flextable::autofit()
+
+
+## ----HD-impact-num-observations, fig.cap=if (HD_html_output) html_caption_HD_impact_num_observations else pdf_caption_HD_impact_num_observations, out.width="90%"----
+easy_theta_small_n <- HD_configuration %>% filter(ID=="1a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+easy_theta_high_n <- HD_configuration %>% filter(ID=="1b") %>% pull(true_parameters) %>% magrittr::extract2(1)
+boxplot_parameter_easy_small <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1a"), 
+                                                 num_col = 2, true_theta = easy_theta_small_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_easy_high <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1b"), 
+                                                 num_col = 2, true_theta = easy_theta_high_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+
+hard_theta_small_n <- HD_configuration %>% filter(ID=="8a") %>% pull(true_parameters) %>% magrittr::extract2(1)
+hard_theta_high_n <- HD_configuration %>% filter(ID=="8b") %>% pull(true_parameters) %>% magrittr::extract2(1)
+boxplot_parameter_hard_small <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1a"), 
+                                                 num_col = 2, true_theta = hard_theta_small_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+boxplot_parameter_hard_high <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "1b"), 
+                                                 num_col = 2, true_theta = hard_theta_high_n,
+                                                 match_symbol = "^p[[:digit:]]+$|mu_var1_|sd_var1_var1|sd_var2_var1|sd_var2_var2") +
+  theme(axis.text.x = ggtext::element_markdown(angle = 90, size = 12, hjust=0.5, vjust = 0.4))
+
+# concatenate plots together
+global_figure <- cowplot::plot_grid(boxplot_parameter_easy_small +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "A"),
+                                    boxplot_parameter_easy_high +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "B"),
+                                    boxplot_parameter_hard_small +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "C"),
+                                    boxplot_parameter_hard_high +
+                                      theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "D"),
+                                    nrow = 2, ncol=2, align = 'hv', axis="tblr")
+
+ggsave("figs/HD/HD-impact-nobservations.png",global_figure, width = 30, height = 40, dpi=600)
+
+knitr::include_graphics("figs/HD/HD-impact-nobservations.png", dpi=300)
+
+
+## ----heatmap-all-correlation-plots-HD, fig.cap= if (HD_html_output) html_global_heatmap_HD else pdf_global_heatmap_HD----
+multivariate_correlation_heatmaps <- plot_correlation_Heatmap(HD_distributions %>% filter(ID=="7a"), row_km = 3)
+multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
+                                                              purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
+                                                            top="", ncol = 3, nrow = 1)
+ggsave("./figs/HD/heatmap_global_HD.png", multivariate_correlation_heatmaps, width = 18, height = 6,dpi = 150)
+knitr::include_graphics("./figs/HD/heatmap_global_HD.png", dpi = 150)
 
