@@ -191,7 +191,7 @@ Recovering the maximum of a function is generally performed by
 determining from which values its derivative cancels. The MLE in GMMs
 has interesting properties, as opposed to the \emph{moment estimation}
 method: it is a consistent, asymptotically efficient and unbiased
-estimator (J. Chen 2016; McLachlan and Peel 2000).
+estimator (Jiahua Chen 2016; G. McLachlan and Peel 2000).
 
 When \(S\) is completely observed, for pairs of observations
 \((x_{1:n}, s_{1:n})\), the log-likelihood of a finite mixture model is
@@ -396,8 +396,9 @@ The commonly-used initialisation methods are:
   algorithms, namely CEM, SEM and EM (see \protect\hyperlink{appendix-b-extensions-of-the-em-algorithm-to-overcome-its-limitations}{Appendix B: Extensions of the EM algorithm to overcome its limitations}), with alleviated convergence criterion. The main idea is
   to use several random initial estimates with shorter runs of the
   algorithm to explore a larger parameter space, and avoid being
-  trapped in a local maximum. Yet, they highly depend on the choice of the initialisation
-  algorithm to start the optimisation (Biernacki, Celeux, and Govaert 2003).
+  trapped in a local maximum. Yet, they highly depend on the choice of the initialisation algorithm to start the optimisation (Biernacki, Celeux, and Govaert 2003).
+\item
+  \color{blue}In the high-dimensional setting, if the number of dimensions \(D\) exceeds the number of observations \(n\), all previous methods must be adjusted, usually by first projecting the dataset into a smaller, suitable subspace and then inferring prior parameters in it. In particular, \pkg{EMMIXmfa}, in the mixture of common factor analysers (MCFA) approach, initialises the shared projection matrix \(\boldsymbol{Q}\) by either keeping the first \(d\) eigen vectors generated from standard principal component analysis or uses custom random initialisations (described in further details in the Appendix of Baek, McLachlan, and Flack (2010)). \color{black}
 \end{itemize}
 
 After this theoretical introduction, we evaluate empirically the
@@ -420,7 +421,7 @@ updated and let the user provide its own initialisation estimates:
 \pkg{GMKMcharlie}, \pkg{mclust}, \pkg{mixtools} and \pkg{Rmixmod}. The
 complete inclusion process is detailed in \protect\hyperlink{appendix-c-the-meta-analysis-workflow-for-the-final-selection-of-cran-and-bioconductor-platforms}{Appendix C: the meta-analysis workflow for the final selection of CRAN and Bioconductor platforms}. The flowchart summarising our choices is represented in Figure \ref{fig:flowchart}.
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/flowchart_packages_selection} 
 
@@ -429,9 +430,7 @@ complete inclusion process is detailed in \protect\hyperlink{appendix-c-the-meta
 \caption{A minimal roadmap used for the selection of the packages reviewed in our benchmark.}\label{fig:flowchart}
 \end{figure}
 
-\textcolor{blue}{In parallel, we include two additional packages dedicated specifically to high-dimensional settings (they are not tailored to deal with univariate or bivariate dimensions), namely \CRANpkg{EMMIXmfa} and \CRANpkg{HDclassif} to compare their performance with standard multivariate approaches in complex, but non degenerate cases.}
-
-We summarise the main features and use cases of the seven + two reviewed
+In parallel, we include two additional packages dedicated specifically to high-dimensional settings (they are not tailored to deal with univariate or bivariate dimensions), namely \CRANpkg{EMMIXmfa} and \CRANpkg{HDclassif} to compare their performance with standard multivariate approaches in complex, but non degenerate cases. We summarise the main features and use cases of the seven + two reviewed
 packages in Table
 \ref{tab:low-comparison-package-pdf}.
 The three most commonly used packages are \pkg{mixtools}, \pkg{mclust} and \pkg{flexmix}. However, the \pkg{mclust} package is by far the most complete with many features provided to visualise and evaluate the quality of the GMM estimate. \pkg{bgmm} requires the greatest number of packages for its installation, making its upkeep
@@ -475,7 +474,7 @@ We further detail features specifically related to GMMs in Table
 
 \begin{itemize}
 \item
-  The parametrisations used to provide parsimonious estimation of the GMMs are reviewed in \protect\hyperlink{parameter-estimation-in-finite-mixtures-models}{Parameter estimation in finite mixtures models} and summarised in rows 1 and 2 (Table \ref{tab:high-comparison-packages-pdf}) for the univariate and multivariate setting. We refer to them as \emph{canonical} when both homoscedastic and heteroscedastic parametrisations in the univariate setting, and the 14 parametrisations listed in Table \ref{tab:param-bivariate-gaussian} in the multivariate setting, are implemented. Adding the additional constraint of equi-balanced clusters results in a total to \(14 \times 2=28\) distinct models and \(2 \times 2=4\) parametrisations, respectively in the univariate and multivariate setting.
+  The parametrisations used to provide parsimonious estimation of the GMMs are reviewed in \protect\hyperlink{parameter-estimation-in-finite-mixtures-models}{Parameter estimation in finite mixtures models} and summarised in rows 1 and 2 (Table \ref{tab:high-comparison-packages-pdf}) for the univariate and multivariate setting. We refer to them as \emph{canonical} when both homoscedastic and heteroscedastic parametrisations in the univariate setting, and the 14 parametrisations listed in Table \ref{tab:param-multivariate-gaussian} in the multivariate setting, are implemented. Adding the additional constraint of equi-balanced clusters results in a total to \(14 \times 2=28\) distinct models and \(2 \times 2=4\) parametrisations, respectively in the univariate and multivariate setting. \color{blue}Since \pkg{EMMIXmfa} and \pkg{HDclassif} are dedicated to the analaysis of high-dimensional datasets, they project the observations in a smaller subspace and are not available in the univariate setting. Given an user-defined or prior computed intrinsic dimension, we can imagine using any of the standard parametrisations available for instance in the \pkg{mclust} package, and listed in \nameref{subsec:parsimonious-parametrisation}. In addition, \pkg{HDclassif} allows each cluster \(j\) to be represented with its own subspace intrinsic dimension \(d_j\), as we describe in further details in \nameref{subsec:high-dimensional}. \color{black}
 \item
   \protect\hyperlink{the-em-algorithm}{The EM algorithm} is the most commonly used
   algorithm to retrieve the parameters of the GMMs but faster or variants complementary of the EM algorithm are reviewed in \protect\hyperlink{appendix-b-extensions-of-the-em-algorithm-to-overcome-its-limitations}{Appendix B: Extensions of the EM algorithm to overcome its limitations} and row 3 of Table \ref{tab:high-comparison-packages-pdf}. Especially, GMMs estimation is particularly impacted by the presence of outliers, justifying a specific benchmark ( see \protect\hyperlink{a-small-simulation-to-evaluate-the-impact-of-outliers}{A small simulation to evaluate the impact of outliers}).
@@ -484,8 +483,15 @@ We further detail features specifically related to GMMs in Table
   To select the best parametrisations and number of components that fit the mixture, several metrics are provided by the reviewed packages
   (\protect\hyperlink{model-selection}{Model selection} and row 5). Due to the complexity of computing the true distribution of the parameters estimated, bootstrap methods are commonly used used to derive confidence intervals (see \protect\hyperlink{derivation-of-confidence-intervals-in-gmms}{Derivation of
   confidence intervals in GMMs} and row 6 in Table \ref{tab:high-comparison-packages-pdf}.
+\end{itemize}
+
+\begin{itemize}
+\tightlist
 \item
-  Four packages supply several visualisations, summarised in the last row of Table \ref{tab:high-comparison-packages-pdf}, to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction), with the additional possibility of integrating custom confidence intervals and critical regions, and finally boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
+  Six packages supply several visualisations, summarised in the last row of Table \ref{tab:high-comparison-packages-pdf}, to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction), with the additional possibility of integrating custom confidence intervals and critical regions, and finally boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
+  \color{blue}
+  High-dimensional packages provide specific representations adjusted to the high-dimensional settings, notably allowing the user to visualise the projected factorial representation of its dataset in a two or three-dimensional subspace. They also provide specialised performance plots, notably scree plots or BIC scatter plots to represent in a compact way numerous projections and parametrisations.
+  \color{black}
 \end{itemize}
 
 \begin{table}[!h]
@@ -493,7 +499,7 @@ We further detail features specifically related to GMMs in Table
 \caption{\label{tab:high-comparison-packages-pdf}Custom features associated to GMMs estimation for any of the benchmarked packages.}
 \centering
 \resizebox{\linewidth}{!}{
-\begin{tabular}[t]{>{}l|>{\raggedright\arraybackslash}m{1.8cm}>{\raggedright\arraybackslash}m{1.8cm}>{\raggedright\arraybackslash}m{1.8cm}>{\raggedright\arraybackslash}m{1.8cm}>{\raggedright\arraybackslash}m{1.8cm}>{\raggedright\arraybackslash}m{1.8cm}>{}l|>{\raggedright\arraybackslash}m{1.8cm}>{\raggedright\arraybackslash}m{1.8cm}}
+\begin{tabular}[t]{>{}l|>{\raggedright\arraybackslash}m{4cm}>{\raggedright\arraybackslash}m{1.6cm}>{\raggedright\arraybackslash}m{1.6cm}>{\raggedright\arraybackslash}m{1.6cm}>{\raggedright\arraybackslash}m{1.6cm}>{\raggedright\arraybackslash}m{1.6cm}>{}l|>{\raggedright\arraybackslash}m{1.6cm}>{\raggedright\arraybackslash}m{1.6cm}}
 \toprule
 \multicolumn{1}{c}{\textbf{ }} & \multicolumn{1}{c}{\textbf{mclust}} & \multicolumn{1}{c}{\textbf{flexmix}} & \multicolumn{1}{c}{\textbf{mixtools}} & \multicolumn{1}{c}{\textbf{Rmixmod}} & \multicolumn{1}{c}{\textbf{EMCluster}} & \multicolumn{1}{c}{\textbf{bgmm}} & \multicolumn{1}{c}{\textbf{GMKMcharlie}} & \multicolumn{1}{c}{\textbf{EMMIXmfa}} & \multicolumn{1}{c}{\textbf{HDclassif}}\\
 \midrule
@@ -505,11 +511,9 @@ We further detail features specifically related to GMMs in Table
 \midrule
 \textbf{Initialisation} & hierarchical clustering, quantile & short-EM, random & random & random, short-EM, CEM, SEM & random, short-EM & k-means, quantile & k-means & k-means, random, heuristic & short-EM, random, k-means\\
 \midrule
-\textbf{Simulation} & real and toy datasets, parametric & real datasets, parametric & real datasets, parametric & real datasets & toy datasets & real datasets, parametric, prior probability & \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& real datasets\\
-\midrule
-\addlinespace
 \textbf{Model or Cluster Selection} & BIC, ICL, LRTS & AIC, BIC, ICL & AIC, BIC, ICL, CAIC, LRTS & BIC, ICL, NEC & AIC, BIC, ICL, CLC & GIC & \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& BIC, ICL, CV\\
 \midrule
+\addlinespace
 \textbf{Bootstrap Confidence Intervals} & \includegraphics[scale=0.05]{figs/green_tick.png}& \includegraphics[scale=0.05]{figs/green_tick.png}& \includegraphics[scale=0.05]{figs/green_tick.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}\\
 \midrule
 \textbf{Visualisation} & performance, histograms and boxplots of bootstrapped estimates, density plots (univariate),  scatter plots with uncertainity regions and boundaries (bivariate), isodensity (bivariate , 2D projected PCA or selecting coordinates) & \includegraphics[scale=0.05]{figs/red_cross.png}& density curves & density curves, scatter plots with uncertainty boundaries & \includegraphics[scale=0.05]{figs/red_cross.png}& performance, scatter plots with uncertainty boundaries & \includegraphics[scale=0.05]{figs/red_cross.png}& projected factorial map & projected factorial map, performance (Cattell's scree plot, BIC performance, slope heuristic)\\
@@ -523,24 +527,21 @@ We further detail features specifically related to GMMs in Table
 
 In addition to the the seven packages selected for our benchmark, we
 include a custom R implementation of the EM algorithm used
-as baseline, referred to as \emph{RGMMBench}. Its code is provided in \protect\hyperlink{application-of-the-em-algorithm-to-gmms}{Application of the EM algorithm to GMMs}. To compare the statistical performances of these packages, we performed \emph{parametric bootstrap} (\protect\hyperlink{derivation-of-confidence-intervals-in-gmms}{Derivation of confidence intervals in GMMs}) and built an experimental design to cover distinct mixture distributions parameter configurations, using prior user-defined parameters.
+as baseline, referred to as \emph{RGMMBench}, and for the high-dimensional setting we select packages \pkg{EMMIXmfa} and \pkg{HDclassif}, on the basis of criteria detailed in Appendix \protect\hyperlink{general-workflow}{General workflow}. Code for \emph{RGMMBench} is provided in \protect\hyperlink{application-of-the-em-algorithm-to-gmms}{Application of the EM algorithm to GMMs}. To compare the statistical performances of these packages, we performed \emph{parametric bootstrap} (\protect\hyperlink{derivation-of-confidence-intervals-in-gmms}{Derivation of confidence intervals in GMMs}) and built an experimental design to cover distinct mixture distributions parameter configurations, using prior user-defined parameters.
 
 For each experiment, we assign each observation to an unique cluster by drawing \(n\) labels \(S_{1:n}\) from a multinomial distribution whose parameters were the prior user-defined proportions \(p=(p_1, \ldots, p_k)\). Then, each observation \(x_i\) assigned to hidden component \(j\) is drawn respectively using the R function \code{stats::rnorm()} for the univariate distribution and \code{MASS::mvrnorm} for the multivariate distribution. The complete code used for simulating data is
-available on GitHub at
-\href{https://github.com/bastienchassagnol-servier/RGMMBench}{RGMMBench}. Finally, we obtain
-an empirical distribution of the estimated parameters by computing the MLE
+available on GitHub at \href{https://github.com/bastienchassagnol-servier/RGMMBench}{RGMMBench}. Finally, we obtain an empirical distribution of the estimated parameters by computing the MLE
 of each randomly generated sample.
 
 For all the packages, we have used the same combination of criterion threshold of
-\(10^{-6}\) and maximal number, 1000, of iterations as a numerical proof of convergence. We simulated data with \(n = 200\) draws in the univariate setting and \(n=500\) in the multivariate framework to lower the probability of generating a sample without drawing any observation from one of the components, especially in case of a highly-unbalanced scenario \protect\hyperlink{practical-details-for-the-implementation-of-our-benchmark}{Practical details for the implementation of our benchmark}. Unless stated explicitly, we keep the default hyper-parameters and custom global options provided by each package. For instance, the \pkg{flexmix} package has a default option, \emph{minprior}, set by default to 0.05 and which removes any component present in the mixture with a ratio below \(0.05\). Besides, we only implement the fully unconstrained model in both univariate and multivariate settings, as it is the only parametrisation implemented in all the seven packages and the most popular to perform classic GMM clustering, since fewer hypothesis are required.
+\(10^{-6}\) and maximal number, 1000, of iterations as a numerical proof of convergence. We simulated data with \(n = 200\) draws in the univariate setting and \(n=500\) in the bivariate framework to lower the probability of generating a sample without drawing any observation from one of the components, especially in case of a highly-unbalanced scenario \protect\hyperlink{practical-details-for-the-implementation-of-our-benchmark}{Practical details for the implementation of our benchmark}. Unless stated explicitly, we keep the default hyper-parameters and custom global options provided by each package. For instance, the \pkg{flexmix} package has a default option, \emph{minprior}, set by default to 0.05 and which removes any component present in the mixture with a ratio below \(0.05\). Besides, we only implement the fully unconstrained model in both univariate and multivariate settings, as it is the only parametrisation implemented in all the seven packages and the most popular to perform classic GMM clustering, since fewer hypothesis are required.
 
 We compared the packages' performances using five
-initialisation methods: random, quantile, \emph{k}-means, rebmix and
-hierarchical clustering in the univariate setting. We benchmarked the same initialisation methods in the multivariate setting, except for the quantile method which has no multivariate equivalent (see section \protect\hyperlink{initialisation-of-the-em-algorithm}{Initialisation of the EM algorithm}):
+initialisation methods: random, quantile, \emph{k}-means, rebmix and hierarchical clustering in the univariate setting. We benchmarked the same initialisation methods in the multivariate setting, except for the quantile method which has no multivariate equivalent (see section \protect\hyperlink{initialisation-of-the-em-algorithm}{Initialisation of the EM algorithm}):
 
 \begin{itemize}
 \item
-  We used the function \code{EMCluster::simple.init()} with 10 random restarts for the random initialisation. The method implemented by \pkg{EMCluster} is the most commonly used, described in details in Biernacki, Celeux, and Govaert (2003) and in section \protect\hyperlink{initialisation-of-the-em-algorithm}{Initialisation of the EM algorithm}.
+  We used the function \code{EMCluster::rand.EM()} with 10 random restarts and required minimal individual cluster size of 2 for the random initialisation. The method implemented by \pkg{EMCluster} is the most commonly used, described in details in Biernacki, Celeux, and Govaert (2003) and in section \protect\hyperlink{initialisation-of-the-em-algorithm}{Initialisation of the EM algorithm}.
 \item
   We used the function \code{stats::kmeans()} function with a \(10^{-2}\) stopping criterion and 200 maximal number of iterations to implement the \emph{k}-means initialisation method.
   The initial centroid and covariance matrix for each component are then computed by restricting to the sample observations assigned to the corresponding component. The approach is close to the one adopted by the CEM algorithm (see \protect\hyperlink{appendix-b-extensions-of-the-em-algorithm-to-overcome-its-limitations}{Appendix B: Extensions of the EM algorithm to overcome its limitations}).
@@ -574,9 +575,7 @@ hc, kmeans, small EM,rebmix, quantiles, random & EM R, Rmixmod, bgmm, mclust, fl
 
 Preliminary experiments suggested that the quality of the estimation of a
 GMM is mostly affected by the overlap between components' distribution
-and level of unbalance between components. We quantified the overlap between two components by the following overlap score (OVL) (see Equation
-\eqref{eq:overlap}), with a smaller score denoting well-separated
-components:
+and level of unbalance between components. We quantified the overlap between two components by the following overlap score (OVL) (see Equation \eqref{eq:overlap}), with a smaller score denoting well-separated components:
 
 \begin{equation}
        \operatorname{OVL}(i, j) = \int \min (f_{\zeta_i} (x), f_{\zeta_j} (x)) dx \quad \text{ with } i \neq j
@@ -585,7 +584,7 @@ components:
 
 We may generalise this definition to \(k\) components by averaging the
 individual components' overlap. We use the function
-\code{MixSim::overlap} from the \CRANpkg{MixSim} package (Melnykov, Chen, and Maitra 2021) that approximates this quantity using a Monte-Carlo based method (see Section \protect\hyperlink{an-analytic-formula-of-the-overlap-for-univariate-gaussian-mixtures}{An analytic formula of the overlap for univariate Gaussian mixtures}).
+\code{MixSim::overlap} from the \CRANpkg{MixSim} package (Melnykov, Chen, and Maitra 2021) that approximates this quantity using a Monte-Carlo based method (see appendices \protect\hyperlink{an-analytic-formula-of-the-overlap-for-univariate-gaussian-mixtures}{An analytic formula of the overlap for univariate Gaussian mixtures} and \protect\hyperlink{practical-details-for-the-implementation-of-our-benchmark}{Practical details for the implementation of our benchmark} for further details).
 
 The level of imbalance may be evaluated with the entropy measure Equation \eqref{eq:entropy}, with equi-balanced clusters having an entropy of 1:
 
@@ -594,19 +593,20 @@ The level of imbalance may be evaluated with the entropy measure Equation \eqref
 \label{eq:entropy}
 \end{equation}
 
-with \(k\) the number of components and \(p_j=\mathbb{P}(S=j)\) the
-frequency of class \(j\).
+with \(k\) the number of components and \(p_j=\mathbb{P}(S=j)\) the frequency of class \(j\).
 
-We considered 9 distinct configuration parameters, associated with distinct values of \(\operatorname{OVL}\) and entropy in the univariate setting, and to 20 scenarios in the multivariate setting. Briefly, we compute any combination, with the same components means (0, 4, 8 and 12), three sets of ratio parametrisations \(\left[(0.25, 0.25, 0.25, 0.25); (0.2, 0.4, 0.2, 0.2); (0.1, 0.7, 0.1, 0.1) \right]\) and three variances: \((0.3, 1, 2)\) in the univariate setting. In the multivariate setting, we consider two sets of proportions: \(\left[(0.5, 0.5); (0.9, 0.1) \right]\), two sets of coordinate centroids: \(\left[(0; 20), (20, 0) \right]\) and \(\left[(0; 2), (2, 0) \right]\), the same variance of 1 for each feature and for each component for illustrative purposes of the direct relation linking the correlation and the level of OVL and five correlation sets: \(\left[(-0.8, -0.8); (0.8, -0.8); (-0.8, 0.8); (0.8, 0.8); (0, 0)\right]\).
+We considered 9 distinct configuration parameters, associated with distinct values of \(\operatorname{OVL}\) and entropy in the univariate setting, 20 scenarios in the bivariate setting and 16 scenarios in the high-dimensional setting. Briefly, we compute any combination, with the same components means (0, 4, 8 and 12), three sets of ratio parametrisations \(\left[(0.25, 0.25, 0.25, 0.25); (0.2, 0.4, 0.2, 0.2); (0.1, 0.7, 0.1, 0.1) \right]\) and three variances: \((0.3, 1, 2)\) in the univariate setting. In the bivariate setting, we consider two sets of proportions: \(\left[(0.5, 0.5); (0.9, 0.1) \right]\), two sets of coordinate centroids: \(\left[(0; 20), (20, 0) \right]\) and \(\left[(0; 2), (2, 0) \right]\), the same variance of 1 for each feature and for each component for illustrative purposes of the direct relation linking the correlation and the level of OVL and five correlation sets: \(\left[(-0.8, -0.8); (0.8, -0.8); (-0.8, 0.8); (0.8, 0.8); (0, 0)\right]\).
+\color{green}And finally, we tested eight scenarios in the high-dimensional framework, setting to \(D=10\) the number of dimensions, playing on the level of overlap, imbalance between the components' proportions and the underlying constraint assigned to the covariance matrix (either fully parametrised or spherical, using the same diagonal term for a given cluster), without explicitly providing this topological restriction when estimating the parameters of the mixture. Each of the parameter configuration tested in the high-dimensional setting was asserted with \(n=200\) observations and \(n=2000\) observations. Additionally, instead of defining manually interesting parameters for a high-dimensional scenario, we take profit of the simulation framework set up in \code{MixSim} function, from the \CRANpkg{MixSim} package (Melnykov, Chen, and Maitra 2021). This function returns the user a fully parametrised GMM, with a prior defined level of maximum or average overlap\footnote{Unfortunately, as discussed in further details in Appendix \protect\hyperlink{an-analytic-formula-of-the-overlap-for-univariate-gaussian-mixtures}{An analytic formula of the overlap for univariate Gaussian mixtures}, the MixSim package does not compute the global distribution overlap, but instead returns the mean of pairwise overlap between any component (however, with two components, these two alternative definitions match.) Finally, it is not possible to set the proportions of the components before the generation of the parameters, except for clusters with equal proportions, and contrary to the expect behaviour of additional parameter \emph{PiLow}, supposed to define the smallest mixing proportion.}.
+\color{black}
 
-The complete list of parameters used is reported respectively in Table \ref{tab:parameter-configuration-univariate} for the univariate setting, and Table \ref{tab:parameter-configuration-bivariate} for the multivariate setting. We benchmarked simulations where the components were alternatively very distinct or instead very overlapping, as well as of equal proportions or instead very unbalanced. In the multivariate setting, we also benchmarked strongly negative, moderate and strongly positive correlation within features.
+The complete list of parameters used is reported respectively in Table \ref{tab:parameter-configuration-univariate} for the univariate setting, Table \ref{tab:parameter-configuration-bivariate} for the bivariate setting and \ref{tab:parameter-configuration-HD} for the high-dimensional setting. We benchmarked simulations where the components were alternatively very distinct or instead very overlapping, as well as of equal proportions or instead very unbalanced. The adjustments made to meet the specific requirements of high dimensional packages are detailed in \protect\hyperlink{practical-details-for-the-implementation-of-our-benchmark}{Practical details for the implementation of our benchmark}.
 
 We report the most significant results and features and the associated recommendations in next section \protect\hyperlink{results}{Results}.
 
 \hypertarget{results}{%
 \subsection{Results}\label{results}}
 
-All the figures and performance overview tables are reported in \protect\hyperlink{supplementary-figures-and-tables-in-the-univariate-simulation}{Supplementary Figures and Tables in the univariate simulation} for the univariate setting and {[}Supplementary Figures and Tables in the multivariate simulation{]} for the bivariate scenario.
+All the figures and performance overview tables are reported in \protect\hyperlink{supplementary-figures-and-tables-in-the-univariate-simulation}{Supplementary Figures and Tables in the univariate simulation} for the univariate setting, \protect\hyperlink{supplementary-figures-and-tables-in-the-bivariate-simulation}{Supplementary Figures and Tables in the bivariate simulation} for the bivariate scenario and \protect\hyperlink{supplementary-figures-and-tables-in-the-hd-simulation}{Supplementary Figures and Tables in the HD simulation} for the high dimensional scenario.
 
 \textbf{Balanced and non-overlapping components}
 
@@ -638,16 +638,28 @@ the package has only small impact.
 
 We detail expensively in our bivariate simulations two scenarios featuring both strongly unbalanced and well-separated components, similarly to scenario U3 in Table \ref{tab:parameter-configuration-univariate}: the scenarios B12 (Figure \ref{fig:multivariate-overlapping-unbalanced-opposite-correlated} and Table \ref{tab:multivariate-overlapping-unbalanced-opposite-correlated-pdf}) and B14 (Figure \ref{fig:multivariate-overlapping-unbalanced-positive-correlated} and Table \ref{tab:multivariate-overlapping-unbalanced-positive-correlated-pdf}). Similarly, scenarios B16, B17 and B20 (Table \ref{tab:parameter-configuration-bivariate}) with similar characteristics are summarised in supplementary Figure \ref{fig:general-unbalanced-well-separated-bivariate}. For all these scenarios, neither the initialisation method nor the package have a statistical significant impact on the overall performance.
 
+\color{blue}
+
+Similarly, scenarios HD1a-HD4b in Table \ref{tab:parameter-configuration-HD}) in the high dimensional setting, display well-separated clusters, with a representative outcome represented in Supplementary Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot} and Table \ref{tab:HD-separated-unbalanced-ellipsoidal-pdf}. Consistently with results from the corresponding univariate and bivariate scenarios, most of the previously benchmarked packages return sensibly the same estimates with the hierarchical clustering and \emph{k}-means initialisation. However, \pkg{bgmm} and \pkg{EMCluster} clearly differentiate by lower performances with the rebmix initialisation method, even though rebmix is globally less performant, no matter the package or the type of parameter to estimate. Notably, initialisations with the rebmix package tend to display a much larger number of poor estimations, some of which can be identified with the local maxima associated with parameter switching between the two classes. Finally, the two additional packages dedicated to high-dimensional clustering display the worst performances, with \pkg{EMMIXmfa} returning the most biased parameters and \pkg{HDclassif} the most noisy estimates. \pkg{EMMIXmfa} is the only package that returned highly biased estimates of the components' proportions in this setting.
+\color{black}
+
 \textbf{Balanced and overlapping components}
 
 When the overlap between components increases, the bias and variability of the estimates tends to increase while the choice of initialisation method becomes becomes valuable.
-The least biased and variable estimations with balanced components in the univariate setting (scenario U3 in Table
+The least biased and noisy estimations with balanced components in the univariate setting (scenario U3 in Table
 \ref{tab:parameter-configuration-univariate}) are obtained with
 the \emph{k}-means initialisation (Figure
 \ref{fig:four-component-balanced-overlapping} and Table
 \ref{tab:balanced-overlapping-table-univariate-pdf}) while
-the rebmix initialisation returns the most biased and variable
+the rebmix initialisation returns the most biased and noisy
 estimates. Similar results are found in the bivariate setting with a balanced and highly overlapping two-components GMM (scenarios B1-B5 from Table \ref{tab:parameter-configuration-bivariate}), with the best performance reached with the \emph{k}-means initialisation method, followed by MBHC. This is emphasised in supplementary Figure \ref{fig:general-balanced-overlapping-bivariate}, in the top three most complex scenarios, namely B1, B2 and B5. If the shape of the covariance matrix is pretty well-recovered, no matter the package, the Hellinger distances are significantly higher (and thus the estimate further away from the target distribution) with the random and rebmix methods.
+
+\color{blue}
+
+Similarly, in the high-dimensional scenario HD7 of Table \ref{tab:parameter-configuration-HD}), presenting balanced but highly overlapping clusters with a full covariance structure, the best performances was obtained with \emph{k}-means initialisation, while the rebmix initialisation returns the most biased and noisy estimates. While \pkg{EMMIXmfa} performed well when it provided estimates, it returned an error in most cases\^{}{[}as we can note out in Column \emph{Success} of Table \ref{tab:HD-overlapping-balanced-ellipsoidal-pdf}. The least biased estimates are returned by \pkg{mixtools} and \pkg{Rmixmod} and the least noisy by \pkg{flexmix}, \pkg{mclust} and \pkg{GMKMCharlie} (smaller MSE). Interestingly, in the high-dimensional setting, the packages \pkg{EMCluster} and \pkg{bgmm} differentiate from the other packages, exhibiting worse performance. In particular, on Panel E of Figure (fig:HD-overlapping-balanced-ellipsoidal-plot), the components' proportions span the \(]0-1[^k\) simplex.
+On the contrary, the \pkg{EMCluster} package, and to a lesser extent, the \pkg{bgmm} package, perform surprisingly well when datasets were simulated with an underlying spherical covariance structure, even though the estimation was not performed explicitly with this constraint (Table \ref{tab:HD-overlapping-spherical-pdf}
+). Indeed, it seems like that that the off-diagonal terms tend to converge towards 0, as showcased in Figure \ref{fig:HD-overlapping-spherical-plot}, in Panel C, in which the fourth row from top represents the bootstrap intervals associated to the pairwise covariance between dimension 1 and 2 of each cluster.\\
+\color{black}
 
 \textbf{Unbalanced and overlapping components}
 
@@ -671,6 +683,14 @@ First, we observe that the the random and rebmix initialization methods have sim
 and \ref{tab:multivariate-overlapping-unbalanced-uncorrelated-pdf}). Second, the estimates differ across packages only in these two complex scenarios, with packages \pkg{Rmixmod} and \pkg{mixtools} returning more accurate estimates than the others.
 It it is particularly emphasised in Scenario B15, where the component-specific covariance matrices are diagonal with same non-null input, and thus should present spherical density distributions. However, only the first class of packages correctly recovers the spherical bivariate \(95\%\) confidence regions while they are slightly ellipsoidal with the second class of packages (Panel B, Figure \ref{fig:multivariate-overlapping-unbalanced-uncorrelated}).
 
+\color{blue}
+
+With full covariance structures and unbalanced proportions, as depicted in the high-dimensional Scenario HD8a) and b) of Table \ref{tab:parameter-configuration-HD}, the general observations stated in the previous subsection for the high dimensional setting hold, namely that the least biased estimates are returned by packages not specifically designed for high-dimensional data, with the \emph{k}-means initialisation (Table @ref(tab:HD-impact-num-observations-pdf-tab2 and Figure \ref{fig:HD-impact-num-observations}). Furthermore, the pkg\{EMCluster\} and \pkg{bgmm} packages and the two packages dedicated to high-dimensional, perform similarly with \(n=200\) observations (sub-scenario a) and \(n=2000\) observations (sub-scenario b), whereas we would expect narrower and less biased confidence intervals by increasing the number of observations by a factor of 10.
+
+Finally, with spherical covariance structures and unbalanced proportions, the best performances, both in terms of bias and variability, are obtained with \pkg{flexmix}, \pkg{mclust} and \pkg{GMKMCharlie}. Indeed, as detailed later in \protect\hyperlink{conclusions}{Conclusions}, these packages are more sensitive to the choice of the initialization method and have a greater tendency to get trapped in the neighbourhood of the initial estimates (Table \ref{tab:HD-overlapping-spherical-pdf} and Figure \ref{fig:HD-overlapping-spherical-plot}). Accordingly, \emph{k}-means initialisation performs best since it assumes independent and homoscedastic features for each cluster.
+Furthermore, \pkg{EMMIXmfa} is the package that best estimates the off-diagonal terms in this setting, as highlighted in Table \ref{tab:HD-overlapping-spherical-pdf-offterms}.
+\color{black}
+
 \textbf{Identification of two classes of packages with distinct behaviours}
 
 By summarizing the results obtained across all simulations, we identify two classes of packages with distinct behaviours (Figure
@@ -686,18 +706,18 @@ By summarizing the results obtained across all simulations, we identify two clas
   the initialisation algorithm are not met.
 \end{itemize}
 
-Panels A and B display, respectively in the univariate and bivariate setting, the heatmap of the Pearson correlation between the estimated parameters across the benchmarked packages. In both cases, we emphasise the differences between them by choosing the most discriminative scenario, which reveals to be the one featuring the most unbalanced and overlapping components (scenario U9, Table \ref{tab:parameter-configuration-univariate} in the univariate setting and scenario B11, Table \ref{tab:parameter-configuration-univariate}, for the bivariate simulation), and the most discriminative initialisation method, namely the random method.
+Panels A, B and C display, respectively in the univariate, bivariate and high-dimensional setting, the heatmap of the Pearson correlation between the estimated parameters across the benchmarked packages for the most discriminative scenario (the one featuring the most unbalanced and overlapping components): scenario U9, Table \ref{tab:parameter-configuration-univariate} in the univariate setting, scenario B11, Table \ref{tab:parameter-configuration-bivariate}, for the bivariate simulation and scenario HD8, Table \ref{tab:parameter-configuration-HD} for the high-dimensional simulation, with the \emph{k}-means initialisation.
 
-\begin{figure}[h]
+We further identified with this representation minor differences for the estimation of the parameters between \pkg{Rmixmod} and \pkg{mixtools}, while three subgroups can be identified in the second class of packages: the first subset with \pkg{bgmm} and \pkg{mclust}, the second subset with \pkg{EMCluster} and \pkg{GMKMcharlie} packages and the \pkg{flexmix} package, which clearly stands out from the others, as being the one most likely to be trapped at the boundaries of the parameter space. After examining the source codes of the packages, we attribute this differences to custom implementation choices of the EM algorithm, such as the way numerical underflow is managed or the choice of a relative or absolute scale to compare consecutive computed log-likelihoods (see \protect\hyperlink{em-implementation-differences-across-reviewed-packages}{EM-implementation differences across reviewed packages} and Panel D, Figure \ref{fig:dichotomy-package-conclusion}). \color{green} In the high-dimensional setting, the second class of packages showed additional heterogeneity, with \pkg{EMCluster} and \pkg{bgmm} setting themselves apart from the other three packages.\color{black}
+
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/dichotomy_package_conclusion} 
 
 }
 
-\caption{Panels A and B show respectively the heatmap of the Pearson correlation in the univariate and in the multivariate setting between the parameters estimated across the evaluated packages. The correlation matrix was computed using the function \code{stats::cor} with option \textit{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{Complexheatmap}. Panel C represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix \nameref{sec:em-differences}.}\label{fig:dichotomy-package-conclusion}
+\caption{Panels A, B and C show respectively the heatmap of the Pearson correlation in the univariate, bivariate and high-dimensional framework between the parameters estimated by the packages, evaluated for the most discriminating and complex scenario. The correlation matrix was computed using the function \code{stats::cor} with option \textit{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{Complexheatmap}. Panel D represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix \nameref{sec:em-differences}.}\label{fig:dichotomy-package-conclusion}
 \end{figure}
-
-We further identified with this representation minor differences for the estimation of the parameters between \pkg{Rmixmod} and \pkg{mixtools}, while three subgroups can be identified in the second class of packages: the first subset with \pkg{bgmm} and \pkg{mclust}, the second subset with \pkg{EMCluster} and \pkg{GMKMcharlie} packages (the difference between them is hardly noticeable with a small number of components) and the \pkg{flexmix} package, which clearly stands out from the others, as being the one most likely to be trapped at the boundaries of the parameter space. After examining the source codes of the packages, we attribute this differences to custom implementation choices of the EM algorithm, such as the way numerical underflow is managed or the choice of a relative or absolute scale to compare consecutive computed log-likelihoods (detailed in \protect\hyperlink{em-implementation-differences-across-reviewed-packages}{EM-implementation differences across reviewed packages}). Of note, in both the univariate and multivariate setting (Figure \ref{fig:heatmap-all-correlation-plots-univariate}), the quantiles and \emph{k}-means initialisation methods tend to smooth out the differences between the packages, followed by the MBHC method while the rebmix and random initialisation methods tend to increase them.
 
 \textbf{Failed estimations}
 
@@ -705,7 +725,14 @@ Finally, in some cases, neither the specific EM algorithm implemented by each pa
 
 In most cases, this phenomenon occurs with mixtures featuring both strongly unbalanced and highly-overlapping components, with up to \(20\%\) initialisations failed for the most difficult scenario B11 (Table \ref{tab:parameter-configuration-bivariate}), \(10\%\) for the second most difficult one, namely scenario B15 and on average, an over-estimation of three components in \(4\%\) of the estimations.
 
-Removing errors proceeding from the initialisation method, only the \pkg{flexmix} package failed in returning an estimate matching the user criteria in some scenarios of the univariate and bivariate settings. In both cases, the strong assumption that any cluster with less than \(5\%\) of the observations is irrelevant, results in trimming one or more components\footnote{With a two-components mixture like our bivariate scenario, this even implies to consider an unimodal distribution of the dataset}. This strong agnostic constraint on component proportions led to failures in scenarios featuring strongly overlapping clusters, with up to \(20\%\) failed estimations with the random initialisation method in scenario B11 (Table \ref{tab:parameter-configuration-bivariate}) and \(80\%\) failed estimations in the univariate setting\footnote{the gap proceeds from the stronger level of imbalance and the greater number of components} with the rebmix initialisation with scenario 9, Table \ref{tab:parameter-configuration-univariate}.
+Removing errors proceeding from the initialisation method, only the \pkg{flexmix} package failed in returning an estimate matching the user criteria in some scenarios of the univariate and bivariate settings. In both cases, the strong assumption that any cluster with less than \(5\%\) of the observations is irrelevant, results in trimming one or more components\footnote{With a two-components mixture like our bivariate scenario, this even implies to consider an unimodal distribution of the dataset}. This strong agnostic constraint on component proportions led to failures in scenarios featuring strongly overlapping clusters, with up to \(20\%\) failed estimations with the random initialisation method in scenario B11 (Table \ref{tab:parameter-configuration-bivariate}) and \(80\%\) failed estimations in the univariate setting\footnote{the gap proceeds from the stronger level of imbalance and the greater number of components} with the rebmix initialisation with scenario U9, Table \ref{tab:parameter-configuration-univariate}.
+
+\color{blue}
+
+In a relatively high dimensional framework, as tested on our third benchmark (Table \ref{tab:parameter-configuration-HD}), none of the initialisations performed with the random method, carried out with \code{EMCluster::rand.EM()}, succeed in returning a valid parametrisation. Indeed, over the 16 scenarios tested, the covariance returned during the initialisation was systematically non-positive definite for at least one of the components, violating the properties of covariance matrices.
+Furthermore, as shown by the comparison of summary metrics with \(n=200\) and \(n=2000\) observations in Tables \ref{tab:HD-impact-num-observations-pdf-tab1}
+and \ref{tab:HD-impact-num-observations-pdf-tab2}, respectively for the simplest scenario HD1 and the most complex one HD8, the rebmix initialization on the one hand, and the packages dedicated to high dimensionality or those of the second class of packages that show a particular behaviour, present much more failures than the \emph{k}-means or hc initialisation, especially with the first class or the other packages of the second class.
+\color{black}
 
 \hypertarget{conclusions}{%
 \section{Conclusions}\label{conclusions}}
@@ -723,14 +750,12 @@ level of overlap and the imbalance of the mixture proportions on the
 quality of the estimation.
 
 Interestingly, the EM algorithm sometimes tends to returns biased and
-inefficient estimators when the components of the GMM under study highly overlap, confirming the experimental observations reported in papers (Lourens et al. 2013; Leytham 1984; D. Xu and Knight 2010). This seems to contradict the statement from Leytham (1984) that shows
-the theoretical asymptotic consistency, unbiasedness and efficiency of the MLE of GMMs. However, the key assumption of the demonstration is the definition of a local environment, implying to define borders for which the conditions of the theorem hold. Thus, it can expected that the EM algorithm sometimes fail to reach the global maximum of the distribution, with multiple local extremes.
+inefficient estimators when the components of the GMM under study highly overlap, confirming the experimental observations reported in papers (Lourens et al. 2013; Leytham 1984; D. Xu and Knight 2010). This seems to contradict the statement from Leytham (1984) that shows the theoretical asymptotic consistency, unbiasedness and efficiency of the MLE of GMMs. However, the key assumption of the demonstration is the definition of a local environment, implying to define borders for which the conditions of the theorem hold. Thus, it can expected that the EM algorithm sometimes fail to reach the global maximum of the distribution, with multiple local extremes.
 
 When all components are well-separated or with a relatively small number of components (three or fewer), we found that the best
 estimation (lowest MSE and bias) is reached with the latest initialisation method developed, namely the rebmix one. Notably, the global maximum is always properly found in our simulations with distinguishable components. Yet, with overlapping components, the least biased and variable estimates overall are obtained with \emph{k}-means
 initialisation, enforcing the robustness of the method while the
-assumptions for using it are not met. On the contrary, with unbalanced and numerous components (above three), the quantiles initialisation leads to the most biased estimates while the rebmix initialisation induces the highest variability. Indeed, rebmix
-initialisation is not fitted for highly overlapping mixtures, since one of its most restrictive assumption is that each generated interval of the empirical mixture distribution can be associated unambiguously to a component (see \protect\hyperlink{initialisation-of-the-em-algorithm}{Initialisation of the EM algorithm} and p15 in Nagode (2015)).
+assumptions for using it are not met. On the contrary, with unbalanced and numerous components (above three), the quantiles initialisation leads to the most biased estimates while the rebmix initialisation induces the highest variability. Indeed, rebmix initialisation is not fitted for highly overlapping mixtures, since one of its most restrictive assumption is that each generated interval of the empirical mixture distribution can be associated unambiguously to a component (see \protect\hyperlink{initialisation-of-the-em-algorithm}{Initialisation of the EM algorithm} and p15 in Nagode (2015)). \color{green} Furthermore, rebmix is not particularly adjusted to deal with high-dimensionality, displaying systematically poorer performance comparared to other more canonical initialisation strategies, such as \emph{k}-means or hierarchical clustering, as illustrated by the summary metrics listed in Appendix \protect\hyperlink{supplementary-figures-and-tables-in-the-hd-simulation}{Supplementary Figures and Tables in the HD simulation}. Higher risk of returning a sub-optimal extremum likely arises from the increase of the average distance between each point of the sampling space that exponentially surges with the number of dimensions. Thus, we expect that most of the equally-large intervals binning the sampling space and that are used to initiate the rebmix algorithm contain either no or only observation, preventing from retrieving the numerically defined mode of the distribution and increasing the risk of initating the algorithm in a spurious neighbourhood. \color{black}
 
 About the remaining initialisation strategies, we observed that random initialisation yields for some simulations, even in the well-separated case, highly biased estimates, far from the true
 parameters. Consistent with our observations, it was shown in
@@ -757,9 +782,11 @@ an unbiased but non MLE-estimate of the covariance matrix, without any clear imp
 of the overall performance in our simulations.
 
 Based on these results, we design a decision tree indicating the best choice of package and initialisation method in relation with the shape of the distribution, displayed in Figure
-\ref{fig:decision-tree-GMMs}. Interestingly, our conclusions are consistent between the univariate and multivariate settings.
+\ref{fig:decision-tree-GMMs}. Interestingly, our conclusions are consistent between the univariate and bivariate settings.
+\color{green} Broadly speaking, the general statements about the behavioural characteristics of the packages with respect to the features of the mixture model to learn mostly hold in a relatively high-dimensional setting. From this, we assume that projection into a lower-dimensional space is only beneficial in a really high-dimensional setting, for example when the number of dimensions exceeds the number of observations, or when unrestricted parameter estimation (with the full covariance structure) is practically infeasible for computational reasons. Finally, it is only by significantly increasing the number of dimensions that we observe a strange behaviour of packages \pkg{bgmm} and \pkg{EMCluster}, displaying much more biased and noisy parameters compared to the other packages benchmarked. Notably, just like the packages dedicated to high dimensional setting, the inferred confidence intervals from bootstrap simulations disprove the expected predictions of the multivariate version of the Central
+Limit Theorem (CLT)\footnote{Indeed, the multidimensional CLT states that the empirical mean of a vector of unbiased parameters, each inferred independently (such the bootstrap distribution we estimated using the EM algorithm with a bootstrap strategy, expected theoretically to be asymptomatically unbiased) converges to a multivariate normal distribution, whose covariance matrix is proportional to the inverse of the square root of the number of observations. Notably, we would expect narrower confidence bands and less biased estimations by increasing the number of observations.}. And while the empirical estimates returned by most of the packages tested satisfy surprisingly well the theory, the performances of high-dimensional packages as well as \pkg{bgmm} and \pkg{EMCluster} stand still with the number of observations, as illustrated with both mixtures that are easy to deconvolve (Table \ref{tab:HD-impact-num-observations-pdf-tab1} or highly-overlapping ones (Table \ref{tab:HD-impact-num-observations-pdf-tab2}. \color{black}
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/decision_tree_GMMs} 
 
@@ -801,6 +828,9 @@ Avila, Luis M., Michael R. May, and Jeff Ross-Ibarra. 2018. \emph{DPP: Inference
 \leavevmode\vadjust pre{\hypertarget{ref-bacci_etal12}{}}%
 Bacci, Silvia, Silvia Pandolfi, and Fulvia Pennoni. 2012. {``A Comparison of Some Criteria for States Selection in the Latent {Markov} Model for Longitudinal Data.''}
 
+\leavevmode\vadjust pre{\hypertarget{ref-baek_etal10}{}}%
+Baek, Jangsun, Geoffrey J. McLachlan, and Lloyd K. Flack. 2010. {``Mixtures of {Factor} {Analyzers} with {Common} {Factor} {Loadings}: {Applications} to the {Clustering} and {Visualization} of {High}-{Dimensional} {Data}.''} \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence} 32 (7): 1298--1309. \url{https://doi.org/10.1109/TPAMI.2009.149}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-R-polySegratioMM}{}}%
 Baker, Peter. 2018. \emph{polySegratioMM: Bayesian Mixture Models for Marker Dosage in Autopolyploids}.
 
@@ -815,6 +845,9 @@ Benaglia, Tatiana, Didier Chauveau, David R. Hunter, and Derek Young. 2009. {``{
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-HDclassif}{}}%
 Berge, Laurent, Charles Bouveyron, and Stephane Girard. 2019. \emph{HDclassif: High Dimensional Supervised Classification and Clustering}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-berge_etal12}{}}%
+Bergé, Laurent, Charles Bouveyron, and Stéphane Girard. 2012. {``{HDclassif}: {An} {R} {Package} for {Model}-{Based} {Clustering} and {Discriminant} {Analysis} of {High}-{Dimensional} {Data}.''} \emph{Journal of Statistical Software}. \url{https://doi.org/10.18637/jss.v046.i06}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-biernacki_etal00}{}}%
 Biernacki, Christophe, Gilles Celeux, and Gerard Govaert. 2000. {``Assessing a {Mixture Model} for {Clustering} with the {Integrated Completed Likelihood}.''} \emph{Pattern Analysis and Machine Intelligence, IEEE Transactions on} 22: 719--25. \url{https://doi.org/10.1109/34.865189}.
@@ -831,6 +864,9 @@ Bouveyron, Charles, Gilles Celeux, and Stéphane Girard. 2011. {``Intrinsic {Dim
 \leavevmode\vadjust pre{\hypertarget{ref-bouveyron_girard09}{}}%
 Bouveyron, Charles, and Stéphane Girard. 2009. {``{Robust Supervised Classification} with {Mixture Models}: {Learning} from {Data} with {Uncertain Labels}.''} \emph{Pattern Recognition} 42 (11): 2649--58. \url{https://doi.org/10.1016/j.patcog.2009.03.027}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-bouveyron_etal07}{}}%
+Bouveyron, Charles, Stéphane Girard, and Cordelia SCHMID. 2007. {``High-{Dimensional} {Data} {Clustering}.''} \emph{Computational Statistics \& Data Analysis}. \url{https://doi.org/10.1016/j.csda.2007.02.009}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-browne_mcnicholas14}{}}%
 Browne, Ryan P., and Paul D. McNicholas. 2014. {``Estimating Common Principal Components in High Dimensions.''} \emph{Advances in Data Analysis and Classification} 8 (2): 217--26. \url{https://doi.org/10.1007/s11634-013-0139-1}.
 
@@ -840,6 +876,9 @@ Cao, Sha, Wennan Chang, and Chi Zhang. 2020. \emph{RobMixReg: Robust Mixture Reg
 \leavevmode\vadjust pre{\hypertarget{ref-cao_spall12}{}}%
 Cao, X., and J. C. Spall. 2012. {``Relative Performance of Expected and Observed Fisher Information in Covariance Estimation for Maximum Likelihood Estimates.''} \url{https://doi.org/10.1109/ACC.2012.6315584}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-cattell66}{}}%
+Cattell, Raymond B. 1966. {``The {Scree} {Test} {For} {The} {Number} {Of} {Factors}.''} \emph{Multivariate Behavioral Research}. \url{https://doi.org/10.1207/s15327906mbr0102_10}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-celeux_etal12}{}}%
 Celeux, Gilles, Stéphane Chrétien, and Florence Forbes. 2012. {``A {Component-wise EM Algorithm} for {Mixtures}.''}
 
@@ -848,6 +887,9 @@ Celeux, Gilles, Sylvia Fruewirth-Schnatter, and Christian P. Robert. 2018. {``Mo
 
 \leavevmode\vadjust pre{\hypertarget{ref-celeux_govaert92}{}}%
 Celeux, Gilles, and Gérard Govaert. 1992. {``A Classification {EM} Algorithm for Clustering and Two Stochastic Versions.''} \emph{Computational Statistics \& Data Analysis} 14 (3): 315--32. \url{https://doi.org/10.1016/0167-9473(92)90042-E}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-chen_chen08}{}}%
+Chen, J., and Z. Chen. 2008. {``Extended {Bayesian} Information Criteria for Model Selection with Large Model Spaces.''} \emph{Biometrika}. \url{https://doi.org/10.1093/biomet/asn034}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-chen16}{}}%
 Chen, Jiahua. 2016. {``Consistency of the {MLE} Under Mixture Models.''}
@@ -872,6 +914,9 @@ Coretto, Pietro, and Christian Hennig. 2016. {``Consistency, Breakdown Robustnes
 
 \leavevmode\vadjust pre{\hypertarget{ref-dai_mukherjea01}{}}%
 Dai, Ming, and Arunava Mukherjea. 2001. {``Identification of the {Parameters} of a {Multivariate Normal Vector} by the {Distribution} of the {Maximum}.''} \emph{Journal of Theoretical Probability} 14 (1): 267--98. \url{https://doi.org/10.1023/A:1007889519309}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-R-clustvarsel}{}}%
+Dean, Nema, Adrian E. Raftery, and Luca Scrucca. 2020. \emph{Clustvarsel: Variable Selection for Gaussian Model-Based Clustering}. \url{https://CRAN.R-project.org/package=clustvarsel}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-delattre_kuhn19}{}}%
 Delattre, Maud, and Estelle Kuhn. 2019. {``Estimating {Fisher Information Matrix} in {Latent Variable Models} Based on the {Score Function}.''}
@@ -921,6 +966,9 @@ Geary, R. C. 1936. {``The {Distribution} of "{Student}'s" {Ratio} for {Non-Norma
 \leavevmode\vadjust pre{\hypertarget{ref-R-flexmix}{}}%
 Gruen, Bettina, and Friedrich Leisch. 2022. \emph{Flexmix: Flexible Mixture Modeling}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-he_chen16}{}}%
+He, Yawei, and Zehua Chen. 2016. {``The {EBIC} and a Sequential Procedure for Feature Selection in Interactive Linear Models with High-Dimensional Data.''} \emph{Annals of the Institute of Statistical Mathematics}. \url{https://doi.org/10.1007/s10463-014-0497-2}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-R-RPMM}{}}%
 Houseman, E. Andres, Sc.D., Devin C. Koestler, and Ph.D. 2017. \emph{RPMM: Recursively Partitioned Mixture Model}.
 
@@ -969,6 +1017,9 @@ Langrognet, Florent, Remi Lebret, Christian Poli, Serge Iovleff, Benjamin Auder,
 \leavevmode\vadjust pre{\hypertarget{ref-leytham84}{}}%
 Leytham, K. M. 1984. {``Maximum {Likelihood Estimates} for the {Parameters} of {Mixture Distributions}.''} \emph{Water Resources Research} 20 (7): 896--902. \url{https://doi.org/10.1029/WR020i007p00896}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-li91}{}}%
+Li, Ker-Chau. 1991. {``Sliced {Inverse} {Regression} for {Dimension} {Reduction}.''} \emph{Journal of the American Statistical Association}. \url{https://doi.org/10.2307/2290563}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-R-MixtureInf}{}}%
 Li, Shaoting, Jiahua Chen, and Pengfei Li. 2016. \emph{MixtureInf: Inference for Finite Mixture Models}.
 
@@ -1002,14 +1053,26 @@ Marandon, Ariane, Tabea Rebafka, Etienne Roquain, and Nataliya Sokolovska. 2022.
 \leavevmode\vadjust pre{\hypertarget{ref-R-MGMM}{}}%
 McCaw, Zachary. 2021. \emph{MGMM: Missingness Aware Gaussian Mixture Models}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-mclachlan_etal03}{}}%
+McLachlan, G. J., D. Peel, and R. W. Bean. 2003. {``Modelling High-Dimensional Data by Mixtures of Factor Analyzers.''} \emph{Computational Statistics \& Data Analysis}, Recent {Developments} in {Mixture} {Model},. \url{https://doi.org/10.1016/S0167-9473(02)00183-4}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-mclachlan_peel00}{}}%
 McLachlan, Geoffrey, and David Peel. 2000. \emph{Finite {Mixture Models}: {McLachlan}/{Finite Mixture Models}}. {John Wiley \& Sons, Inc.} \url{https://doi.org/10.1002/0471721182}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-mclachlan_peel00a}{}}%
+Mclachlan, G., and David Peel. 2000. {``Mixtures of {Factor} {Analyzers}.''} In.
+
+\leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_etal10a}{}}%
+McNicholas, P. D., T. B. Murphy, A. F. McDaid, and D. Frost. 2010b. {``Serial and Parallel Implementations of Model-Based Clustering via Parsimonious {Gaussian} Mixture Models.''} \emph{Computational Statistics \& Data Analysis}, Second {Special} {Issue} on {Statistical} {Algorithms} and {Software},. \url{https://doi.org/10.1016/j.csda.2009.02.011}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_etal10}{}}%
-McNicholas, P. D., T. B. Murphy, A. F. McDaid, and D. Frost. 2010. {``Serial and Parallel Implementations of Model-Based Clustering via Parsimonious Gaussian Mixture Models.''} \emph{Computational Statistics \& Data Analysis} 54 (3): 711--23. \url{https://doi.org/10.1016/j.csda.2009.02.011}.
+---------. 2010a. {``Serial and Parallel Implementations of Model-Based Clustering via Parsimonious Gaussian Mixture Models.''} \emph{Computational Statistics \& Data Analysis} 54 (3): 711--23. \url{https://doi.org/10.1016/j.csda.2009.02.011}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_murphy08b}{}}%
+McNicholas, Paul David, and Thomas Brendan Murphy. 2008b. {``Parsimonious {Gaussian} Mixture Models.''} \emph{Statistics and Computing}. \url{https://doi.org/10.1007/s11222-008-9056-0}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_murphy08}{}}%
-McNicholas, Paul David, and Thomas Brendan Murphy. 2008. {``Parsimonious Gaussian Mixture Models.''} \emph{Statistics and Computing} 18 (3): 285--96. \url{https://doi.org/10.1007/s11222-008-9056-0}.
+---------. 2008a. {``Parsimonious Gaussian Mixture Models.''} \emph{Statistics and Computing} 18 (3): 285--96. \url{https://doi.org/10.1007/s11222-008-9056-0}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-pgmm}{}}%
 McNicholas, Paul D., Aisha ElSherbiny, Aaron F. McDaid, and T. Brendan Murphy. 2022. \emph{Pgmm: Parsimonious Gaussian Mixture Models}.
@@ -1098,6 +1161,9 @@ Schlattmann, Peter, Johannes Hoehne, and Maryna Verba. 2022. \emph{CAMAN: Finite
 \leavevmode\vadjust pre{\hypertarget{ref-schwarz78}{}}%
 Schwarz, Gideon. 1978. {``Estimating the {Dimension} of a {Model}.''} \emph{The Annals of Statistics} 6 (2): 461--64. \url{https://doi.org/10.1214/aos/1176344136}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-scrucca10}{}}%
+Scrucca, Luca. 2010. {``Dimension Reduction for Model-Based Clustering.''} \emph{Statistics and Computing}. \url{https://doi.org/10.1007/s11222-009-9138-7}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-scrucca_etal16}{}}%
 Scrucca, Luca, Michael Fop, T. Brendan Murphy, and Adrian E. Raftery. 2016. {``Mclust 5: {Clustering}, {Classification} and {Density Estimation Using Gaussian Finite Mixture Models}.''} \emph{The R Journal} 8 (1): 289--317.
 
@@ -1115,6 +1181,9 @@ Taushanov, Zhivko, and André Berchtold. 2019. {``Bootstrap Validation of the Es
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-AdaptGauss}{}}%
 Thrun, Michael, Onno Hansen-Goos, and Alfred Ultsch. 2020. \emph{AdaptGauss: Gaussian Mixture Models (GMM)}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-tipping_bishop99}{}}%
+Tipping, Michael E., and Christopher M. Bishop. 1999. {``Probabilistic {Principal} {Component} {Analysis}.''} \emph{Journal of the Royal Statistical Society: Series B (Statistical Methodology)}. \url{https://doi.org/10.1111/1467-9868.00196}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-mixreg}{}}%
 Turner, Rolf. 2021. \emph{Mixreg: Functions to Fit Mixtures of Regressions}.
@@ -1404,8 +1473,10 @@ with \code{log1p} the R function dedicated for this Taylor's development. The po
   We stop the algorithm early when the estimates are trapped in the boundaries of the parameter space, typically when the ratio of a component or its associated variance tends to zero. This case rarely occurs in our simulations: once in univariate and never in multivariate.
 \end{itemize}
 
-\hypertarget{parameters-estimation-in-a-high-dimensional-context}{%
-\subsection{Parameters estimation in a high-dimensional context}\label{parameters-estimation-in-a-high-dimensional-context}}
+\hypertarget{parsimonious-parametrisation-of-multivariate-gmms}{%
+\subsection{Parsimonious parametrisation of multivariate GMMs}\label{parsimonious-parametrisation-of-multivariate-gmms}}
+
+\label{subsec:parsimonious-parametrisation}
 
 Parsimonious parametrisation of GMMs models are provided by the following \emph{eigenvalue} factorisation of the covariance matrix (Equation \eqref{eq:covariance-decomposition}):
 
@@ -1487,6 +1558,11 @@ We detail the main characteristics of the 14 parametrisations (28 if we add for 
   Last column displays the 14 most common GMMs parametrisations, by plotting the ellipses and centroids of a three components bivariate GMM parametrised by the mean vector and covariance of each component. For any additional detail, we refer the interested reader to \pkg{mclust} (Scrucca et al. 2016) and \pkg{Rmixmod} (Langrognet et al. 2021) vignettes for a general introduction to GMMs and to (Banfield and Raftery 1993; Celeux and Govaert 1992; Browne and McNicholas 2014) for the closed formulas of the models.
 \end{itemize}
 
+\hypertarget{parameters-estimation-in-a-high-dimensional-context}{%
+\subsection{Parameters estimation in a high-dimensional context}\label{parameters-estimation-in-a-high-dimensional-context}}
+
+\label{subsec:high-dimensional}
+
 However, while parsimonious representations can largely reduce the computational burden, none of them in the general family is able to handle degenerate cases where the number of features, \(D\), exceeds the number of observations \(n\). Likewise situations, when the number of features is consequent, are referred to as high-dimensional, raising the well-known issue of the ``curse of the dimensionality''. Two distinct approaches have been developed in the literature to handle these degenerate cases:
 
 \begin{itemize}
@@ -1499,7 +1575,21 @@ However, while parsimonious representations can largely reduce the computational
 
 When the sub dimension \(d_j\) is known, a closed version is generally available for the M-step of the EM algorithm, however \(d_j\) is itself an hyperparameter to estimate. Though, (Bouveyron, Celeux, and Girard 2011) has shown that a classical Cattell's scree-test could be used to asymptotically estimate the intrinsic dimension of each cluster. Compared to the previous approach, this method has a strong theoretical background and strong impact on the running times performance.
 
-Taking a concrete use case from the help documentation of the package \pkg{HDclassif}, it enabled to cluster a dataset of 10 classes with 130 observations overall and described in a 1024-dimensional space (consider the famous machine-learning digit recognition problem). Variants of these approaches have been developed in the following packages: \pkg{HDclassif}, \pkg{fabMix}, \pkg{EMMIXmfa} and \pkg{pgmm}. We refer the interested reader to the educational vignette of \pkg{HDclassif}: \href{https://rdrr.io/pkg/HDclassif/man/HDclassif-package.html}{HDclassif} and papers (Paul David McNicholas and Murphy 2008; P. D. McNicholas et al. 2010; Paul D. McNicholas and Murphy 2010).
+Taking a concrete use case from the help documentation of the package \pkg{HDclassif}, it enabled to cluster a dataset of 10 classes with 130 observations overall and described in a 1024-dimensional space (consider the famous machine-learning digit recognition problem). Variants of these approaches have been developed in the following packages: \pkg{HDclassif}, \pkg{fabMix}, \pkg{EMMIXmfa} and \pkg{pgmm}. We refer the interested reader to the educational vignette of \pkg{HDclassif}: \href{https://rdrr.io/pkg/HDclassif/man/HDclassif-package.html}{HDclassif} and papers (Paul David McNicholas and Murphy 2008a; P. D. McNicholas et al. 2010a; Paul D. McNicholas and Murphy 2010).
+
+\color{green}
+
+Historically, the first mention of a probabilistic framework with an application to dimension reduction in the context of finite mixture models goes back to Tipping and Bishop (1999), relying in principal component analysis. G. J. McLachlan, Peel, and Bean (2003) and Mclachlan and Peel (2000) extends this original model by postulating that the distribution of the data within any latent class could be described with the tools of the factor analysis field\footnote{Although principal component analysis and factor analysis are closely related, we may differentiate these two approaches by the main purpose intended: while PCA seeks to capture the overall variability of the dataset, factor analysis focuses on describing the within-variability between covariates. In practice, the differences between both approaches in a probabilistic framework are minor, and we can show that PCA is one of the solutions , under reasonable assumptions, of the factor analysis.} Finally, leveraging the parsimonious parametrisations already developed to describe GMMs on the original space (see previous section) , Paul David McNicholas and Murphy (2008b), P. D. McNicholas et al. (2010b) and Bouveyron, Girard, and SCHMID (2007) proposed a variety of reparameterised GMMs, defined directly on the projected subspace and addressing the issue of reducing the number of parameters and improving explicability and reproducibility. Since all methods relying on factor analysis provide with a transition matrix, by keeping the two or three most informative eigen values and their associated eigen vectors, all these methods provide a straightforward visualisation tool to represent high dimensional datasets.
+However, such a method may not be the most adjusted to show the clustering structure and enhance separation between components. Instead, the GMMDR method, first proposed in paper Scrucca (2010) and implemented in function \code{MclustDR} of the \pkg{mclust} package, aims at retrieving the subspace that best captures the underlying cluster structure (for instance, we expect invariance of the global overlap in the orignal space and the corresponding spanning subspace). More precisely, the main purpose of the GMMDR technique is to retrieve the global \emph{change-of-basis matrix} \(\boldsymbol{Q}\) that minimises the differences of the posterior probabilities to assign each observation \(i\) to a given cluster \(s_i\), knowing the value of the observed covariates vector \(\boldsymbol{x}_i\), namely the orientation matrix that ascertains at most the following purpose (Eq. \eqref{eq:GMMDR}):
+
+\begin{equation}
+ \hat{\boldsymbol{Q}} = \arg \max_{\boldsymbol{Q}} \,  \left(\mathbb{P}_{\theta} (S_i=j | \boldsymbol{X} =\boldsymbol{x}_i) = \mathbb{P}_{\theta} (S_i=j | \boldsymbol{X} \boldsymbol{Q}) \right)
+\text{ such that } S \perp \boldsymbol{X} | \boldsymbol{X} \boldsymbol{Q}
+    \label{eq:GMMDR}
+\end{equation}
+
+This procedure itself derives from the \emph{sliced inverse regression} algorithm (K.-C. Li 1991), but instead of conditioning on the known response variable, GMMDR conditions on the estimated MAP cluster assignments. Since the solution returned by the following optimization problem is not unique, we generally coerce the spanning matrix to be orthonormal (any of the vectors forming the basis are pairwise orthogonal, and individually of norm 1).
+\color{black}
 
 \hypertarget{model-selection}{%
 \subsection{Model selection}\label{model-selection}}
@@ -1537,7 +1627,7 @@ and theoretical properties, can be found in Fonseca (2008), Celeux, Fruewirth-Sc
 
 In the second category, the most commonly implemented is the \emph{ICL
 (integrated complete-data likelihood)}, a BIC criterion with an
-additional entropy penalty (McLachlan and Peel 2000). As opposed to \emph{BIC},
+additional entropy penalty (G. McLachlan and Peel 2000). As opposed to \emph{BIC},
 the entropy term reduces the number of components to a well-separated
 and readable clustering. Hence, it tends to underestimate their true
 number when components are overlapping. Alternative similar metrics are
@@ -1556,8 +1646,8 @@ can not be rejected anymore. Under standard regularity conditions of
 Cramer's theorem, Wilk's theorem states that the Likelihood Ratio
 distribution follows asymptotically a \(\chi^2\) distribution, but
 unfortunately these conditions are not met in mixture models
-(McLachlan and Peel 2000). To counterbalance it, bootstrap inference
-(McLachlan and Peel 2000) is often used to derive an empirical distribution of
+(G. McLachlan and Peel 2000). To counterbalance it, bootstrap inference
+(G. McLachlan and Peel 2000) is often used to derive an empirical distribution of
 the Likelihood Ratio.
 
 \hypertarget{derivation-of-confidence-intervals-in-gmms}{%
@@ -1572,7 +1662,7 @@ distribution or at least the variability of the estimated parameters,
 which can reveal useful to derive confidence intervals. However,
 obtaining the distribution or even an asymptotic approximation of the
 distribution of the parameters is not feasible in practice with mixture
-models (McLachlan and Peel 2000). Hence, most authors recommend to use
+models (G. McLachlan and Peel 2000). Hence, most authors recommend to use
 bootstrap methods for the generation of confidence intervals, as
 suggested in (Efron and Tibshirani 1993; Basford et al. 1997).
 
@@ -1717,7 +1807,7 @@ misclassifying component 2 as component 1. Total overlap is since the
 sum of red and green area, in Figure
 \ref{fig:OVL-represention-pdf}.
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{chassagnol-becht-nuel-benchmark-of-Gaussian-mixtures_files/figure-latex/OVL-represention-pdf-1} 
 
@@ -1812,7 +1902,7 @@ assigned to the maximum a posteriori (MAP) estimate Equation
 making no assumption of homoscedascity or equibalanced clusters. Its
 main drawback is to not take into account uncertainty of the cluster
 assignment, inducing \emph{inconsistency} of the algorithm
-(McLachlan and Peel 2000). EM*, referred in Kurban, Jenne, and Dalkilic (2017) and implemented
+(G. McLachlan and Peel 2000). EM*, referred in Kurban, Jenne, and Dalkilic (2017) and implemented
 in the \CRANpkg{DCEM} package, is a faster implementation of the CEM
 algorithm, with roughly a twice smaller complexity. To do so, only the
 posterior distributions associated to the lower half of the most
@@ -1971,7 +2061,7 @@ distribution bounded by an interval five times as big as the 0.05 and
 the five reviewed initialisation methods, except with \pkg{otrimle}
 which has its own hierarchical clustering initialisation method.
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/univariate/outliers} 
 
@@ -2077,7 +2167,7 @@ criteria:
   \CRANpkg{pgmm} (Paul D. McNicholas et al. 2022) packages. The \CRANpkg{sensory}
   (Franczak, Browne, and McNicholas 2016) package both imputes missing data and performs factor
   regression on a subspace up to 3 dimensions at most, but requires
-  the user to provide its own initial estimates.
+  the user to provide its own initial estimates. \color{green} Alternatively, \CRANpkg{clustvarsel} (Dean, Raftery, and Scrucca 2020) discards the least informative variables, in an attempt to find a locally optimal subset of variables that best discriminate clusters. \color{black}
 \item
   We assume that our original data is continuous. However, some
   packages are dedicated to deal with discrete data, for instance
@@ -2162,7 +2252,7 @@ Among them, \pkg{mclust} and \pkg{flexmix} are largely the most popular,
 followed by \pkg{mixtools} and increasingly popular \pkg{Rmixmod}
 package.
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{chassagnol-becht-nuel-benchmark-of-Gaussian-mixtures_files/figure-latex/trend-package-pdf-1} 
 
@@ -2171,20 +2261,31 @@ package.
 \caption{Number of daily downloads (logarithmic scale) from the CRAN mirror from the $1^\text{st}$ of January to the $30^{\text{th}}$ April 2022 for the seven R packages reviewed.}\label{fig:trend-package-pdf}
 \end{figure}
 
+\color{green}
+
+Only the packages dedicated to high-dimensionality, listed in our first bullet point, are relevant to compare in a benchmark comparing performance of algorithms with an exponential number of features. Indeed, while some packages computing mixtures of regressions do implement features to deal with high-dimensional datasets, such as \pkg{RobMixReg} and \pkg{fmerPack}, they all assume a diagonal or even spherical covariance structure, and accordingly independent covariates\footnote{Note that with only some workarounds, moving from a regression framework to a more standard clustering task is straightforward, replacing the design matrix storing covariates by a constant term.}.
+
+The two existing strategies are then limited to projection to a smaller, informative subspace, usually within the theoretical framework of factor analysis, including principal component analysis (PCA), or to various variable selection strategies.\\
+We quickly discard \pkg{fabMix}, since it only retrieves the parameters of GMMs within a Bayesian framework, while we focused on strategies retrieving the MLE through the EM algorithm. The core function \code{pgmmEM} of \pkg{pgmm} package unfortunately includes a seed for the initialization of the algorithm that cannot be disabled. In general, this is bad programming practice, as it is highly recommended to call the seed once and for all for reproducible research, generally before launching the actual benchmark. Instead, by setting the seed internally within the function, we were not able to generate independently new reproducible datasets with that package. Finally, \pkg{clustvarsel} is not really tailored for datasets with a huge number of dimensions, but rather for small datasets displaying few observations. Indeed, by performing a sequential search of the model space, in either forward-backward or backward-forward direction process (namely by respectively adding variables to the null model or by removing variables from the full model with all features), it requires intensive computational resources (indeed, the whole set of models to be tested grows exponentially with the number of dimensions, equating \(2^D\), i.e.~already 1024 models to be tested in dimension 10). Instead of a greedy strategy, it would have been interesting to set up a sequential feature selection process, sampling the model space by taking advantage of the theoretical framework underpinned by the \emph{eBIC} criteria in order to have an equal chance to draw a model of any dimension (J. Chen and Chen 2008; He and Chen 2016)\footnote{By simply sampling uniformly among the \(2^D\) models available, we are much more likely to select parameters with \(D/2\) features on average.}, adopting a strategy commonly adopted in \emph{ensemble learning}.
+\color{black}
+
 \hypertarget{practical-details-for-the-implementation-of-our-benchmark}{%
 \subsection{Practical details for the implementation of our benchmark}\label{practical-details-for-the-implementation-of-our-benchmark}}
 
-First, the number of observations (\(n=200\) and \(n=500\) respectively in the univariate and bivariate setting) was chosen enough high to both lower the probability of generating a sample without drawing any observation from one of the components in case of highly-unbalanced clusters and decreases the \emph{margin of error} related to the random sampling error. Specifically, the probability of generating at least one simulation among the \(N\) generated fo which less than two observations proceed from component \(j\) (the minimal number of elements required to estimate both the mean and the variance of the corresponding cluster), with a two-components mixture of \(n\) observations, is given by the following formula (Equation
-\eqref{eq:random-sampling-risk}):
+\label{subsec:benchmark-details}
+
+First, the number of observations (\(n=200\) and \(n=500\) respectively in the univariate and bivariate setting) was chosen enough high to both lower the probability of generating a sample without drawing any observation from one of the components in case of highly-unbalanced clusters and decreases the \emph{margin of error} related to the random sampling error. Specifically, the probability of generating at least one simulation among the \(N\) generated fo which less than two observations proceed from component \(j\) (the minimal number of elements required to estimate both the mean and the variance of the corresponding cluster), with a two-components mixture of \(n\) observations, is given by the following formula (Equation \eqref{eq:random-sampling-risk}):
 
 \begin{equation}
 1 - \left(1 - (1-p_j)^n - n \times (1-p_j)^{n-1}\times p_j\right)^N
 \label{eq:random-sampling-risk}
 \end{equation}
 
-Interestingly, the probability of generating a sample among the \(N\) repetitions increases exponentially as the level of imbalance increases. For instance, considering \(N=100\) repetitions, \(n=200\) observations per sample and proportion for the minor component \(p_j=0.1\), the probability of generating a degenerate simulation is insignificant: \(1.63 \times 10^{-6}\) while the risk considerably increases, keeping the same general simulation parameters and setting minor proportion to \(p_j=0.05\), with a probability of \(0.04\).
+Interestingly, the probability of generating a sample among the \(N\) repetitions increases exponentially as the level of imbalance increases. For instance, considering \(N=100\) repetitions, \(n=200\) observations per sample and proportion for the minor component \(p_j=0.1\), the probability of generating a degenerate simulation is insignificant: \(1.63 \times 10^{-6}\) while the risk considerably increases, keeping the same general simulation parameters and setting minor proportion to \(p_j=0.05\), with a probability of \(0.04\). \color{green} When it comes to the number of observations selected for the high-dimensional framework, we weaken the stricter definition, that refers to datasets where the number of features is larger than the number of observations\footnote{Indeed, we restrain to GMMs for which the multivariate Gaussian distribution was a proper density function, implying especially that the covariance matrix for each component is positive-definite and invertible. However, when \(D>n\), the covariance matrix is not longer of full rank, which induces that the distribution does span completely over a smaller subspace.}, and rather focuses, by setting \(n=200\), on unravelling the impact in terms of quality of the estimation when only few observations are available to deconvolve mixtures (the number of free parameters, \(k \times \frac{D(D+1)}{2} + kD + 1 = 131\) for a full unconstrained framework with \(k=2\) clusters and \(D=10\) dimensions, is indeed close to the total number of observations available to estimate them).\color{black}
 
 Unless stated explicitly, we keep the default hyper-parameters and custom global options provided by each package. For instance, the \pkg{flexmix} package has a default option, \emph{minprior}, set by default to 0.05 which removes any component present in the mixture with a ratio below \(0.05\). Besides, we only implement the fully unconstrained model in both univariate and multivariate settings, as it is the only parametrisation implemented in all the seven packages and the most popular to perform classic GMM clustering, as no restrictive and difficult-to-test assumptions are required.
+
+\color{green} Additionally, as documented in \protect\hyperlink{parameters-estimation-in-a-high-dimensional-context}{Parameters estimation in a high-dimensional context}, the intrinsic spanning dimension \(d_j\) for each cluster \(j\) is a hyper-parameter, which is generally inferred independently from the GMM estimation itself. While a diversity of methods from the factor analysis field, enumerated in \href{https://en.wikipedia.org/wiki/Factor_analysis\#Criteria_for_determining_the_number_of_factors}{Factor criteria selection}, have been developed to estimate the intrinsic dimension, up to our knwoledge, only two have been implemented in CRAN packages: the \emph{Cattell's scree-test} (Cattell 1966) or the graph of the dimensions' selection using any of the \emph{penalty metric} reviewed in Appendix \protect\hyperlink{model-selection}{Model selection}, generally the BIC or AIC score (Bergé, Bouveyron, and Girard 2012). However, while \pkg{HDclassif} natively implements a performance criteria's method for determining the dimension of the spanning space, performed internally (OU under the hood?) by the core package's function \code{mixsmsn::hdcc}, none of the other packages evaluated implemented a feature for dimension selection function. Instead, we infer it for each of the packages dedicated to high-dimensionality with HDclassif, using using the so-called model ``AkjBkQkD'', for which the intrinsic dimension is common to all clusters, but the characteristics of each subspace are unique for each cluster. Finally, we use the least informative (or alternatively the least constrained parameter, with the most free parameters) for each of the HD packages: we hence used model ``AkjBkQkDk'' with HDclassif, in which not only the individual features of the covariance matrix but also the spanning dimension are unique for each cluster, and the interesting function \code{mcfa} from \pkg{ EMMIXmfa} package, in which the \emph{transition matrix} from the original sample space to a possibly more informative subspace is common for any cluster (termed as orientation matrix in Appendix \protect\hyperlink{parameters-estimation-in-a-high-dimensional-context}{Parameters estimation in a high-dimensional context}, but the individual variances in this projected subspace are unique to a cluster). \color{black}
 
 If all the seven reviewed packages accept initial estimates provided by the user, both the input and the output format differ between them, requiring an intensive processing to standardise both the initial estimates input, and the output estimates. Notably, a well-known issue with the mixture models is that they identifiable up to a permutation of the components (alternatively, changing the index of the labels do not change the likelihood of the model). Assigning one component of the mixture to a specific index is generally immaterial, as the main objective is to return the estimates. However, when it comes to compare the estimated parameters with the true estimates, we must associate unequivocally each component to a specific index. To do so, we set a partial ordering, sorting the components by increasing order of their mean components. Actually, if the ratio or the covariance estimates can be equal for all the components, it is generally not the case for the centroids, as this would result into a degenerate distribution. The consequence and some illustrations of the non-identifiability of the mixture distributions are discussed in section \href{https://stats.stackexchange.com/questions/265898/why-is-a-normal-mixture-model-not-identifiable-and-why-does-it-matter}{Identifiability of finite mixture models}, in Dai and Mukherjea (2001) and in Book Robert and Casella (2010).
 
@@ -2201,6 +2302,13 @@ We detail below some additional functions we implement to both homogenise input 
   \pkg{flexmix} starts by the M-step of the EM algorithm instead of the E-step. Hence, it expects the posterior probabilities assigned to each cluster \(j\) for each observation \(i\), \(\eta_i(j)\) (Equation \eqref{eq:posteriori}), instead of the initial estimates. Both approaches are, however, equivalent.
 \end{itemize}
 
+\color{green}
+
+On the contrary, none of the packages we evaluated that were dedicated to high-dimensional datasets allow the user to provide its own estimates. Thus, when one of the compared initialization methods, as listed in the table \ref{tab: general-parameter-description-pdf}, was inherently available in the package, we use it, if possible using the same initial hyperparameters described in {[}Initialization of the EM algorithm{]}. If this is not the case, we provide a vector containing the prior classes deduced from the MAP estimation, with the parameters returned by the corresponding initialisation method, in a process similar to the one used with HC approach.
+\color{black}
+
+\color{yellow}
+
 In the multivariate scenario, several practical implementation reasons led us to restrain to a bivariate scenario:
 
 \begin{itemize}
@@ -2214,8 +2322,9 @@ In the multivariate scenario, several practical implementation reasons led us to
   Univariate or low dimensional settings are still largely used in a variety of clinical studies. In addition, we can always, at the cost of losing information, restricts to a lower dimensional space using one of the many dimensionality reduction techniques imported from the machine learning field.
 \end{itemize}
 
-In addition to the scenarios listed in
-Tables \ref{tab:parameter-configuration-univariate}-\ref{tab:parameter-configuration-bivariate}, we have computed summary statistics to compare the performances of the reviewed packages:
+\color{black}
+
+In addition to the plots displaying the bootstrap parameter estimations associated to Scenarios in Tables \ref{tab:parameter-configuration-univariate}, \ref{tab:parameter-configuration-bivariate} and \ref{tab:parameter-configuration-HD}, we have computed summary statistics to compare the performances of the reviewed packages:
 
 \begin{itemize}
 \item
@@ -2227,7 +2336,7 @@ Tables \ref{tab:parameter-configuration-univariate}-\ref{tab:parameter-configura
   estimator and its bias: \(\operatorname{MSE} (\hat{\theta})=\mathbb{E} \left[ (\hat{\theta} - \theta)^2 \right] = \operatorname{var}(\hat{\theta}) + \operatorname{Bias}(\hat{\theta})^2\), where \(\operatorname{var}(\hat{\theta})\) is the empiric variance of each
   estimator given by the diagonal terms of the empiric covariance matrix.
 \item
-  We enumerate the number of failed estimations (either an exception returned by a package or a non standardised parameter output).
+  We enumerate the number of successes (either the package or the initial method returns an error, or fails in returning a set of parameters enforcing standard constraints of multivariate GMMs, namely the unit simplex constraint over the ratios, positive-definite covariance matrices and in general no missing or infinite value).
 \item
   For each scenario, we measured independently the running times taken by the initialisation step and by the estimation of the parameters by the EM
   algorithm. To do so, the \CRANpkg{microbenchmark} package
@@ -2235,10 +2344,69 @@ Tables \ref{tab:parameter-configuration-univariate}-\ref{tab:parameter-configura
   the computation of the running times in place of \code{System.time}.
 \end{itemize}
 
-The main differences across packages as well as performance results obtained across packages in each univariate and multivariate simulation scenario are shown in the next section.
+The main differences across packages as well as performance results obtained across packages in each univariate, bivariate and high-dimensional simulation scenario are thoroughly described in the next section.
 
 \hypertarget{appendix-d-comprehensive-report-from-the-univariate-and-multivariate-benchmark}{%
 \section{Appendix D: comprehensive report from the univariate and multivariate benchmark}\label{appendix-d-comprehensive-report-from-the-univariate-and-multivariate-benchmark}}
+
+\hypertarget{em-implementation-differences-across-reviewed-packages}{%
+\subsection{EM-implementation differences across reviewed packages}\label{em-implementation-differences-across-reviewed-packages}}
+
+\label{sec:em-differences}
+
+Most of the distinct behaviours between the packages result from additional choices external to the EM algorithm itself, aiming at partly overcoming its main limitations (Panel B, Figure \ref{fig:heatmap-all-correlation-plots-univariate}). We detail below their differences ranked by decreasing order of their leverage effect on the final estimate:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Most of the differences between the two classes of packages (Figure \ref{fig:dichotomy-package-conclusion}) are
+  related to the either relative or absolute choice for the termination criterion of the EM algorithm. Given an user-defined threshold, the \emph{absolute method} early stops the estimation by comparing the difference between two consecutive log-likelihoods, \(|\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)|\), while the \emph{relative method} examines the variation rate, \(\left\lvert\frac{\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)}{\ell(\hat{\theta}_{q-1}|X)}\right\lvert\).
+\item
+  Several methods can be used to deal with numerical underflow, mostly happening with highly unlikely observations, distant from any centroid.
+
+  \begin{itemize}
+  \item
+    The least elaborate feature is from \pkg{Rmixmod}, returning an error when either any of the posterior probabilities or any of the estimated parameters goes below to the precision threshold of the machine (\ensuremath{2.22\times 10^{-16}} for most OS).
+  \item
+    If the maximal value of any posterior probability is null, \pkg{bgmm} subtracts the minimal logarithm posterior probability to any log-computed probability. This method avoids numerical
+    underflow by preventing computation of null ratios but the correctness of the estimates is no longer enforced\footnote{Additionally, \pkg{bgmm} does
+      not update the estimated variances if any newly computed variance is
+      below the criterion stop. A remarkable side-effect of these features, as
+      shown in Figure \ref{fig:outliers}, is that the \pkg{bgmm} package is
+      less sensitive to the presence of outliers.}.
+  \item
+    The remaining packages handled numeric underflow in a more convincing
+    manner as they guarantee to return the MLE estimate. The \pkg{flexmix}, \pkg{GMKMcharlie} and \pkg{EMCluster}
+    packages use the same log-rescaling tip detailed in (\protect\hyperlink{application-of-the-em-algorithm-to-gmms}{Application of the EM algorithm to GMMs}). The \pkg{mixtools} and
+    \pkg{mclust} packages use a variant of this trick, taking profit of the factorisation
+    by the greatest element (Equation \eqref{eq:trick-underflow}, Equation 3 p.5 Benaglia et al. (2009)), but without exploiting the tip of Taylor's development over \(\log(1+x)\):
+  \end{itemize}
+\end{enumerate}
+
+\begin{equation}
+\eta_{i} (j) = \frac{p_{j} \, \varphi_{\zeta_j} (x)}{\sum_{j=1}^k p_{j} \, \varphi_{\zeta_j} (x)}=\frac{\frac{p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}{1+ \frac{\sum_{j\neq j_{\min}} p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}
+    \label{eq:trick-underflow}
+\end{equation}
+
+In both cases, the computation of the smallest posterior probability, the most proned to be assigned a null value, is avoided, avoiding inconsistent ratios of type \(0/0\).
+
+\begin{itemize}
+\tightlist
+\item
+  The previous two items deal with specific numeric limitations, but do not directly address one of the main theoretical limitation of the EM algorithm, namely the risk of falling into a suboptimal maximum, plateau or getting trapped on the boundary space (occurs when the proportion of one of the component converges to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default \(10^{-8}\)). \pkg{flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{flexmix} removes any component whose associated weight is by default below \(0.05\) (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)\footnote{Indeed, at least one of the component was removed in \(80\%\) of our estimations in the unbalanced and overlapping case (scenario U9 in \ref{tab:parameter-configuration-univariate}) and in \(20\%\) of the simulations in the unbalanced and well-separated case (scenario U3 in \ref{tab:parameter-configuration-univariate}).}, while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \eqref{eq:covariance-decomposition})\footnote{These options are set respectively to 0 and \(+\infty\) by default, thus they did not impact our simulations}.
+\end{itemize}
+
+We enumerate below some additional features supplied by the packages:
+
+\begin{itemize}
+\item
+  In addition to log rescaling, \pkg{GMKMcharlie} includes an additional argument, \emph{embedNoise}, to avoid degenerate GMMs by adding a small constant to any diagonal term (by default \(10^{-6}\)). Besides, instead of controlling whether there was a relative change of the log-likelihood, the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations\footnote{In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class. However, the use of an Euclidean distance criterion may be problematic when parameters are not on the same order of magnitude, requiring their prior normalisation}. Finally, since \pkg{GMKMcharlie} has implemented a parallelised version of the algorithm, it ensures using a a time limit that the algorithm indeed terminates (by default, set to one hour).
+\item
+  \pkg{flexmix} performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor \(n-1\) instead of the number of observations \(n\)). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
+\end{itemize}
+
+\newpage
 
 \hypertarget{supplementary-figures-and-tables-in-the-univariate-simulation}{%
 \subsection{Supplementary Figures and Tables in the univariate simulation}\label{supplementary-figures-and-tables-in-the-univariate-simulation}}
@@ -2353,7 +2521,7 @@ individual components.
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_balanced_separated} 
 
@@ -2443,7 +2611,7 @@ true value of the parameter is represented as a dashed red line. The bold black 
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_unbalanced_separated} 
 
@@ -2518,7 +2686,7 @@ true value of the parameter is represented as a dashed red line. The bold black 
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_balanced_overlapping} 
 
@@ -2593,7 +2761,7 @@ true value of the parameter is represented as a dashed red line. The bold black 
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/univariate_unbalanced_overlapping} 
 
@@ -2603,7 +2771,7 @@ true value of the parameter is represented as a dashed red line. The bold black 
 \end{figure}
 
 \newpage
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/univariate/univariate_midbalanced} 
 
@@ -2613,7 +2781,7 @@ true value of the parameter is represented as a dashed red line. The bold black 
 \end{figure}
 
 \newpage
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate/heatmap_univariate} 
 
@@ -2623,7 +2791,7 @@ true value of the parameter is represented as a dashed red line. The bold black 
 \end{figure}
 
 \newpage
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/univariate_initialisation_time_computations} 
 
@@ -2813,21 +2981,18 @@ From our experiments, we deduce that the highest OVL is obtained when the main a
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=0.6\linewidth]{figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated} 
 
 }
 
-\caption{Benchmark plots of scenario B11 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such: 
+\caption{Results of scenario B11 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such:
 The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
 In both Panels A and B, the ellipsoids correspond to the $95\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the \code{mixtools::ellipse()} and website \href{https://cookierobotics.com/007/}{How to draw ellipses}. To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
-The running times are displayed in Panel C with the \textit{k}-means initialisation. The number of observations
-(x-axis) and the running time (y-axis) is in $\log(10)$ scale. The points represent median
-running time. The coloured bands represent the $5^{\text{th}}$ and $95^{\text{th}}$ percentiles
-of the running time.
+The running times are displayed in Panel C with the \textit{k}-means initialisation. The number of observations (x-axis) and the running time (y-axis) is in $\log(10)$ scale. The points represent median running time. The coloured bands represent the $5^{\text{th}}$ and $95^{\text{th}}$ percentiles of the running time.
 The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1. We represent them using boxplot representations in Panel D.
-In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \nameref{Supplementary Figures and Tables in the univariate simulation}. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2.}\label{fig:multivariate-overlapping-unbalanced-negative-correlated}
+In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2.}\label{fig:multivariate-overlapping-unbalanced-negative-correlated}
 \end{figure}
 
 \newpage
@@ -2886,13 +3051,13 @@ In panel E we represent the boxplots associated with the distribution of the est
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated} 
 
 }
 
-\caption{Benchmark plots of scenario B12 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and opposite correlated components), with the same layout as Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}.}\label{fig:multivariate-overlapping-unbalanced-opposite-correlated}
+\caption{Results of scenario B12 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and opposite correlated components), with the same layout as Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}.}\label{fig:multivariate-overlapping-unbalanced-opposite-correlated}
 \end{figure}
 
 \newpage
@@ -2951,13 +3116,13 @@ In panel E we represent the boxplots associated with the distribution of the est
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated} 
 
 }
 
-\caption{Benchmark plots of scenario B14 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and positive correlated components), with the same layout as Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}.}\label{fig:multivariate-overlapping-unbalanced-positive-correlated}
+\caption{Results of scenario B14 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and positive correlated components), with the same layout as Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}.}\label{fig:multivariate-overlapping-unbalanced-positive-correlated}
 \end{figure}
 
 \newpage
@@ -3016,20 +3181,20 @@ In panel E we represent the boxplots associated with the distribution of the est
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/bivariate/multivariate_unbalanced_uncorrelated} 
 
 }
 
-\caption{Benchmark plots of scenario B15 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and uncorrelated components), with the same layout as Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}.}\label{fig:multivariate-overlapping-unbalanced-uncorrelated}
+\caption{Results of scenario B15 in Table \ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and uncorrelated components), with the same layout as Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}.}\label{fig:multivariate-overlapping-unbalanced-uncorrelated}
 \end{figure}
 
 In contrast to the univariate setting (\protect\hyperlink{supplementary-figures-and-tables-in-the-univariate-simulation}{Supplementary Figures and Tables in the univariate simulation}), the fastest packages are \pkg{bgmm}, \pkg{EMCluster}, \pkg{flexmix}, and \pkg{Rmixmod}, and the slowest ones \pkg{mclust}, \pkg{GMKMcharlie} and \pkg{mixtools}, independently from the difficulty of the simulation.
 
 Finally, Figures \ref{fig:general-balanced-overlapping-bivariate}, \ref{fig:general-balanced-well-separated-bivariate} and \ref{fig:general-unbalanced-well-separated-bivariate} represent in a synthetic way less interesting scenarios benchmarked with to the left, the contour maps and to the right the corresponding Hellinger boxplots, with one scenario being illustrated per row.
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/bivariate/multivariate_balanced_overlapping} 
 
@@ -3040,7 +3205,7 @@ Finally, Figures \ref{fig:general-balanced-overlapping-bivariate}, \ref{fig:gene
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/bivariate/multivariate_balanced_well_separated} 
 
@@ -3051,7 +3216,7 @@ Finally, Figures \ref{fig:general-balanced-overlapping-bivariate}, \ref{fig:gene
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{figs/bivariate/multivariate_unbalanced_well_separated} 
 
@@ -3060,7 +3225,7 @@ Finally, Figures \ref{fig:general-balanced-overlapping-bivariate}, \ref{fig:gene
 \caption{Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \ref{tab:parameter-configuration-bivariate} featuring unbalanced and well-separated clusters, with the same layout as Figure \ref{fig:general-balanced-overlapping-bivariate}.}\label{fig:general-unbalanced-well-separated-bivariate}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{./figs/bivariate/heatmap_bivariate} 
 
@@ -3077,56 +3242,58 @@ Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of par
 \begin{table}[!h]
 
 \caption{\label{tab:parameter-configuration-HD}The 16 parameter configurations tested to generate the samples in a high dimensional context. The first digit of each ID index refers
-      to an unique parameter configuration (uniquely identified by its level of overlap, entropy and topological structure, either circular or ellippsoidal, 
+      to an unique parameter configuration (uniquely identified by its level of overlap, entropy and topological structure, either circular or ellippsoidal,
       of the covariance matrix, while the lowercase letter depicts the number of observations, a) with $n=200$ and b) with $n=2000$.}
 \centering
 \resizebox{\linewidth}{!}{
-\begin{tabular}[t]{ccccc>{}c}
+\begin{tabular}[t]{ccccc}
 \toprule
-\textbf{ID} & \textbf{OVL} & \textbf{Entropy} & \textbf{nobservations} & \textbf{Proportions} & \textbf{Spherical}\\
+\textbf{ID} & \textbf{OVL} & \textbf{\makecell[r]{Number of \\observations}} & \textbf{Proportions} & \textbf{Spherical}\\
 \midrule
-1a & 1e-04 & 1.00 & 200 & 0.5 / 0.5 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
+HD1a & 1e-04 & 200 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
 \midrule
-1b & 1e-04 & 1.00 & 2000 & 0.5 / 0.5 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
+HD1b & 1e-04 & 2000 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
 \midrule
-2a & 1e-04 & 0.47 & 200 & 0.19 / 0.81 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
+HD2a & 1e-04 & 200 & 0.19 / 0.81 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
 \midrule
-2b & 1e-04 & 0.47 & 2000 & 0.19 / 0.81 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
+HD2b & 1e-04 & 2000 & 0.19 / 0.81 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
 \midrule
-3a & 1e-04 & 1.00 & 200 & 0.5 / 0.5 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
-\midrule
-\addlinespace
-3b & 1e-04 & 1.00 & 2000 & 0.5 / 0.5 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
-\midrule
-4a & 1e-04 & 0.47 & 200 & 0.21 / 0.79 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
-\midrule
-4b & 1e-04 & 0.47 & 2000 & 0.21 / 0.79 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
-\midrule
-5a & 2e-01 & 1.00 & 200 & 0.5 / 0.5 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
-\midrule
-5b & 2e-01 & 1.00 & 2000 & 0.5 / 0.5 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
+HD3a & 1e-04 & 200 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
 \midrule
 \addlinespace
-6a & 2e-01 & 0.47 & 200 & 0.15 / 0.85 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
+HD3b & 1e-04 & 2000 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
 \midrule
-6b & 2e-01 & 0.47 & 2000 & 0.15 / 0.85 & \cellcolor{green}{\textcolor{white}{TRUE}}\\
+HD4a & 1e-04 & 200 & 0.21 / 0.79 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
 \midrule
-7a & 2e-01 & 1.00 & 200 & 0.5 / 0.5 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
+HD4b & 1e-04 & 2000 & 0.21 / 0.79 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
 \midrule
-7b & 2e-01 & 1.00 & 2000 & 0.5 / 0.5 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
+HD5a & 2e-01 & 200 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
 \midrule
-8a & 2e-01 & 0.47 & 200 & 0.69 / 0.31 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
+HD5b & 2e-01 & 2000 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
 \midrule
 \addlinespace
-8b & 2e-01 & 0.47 & 2000 & 0.69 / 0.31 & \cellcolor{red}{\textcolor{white}{FALSE}}\\
+HD6a & 2e-01 & 200 & 0.15 / 0.85 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
+\midrule
+HD6b & 2e-01 & 2000 & 0.15 / 0.85 & \includegraphics[scale=0.05]{figs/green_tick.png}\\
+\midrule
+HD7a & 2e-01 & 200 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
+\midrule
+HD7b & 2e-01 & 2000 & 0.5 / 0.5 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
+\midrule
+HD8a & 2e-01 & 200 & 0.69 / 0.31 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
+\midrule
+\addlinespace
+HD8b & 2e-01 & 2000 & 0.69 / 0.31 & \includegraphics[scale=0.05]{figs/red_cross.png}\\
 \midrule
 \bottomrule
 \end{tabular}}
 \end{table}
 
+\newpage
+
 \begin{table}[!h]
 
-\caption{\label{tab:HD-separated-unbalanced-ellipsoidal-pdf}MSE and Bias associated to scenario 4a, in Table
+\caption{\label{tab:HD-separated-unbalanced-ellipsoidal-pdf}MSE and Bias associated to scenario HD4a, in Table
       \ref{tab:parameter-configuration-HD} (unbalanced, separated and ellipsoidal components).}
 \centering
 \resizebox{\linewidth}{!}{
@@ -3134,75 +3301,68 @@ Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of par
 \toprule
 \multicolumn{1}{c}{\textbf{Package}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Initialisation\\Method}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ MSE $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\MSE $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\MSE $\sigma$}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ Bias $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\Bias $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\Bias $\sigma$}}} & \multicolumn{1}{c}{\textbf{$\%$ Success}}\\
 \midrule
- & hc & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{0.3244} & \textcolor{black}{0.1980} & \textcolor{black}{0.0845} & \textcolor{black}{0.0720} & \textcolor{black}{0.395} & \textcolor{black}{0.535} & \cellcolor[HTML]{E75263}{\textcolor{white}{98}}\\
+ & hc & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{0.3244} & \textcolor{black}{0.1980} & \textcolor{black}{0.0845} & \textcolor{black}{0.0720} & \textcolor{black}{0.395} & \textcolor{black}{0.535} & \textcolor{black}{98}\\
 \cmidrule{1-9}
- & hc & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{0.2553} & \textcolor{black}{0.1444} & \textcolor{black}{0.0924} & \textcolor{black}{0.0470} & \textcolor{black}{0.364} & \textcolor{black}{0.596} & \cellcolor[HTML]{311165}{\textcolor{white}{85}}\\
+ & hc & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{green}{0.0106} & \textcolor{black}{0.0020} & \textcolor{green}{0.056} & \textcolor{black}{0.097} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{0.2553} & \textcolor{black}{0.1444} & \textcolor{black}{0.0924} & \textcolor{black}{0.0470} & \textcolor{black}{0.364} & \textcolor{black}{0.596} & \textcolor{black}{85}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{0.0337} & \textcolor{black}{0.0214} & \textcolor{black}{0.0107} & \textcolor{black}{0.0070} & \textcolor{black}{0.064} & \textcolor{green}{0.096} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{0.0338} & \textcolor{black}{0.0216} & \textcolor{green}{0.0106} & \textcolor{black}{0.0074} & \textcolor{black}{0.064} & \textcolor{green}{0.096} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{0.4818} & \textcolor{black}{0.1152} & \textcolor{black}{0.3442} & \textcolor{black}{0.0320} & \textcolor{black}{0.223} & \textcolor{black}{2.329} & \cellcolor[HTML]{B2357B}{\textcolor{white}{94}}\\
+ & hc & \textcolor{black}{0.0337} & \textcolor{black}{0.0214} & \textcolor{black}{0.0107} & \textcolor{black}{0.0070} & \textcolor{black}{0.064} & \textcolor{green}{0.096} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{0.0338} & \textcolor{black}{0.0216} & \textcolor{green}{0.0106} & \textcolor{black}{0.0074} & \textcolor{black}{0.064} & \textcolor{green}{0.096} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{0.4818} & \textcolor{black}{0.1152} & \textcolor{black}{0.3442} & \textcolor{black}{0.0320} & \textcolor{black}{0.223} & \textcolor{black}{2.329} & \textcolor{black}{94}\\
 \cmidrule{1-9}
-\textbf{} & \textbf{hc} & \textbf{\textcolor{green}{0.0333}} & \textbf{\textcolor{green}{0.0212}} & \textbf{\textcolor{black}{0.0107}} & \textbf{\textcolor{black}{0.0023}} & \textbf{\textcolor{green}{0.056}} & \textbf{\textcolor{green}{0.096}} & \textbf{\cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}}\\
+ & hc & \textcolor{green}{0.0333} & \textcolor{green}{0.0212} & \textcolor{black}{0.0107} & \textcolor{black}{0.0023} & \textcolor{green}{0.056} & \textcolor{green}{0.096} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{0.0334} & \textcolor{black}{0.0213} & \textcolor{green}{0.0106} & \textcolor{green}{0.0018} & \textcolor{green}{0.056} & \textcolor{green}{0.096} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{1.5983} & \textcolor{black}{1.0992} & \textcolor{red}{0.3794} & \textcolor{black}{0.3100} & \textcolor{black}{2.018} & \textcolor{black}{2.575} & \textcolor{black}{84}\\
 \midrule
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{0.0334} & \textcolor{black}{0.0213} & \textcolor{green}{0.0106} & \textcolor{green}{0.0018} & \textcolor{green}{0.056} & \textcolor{green}{0.096} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{1.5983} & \textcolor{black}{1.0992} & \textcolor{red}{0.3794} & \textcolor{black}{0.3100} & \textcolor{black}{2.018} & \textcolor{black}{2.575} & \cellcolor[HTML]{22114F}{\textcolor{white}{84}}\\
 \cmidrule{1-9}
- & hc & \textcolor{red}{8.4062} & \textcolor{red}{8.3936} & \textcolor{black}{0.0111} & \textcolor{black}{0.0020} & \textcolor{red}{10.426} & \textcolor{black}{0.149} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{7.9407} & \textcolor{black}{7.9282} & \textcolor{black}{0.0111} & \textcolor{black}{0.0019} & \textcolor{black}{10.081} & \textcolor{black}{0.149} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{black}{7.9803} & \textcolor{black}{7.9514} & \textcolor{black}{0.0273} & \textcolor{black}{0.0044} & \textcolor{black}{10.128} & \textcolor{black}{0.262} & \cellcolor[HTML]{22114F}{\textcolor{white}{84}}\\
+ & hc & \textcolor{red}{8.4062} & \textcolor{red}{8.3936} & \textcolor{black}{0.0111} & \textcolor{black}{0.0020} & \textcolor{red}{10.426} & \textcolor{black}{0.149} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{7.9407} & \textcolor{black}{7.9282} & \textcolor{black}{0.0111} & \textcolor{black}{0.0019} & \textcolor{black}{10.081} & \textcolor{black}{0.149} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{black}{7.9803} & \textcolor{black}{7.9514} & \textcolor{black}{0.0273} & \textcolor{black}{0.0044} & \textcolor{black}{10.128} & \textcolor{black}{0.262} & \textcolor{black}{84}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{4.0605} & \textcolor{black}{3.3317} & \textcolor{black}{0.3357} & \textcolor{red}{0.6500} & \textcolor{black}{5.757} & \textcolor{black}{2.772} & \cellcolor[HTML]{C03A76}{\textcolor{white}{95}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{3.8790} & \textcolor{black}{3.2175} & \textcolor{black}{0.3372} & \textcolor{black}{0.5400} & \textcolor{black}{5.781} & \textcolor{red}{2.777} & \cellcolor[HTML]{CF4070}{\textcolor{white}{96}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{4.0127} & \textcolor{black}{3.2715} & \textcolor{black}{0.3337} & \textcolor{black}{0.5700} & \textcolor{black}{5.680} & \textcolor{black}{2.757} & \cellcolor[HTML]{000004}{\textcolor{white}{80}}\\
+ & hc & \textcolor{black}{4.0605} & \textcolor{black}{3.3317} & \textcolor{black}{0.3357} & \textcolor{red}{0.6500} & \textcolor{black}{5.757} & \textcolor{black}{2.772} & \textcolor{black}{95}\\
+
+ & kmeans & \textcolor{black}{3.8790} & \textcolor{black}{3.2175} & \textcolor{black}{0.3372} & \textcolor{black}{0.5400} & \textcolor{black}{5.781} & \textcolor{red}{2.777} & \textcolor{black}{96}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{4.0127} & \textcolor{black}{3.2715} & \textcolor{black}{0.3337} & \textcolor{black}{0.5700} & \textcolor{black}{5.680} & \textcolor{black}{2.757} & \textcolor{red}{80}\\
 \bottomrule
 \end{tabu}}
 \end{table}
 
 \newpage
 
-\textbackslash begin\{figure\}{[}h{]}
+\begin{figure}
 
-\{\centering \includegraphics[width=0.6\linewidth]{figs/HD/HD-separated-unbalanced-ellipsoidal}
+{\centering \includegraphics[width=0.4\linewidth]{figs/HD/HD-separated-unbalanced-ellipsoidal} 
 
-\}
+}
 
-\textbackslash caption\{Benchmark plots of scenario 4a) in Table \ref{tab:parameter-configuration-HD} (unbalanced, overlapping and negative correlated components), organised as such:
-
-\begin{itemize}
-\item
-  The panel A displays at the top the \textbf{scree plot}, namely the barplot of the eigenvalues resulting from the factor decomposition of a multivariate sample. Eigenvalues are traditionally sorted by decreasing order and normalised to one, such that each of them represents the percentage of within-components variability captured. The scree test consists then in determining the \textit{elbow} of the graph and keep only components to the left of this point (we generally assume that the number of components retained as significant matches the intrinsic dimension of the problem). At the bottom is represented the bivariate factorial projection of a random sample drawn from the 10-dimensional multivariate Gaussian distribution parametrised by Table \ref{tab:parameter-configuration-HD}, each individual point corresponding to the projection induced by a two-dimensional \textit{transition matrix}. This change-of-basis matrix is built from the coordintates of the two eigen vectors associated to the two larger eigen values (to make them unique, the resulting basis is supposed to be orthonormal, implying that that the two vectors are orthogonal and of norm 1). Each component is associated to a specific color, a centroid whose coordinates are given by the mean components' elements in the bivariate projected space and a \(95\%\) confidence ellipse. Finally, we represent on the same graph the correlation circle of the dimensional variables. The longer and redder are the vectors, the more they have contributed to the factor analysis, while their angle with each axis reflects their level of correlation with one of the projected dimension. For instance, we note in this projection that most higher dimensional variables align with the first axis, implying that they their individual distribution is mostly captured by the first dimension. This trend is confirmed by the layout of the scree plot, in which we can note that most of the variability is well captured by the first dimension (up to \(85\%\)). Both panels were displayed respectively using functions \code{factoextra::fviz\_eig} and \code{factoextra::fviz\_pca\_biplot}, while the underlying computations proceed from the principal component analysis performed by \code{ade4::dudi.pca} package preceded by standard scaling of the sampling dataset.
-\item
-  The panel B pictures the \textit{parallel distribution plots} associated to a random sampling of \(n=100\) observations, in the same proportions and using the parameters from scenario 4a) in Table \ref{tab:parameter-configuration-HD}. A parallel coordinate plot maps each row, corresponding to one random draw of the multivariate GMM distribution, as a line profile, with each attribute, corresponding to one of the \(D=10\) dimensions, being represented by an individual point. The color depicts the component origin of each observation. The two PDPs represented were respectively computed with no scaling (on the top) and with univariate standard scaling (each individual variable has a null mean and variance of 1, on the bottom), using the \code{GGally::ggparcoord} function.
-\item
-  The running times are displayed in Panel C with the \textit{k}-means initialisation, since it was the only method natively implemented in all the packages benchmarked. The number of observations (x-axis) and the running time (y-axis) is in \(\log(10)\) scale. The points represent median running time. The coloured bands represent the \(5^{\text{th}}\) and \(95^{\text{th}}\) percentiles of the running time.
-\item
-  The distributions of the Hellinger distances are computed for each component in Panel D, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1.
-\item
-  In panel E we represent the boxplots associated with the distribution of some of the estimates, with one box per pair of package and initialisation method, using the same conventions detailed in \nameref{Supplementary Figures and Tables in the univariate simulation}. Since it was incovenient to represent the whole set of parameters (\(k + kD + k \frac{D \times (D+1)}{2}\) with \(k=2\) and \(D=10\) in our example), we subset some relevant parameters for visualisation, namely the two individual proportions, the means of the first dimension of each component and their associated variances on the first two dimensions, as well as their correlation level. Indeed, the protocol we use to generate relevant parameters imply that no dimension prevails on others, as characterised by the parallel distribution plots (only small differences between the unscaled and normalised parallel representations). Each column is associated to one of the two components, while each row is associated to the distribution of a parameter in a given dimension, namely on the first line the estimated ratios, on the second the distributions of the mean vector on the first dimension, and on the remaining rows the individual variances in dimension 1 and 2 and the pairwise correlation between them.\}\label{fig:HD-separated-unbalanced-ellipsoidal-plot}
-  \textbackslash end\{figure\}
-\end{itemize}
+\caption{Results of scenario HD4a) in Table \ref{tab:parameter-configuration-HD} (unbalanced, overlapping and negative correlated components), organised as such:
+The panel A displays the bivariate factorial projection of a random sample drawn from the 10-dimensional multivariate Gaussian distribution parametrised by Table \ref{tab:parameter-configuration-HD}. Each component is associated to a specific color, a centroid whose coordinates are given by the mean components' elements in the bivariate projected space and a $95\%$ confidence ellipse. Arrows represent the correlation circle of the dimensional variables.
+ Both panels were displayed respectively using functions \code{factoextra::fviz\_eig} and \code{factoextra::fviz\_pca\_biplot} while the underlying computations proceed from the principal component analysis performed by \code{ade4::dudi.pca} preceded by standard scaling of the sampling dataset.
+The panel B pictures the \textit{parallel distribution plots} from a random sampling of $n=100$ observations, generated using \code{GGally::ggparcoord}, and representing the coordinates of each simulated data point in 10 dimensions. 
+The running times are displayed in Panel C with the \textit{k}-means initialisation. The number of observations (x-axis) and the running time (y-axis) is in $\log(10)$ scale.
+The distributions of the Hellinger distances are computed for each component in Panel D, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. 
+In panel E we represent the boxplots associated with the distribution of some of the estimates. Since it was impractical to represent all of the $k + kD + k\frac{D \times (D+1)}{2}$ with $k=2$ and $D=10$ parameters, we only represent the first component's mean, two first components' variances and their covariance term.}\label{fig:HD-separated-unbalanced-ellipsoidal-plot}
+\end{figure}
 
 \newpage
 
 \begin{table}[!h]
 
-\caption{\label{tab:HD-overlapping-balanced-ellipsoidal-pdf}MSE and Bias associated to scenario 7a, in Table
+\caption{\label{tab:HD-overlapping-balanced-ellipsoidal-pdf}MSE and Bias associated to scenario HD7a, in Table
       \ref{tab:parameter-configuration-HD} (balanced, overlapping and ellipsoidal components).}
 \centering
 \resizebox{\linewidth}{!}{
@@ -3210,125 +3370,62 @@ Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of par
 \toprule
 \multicolumn{1}{c}{\textbf{Package}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Initialisation\\Method}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ MSE $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\MSE $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\MSE $\sigma$}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ Bias $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\Bias $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\Bias $\sigma$}}} & \multicolumn{1}{c}{\textbf{$\%$ Success}}\\
 \midrule
- & hc & \textcolor{black}{5.8544} & \textcolor{black}{2.2153} & \textcolor{black}{3.5586} & \textcolor{black}{0.0450} & \textcolor{black}{2.084} & \textcolor{black}{6.704} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{5.4773} & \textcolor{black}{1.9490} & \textcolor{black}{3.4819} & \textcolor{green}{0.0086} & \textcolor{black}{2.323} & \textcolor{black}{6.861} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{6.9243} & \textcolor{black}{2.5185} & \textcolor{black}{4.2898} & \textcolor{black}{0.0620} & \textcolor{black}{2.670} & \textcolor{black}{7.626} & \cellcolor[HTML]{F2645C}{\textcolor{white}{97}}\\
+ & hc & \textcolor{black}{5.8544} & \textcolor{black}{2.2153} & \textcolor{black}{3.5586} & \textcolor{black}{0.0450} & \textcolor{black}{2.084} & \textcolor{black}{6.704} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{5.4773} & \textcolor{black}{1.9490} & \textcolor{black}{3.4819} & \textcolor{green}{0.0086} & \textcolor{black}{2.323} & \textcolor{black}{6.861} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{6.9243} & \textcolor{black}{2.5185} & \textcolor{black}{4.2898} & \textcolor{black}{0.0620} & \textcolor{black}{2.670} & \textcolor{black}{7.626} & \textcolor{black}{97}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{6.0584} & \textcolor{black}{2.4737} & \textcolor{black}{3.5198} & \textcolor{black}{0.0180} & \textcolor{black}{2.565} & \textcolor{black}{7.624} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{5.6388} & \textcolor{black}{2.1597} & \textcolor{black}{3.4549} & \textcolor{black}{0.0140} & \textcolor{black}{2.744} & \textcolor{black}{8.266} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{6.5397} & \textcolor{black}{2.4738} & \textcolor{black}{3.9661} & \textcolor{black}{0.0700} & \textcolor{black}{2.774} & \textcolor{black}{7.764} & \cellcolor[HTML]{EB5760}{\textcolor{white}{93}}\\
+ & hc & \textcolor{black}{6.0584} & \textcolor{black}{2.4737} & \textcolor{black}{3.5198} & \textcolor{black}{0.0180} & \textcolor{black}{2.565} & \textcolor{black}{7.624} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{5.6388} & \textcolor{black}{2.1597} & \textcolor{black}{3.4549} & \textcolor{black}{0.0140} & \textcolor{black}{2.744} & \textcolor{black}{8.266} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{6.5397} & \textcolor{black}{2.4738} & \textcolor{black}{3.9661} & \textcolor{black}{0.0700} & \textcolor{black}{2.774} & \textcolor{black}{7.764} & \textcolor{black}{93}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{9.5015} & \textcolor{black}{5.1348} & \textcolor{black}{4.1086} & \textcolor{black}{0.1000} & \textcolor{black}{3.720} & \textcolor{black}{10.310} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{8.7930} & \textcolor{black}{4.7119} & \textcolor{black}{3.8693} & \textcolor{black}{0.1500} & \textcolor{black}{3.932} & \textcolor{black}{10.108} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{10.3630} & \textcolor{black}{5.6474} & \textcolor{black}{4.4026} & \textcolor{red}{0.2700} & \textcolor{black}{3.798} & \textcolor{black}{10.049} & \cellcolor[HTML]{F2645C}{\textcolor{white}{97}}\\
+ & hc & \textcolor{black}{9.5015} & \textcolor{black}{5.1348} & \textcolor{black}{4.1086} & \textcolor{black}{0.1000} & \textcolor{black}{3.720} & \textcolor{black}{10.310} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{8.7930} & \textcolor{black}{4.7119} & \textcolor{black}{3.8693} & \textcolor{black}{0.1500} & \textcolor{black}{3.932} & \textcolor{black}{10.108} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{10.3630} & \textcolor{black}{5.6474} & \textcolor{black}{4.4026} & \textcolor{red}{0.2700} & \textcolor{black}{3.798} & \textcolor{black}{10.049} & \textcolor{black}{97}\\
 \cmidrule{1-9}
-\textbf{} & \textbf{hc} & \textbf{\textcolor{black}{6.4022}} & \textbf{\textcolor{black}{2.8255}} & \textbf{\textcolor{black}{3.5124}} & \textbf{\textcolor{black}{0.0120}} & \textbf{\textcolor{black}{3.141}} & \textbf{\textcolor{black}{9.086}} & \textbf{\cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}}\\
+ & hc & \textcolor{black}{6.4022} & \textcolor{black}{2.8255} & \textcolor{black}{3.5124} & \textcolor{black}{0.0120} & \textcolor{black}{3.141} & \textcolor{black}{9.086} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{6.4333} & \textcolor{black}{2.8740} & \textcolor{black}{3.5523} & \textcolor{black}{0.0110} & \textcolor{black}{4.210} & \textcolor{red}{11.007} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{6.5527} & \textcolor{black}{2.9643} & \textcolor{black}{3.4862} & \textcolor{black}{0.0580} & \textcolor{black}{3.051} & \textcolor{black}{9.253} & \textcolor{black}{93}\\
 \midrule
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{6.4333} & \textcolor{black}{2.8740} & \textcolor{black}{3.5523} & \textcolor{black}{0.0110} & \textcolor{black}{4.210} & \textcolor{red}{11.007} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{6.5527} & \textcolor{black}{2.9643} & \textcolor{black}{3.4862} & \textcolor{black}{0.0580} & \textcolor{black}{3.051} & \textcolor{black}{9.253} & \cellcolor[HTML]{EB5760}{\textcolor{white}{93}}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{15.9010} & \textcolor{red}{11.5382} & \textcolor{black}{4.2950} & \textcolor{black}{0.1400} & \textcolor{black}{10.846} & \textcolor{black}{10.100} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{15.3377} & \textcolor{black}{10.9441} & \textcolor{black}{4.3716} & \textcolor{black}{0.0087} & \textcolor{red}{10.990} & \textcolor{black}{10.771} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{red}{16.1231} & \textcolor{black}{11.1103} & \textcolor{red}{4.9113} & \textcolor{black}{0.1600} & \textcolor{black}{10.761} & \textcolor{black}{10.513} & \cellcolor[HTML]{EB5760}{\textcolor{white}{93}}\\
+ & hc & \textcolor{black}{15.9010} & \textcolor{red}{11.5382} & \textcolor{black}{4.2950} & \textcolor{black}{0.1400} & \textcolor{black}{10.846} & \textcolor{black}{10.100} & \textcolor{green}{100}\\
+
+ & kmeans & \textcolor{black}{15.3377} & \textcolor{black}{10.9441} & \textcolor{black}{4.3716} & \textcolor{black}{0.0087} & \textcolor{red}{10.990} & \textcolor{black}{10.771} & \textcolor{green}{100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{red}{16.1231} & \textcolor{black}{11.1103} & \textcolor{red}{4.9113} & \textcolor{black}{0.1600} & \textcolor{black}{10.761} & \textcolor{black}{10.513} & \textcolor{black}{93}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{4.8606} & \textcolor{black}{1.6546} & \textcolor{black}{3.1856} & \textcolor{black}{0.0160} & \textcolor{black}{2.030} & \textcolor{black}{7.395} & \cellcolor[HTML]{000004}{\textcolor{white}{15}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{green}{4.4039} & \textcolor{green}{1.4129} & \textcolor{green}{2.9701} & \textcolor{black}{0.0260} & \textcolor{green}{1.734} & \textcolor{green}{6.236} & \cellcolor[HTML]{07051B}{\textcolor{white}{21}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{5.0984} & \textcolor{black}{2.0057} & \textcolor{black}{3.0689} & \textcolor{black}{0.0470} & \textcolor{black}{2.314} & \textcolor{black}{7.613} & \cellcolor[HTML]{010106}{\textcolor{white}{16}}\\
+ & hc & \textcolor{black}{4.8606} & \textcolor{black}{1.6546} & \textcolor{black}{3.1856} & \textcolor{black}{0.0160} & \textcolor{black}{2.030} & \textcolor{black}{7.395} & \textcolor{red}{15}\\
+
+ & kmeans & \textcolor{green}{4.4039} & \textcolor{green}{1.4129} & \textcolor{green}{2.9701} & \textcolor{black}{0.0260} & \textcolor{green}{1.734} & \textcolor{green}{6.236} & \textcolor{black}{21}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{5.0984} & \textcolor{black}{2.0057} & \textcolor{black}{3.0689} & \textcolor{black}{0.0470} & \textcolor{black}{2.314} & \textcolor{black}{7.613} & \textcolor{black}{16}\\
 \bottomrule
 \end{tabu}}
 \end{table}
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
-{\centering \includegraphics[width=0.9\linewidth]{figs/HD/HD-overlapping-balanced-ellipsoidal} 
-
-}
-
-\caption{Benchmark plots of scenario 7a) in Table \ref{tab:parameter-configuration-HD} (balanced and overlapping components, with full covariance structure), with the same layout as Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.}\label{fig:HD-overlapping-balanced-ellipsoidal-plot}
-\end{figure}
-
-\newpage
-
-\begin{figure}[h]
-
-{\centering \includegraphics[width=0.9\linewidth]{figs/HD/HD-overlapping-unbalanced-ellipsoidal} 
+{\centering \includegraphics[width=0.8\linewidth]{figs/HD/HD-overlapping-balanced-ellipsoidal} 
 
 }
 
-\caption{Benchmark plots of scenario 8a) in Table \ref{tab:parameter-configuration-HD} (unbalanced and overlapping components, with full covariance structure), with the same layout as Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.}\label{fig:HD-overlapping-unbalanced-ellipsoidal-plot}
+\caption{Results of scenario HD7a) in Table \ref{tab:parameter-configuration-HD} (balanced and overlapping components, with full covariance structure), with the same layout as Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.}\label{fig:HD-overlapping-balanced-ellipsoidal-plot}
 \end{figure}
 
 \newpage
 
 \begin{table}[!h]
 
-\caption{\label{tab:HD-overlapping-spherical-balanced-pdf}MSE and Bias associated to scenario 5a, in Table
-      \ref{tab:parameter-configuration-HD} (balanced, overlapping and spherical-distributed components).}
-\centering
-\resizebox{\linewidth}{!}{
-\begin{tabu} to \linewidth {>{}l>{}l>{}r>{}r>{}r>{}r>{}r>{}r>{}r}
-\toprule
-\multicolumn{1}{c}{\textbf{Package}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Initialisation\\Method}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ MSE $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\MSE $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\MSE $\sigma$}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ Bias $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\Bias $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\Bias $\sigma$}}} & \multicolumn{1}{c}{\textbf{$\%$ Success}}\\
-\midrule
- & hc & \textcolor{black}{4.2772} & \textcolor{black}{0.9198} & \textcolor{black}{3.3027} & \textcolor{green}{0.017} & \textcolor{black}{0.995} & \textcolor{black}{3.571} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{3.9776} & \textcolor{black}{0.8279} & \textcolor{black}{3.1111} & \textcolor{black}{0.072} & \textcolor{black}{0.841} & \textcolor{black}{3.023} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{9.3136} & \textcolor{black}{2.7793} & \textcolor{red}{6.4009} & \textcolor{black}{0.150} & \textcolor{black}{3.619} & \textcolor{red}{9.061} & \cellcolor[HTML]{641A80}{\textcolor{white}{96}}\\
-\cmidrule{1-9}
- & hc & \textcolor{black}{2.9743} & \textcolor{black}{0.5862} & \textcolor{black}{2.3612} & \textcolor{black}{0.024} & \textcolor{black}{0.449} & \textcolor{black}{2.127} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{2.5629} & \textcolor{black}{0.4642} & \textcolor{black}{2.0855} & \textcolor{black}{0.085} & \textcolor{black}{0.671} & \textcolor{black}{1.670} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{8.2907} & \textcolor{black}{2.6468} & \textcolor{black}{5.5421} & \textcolor{black}{0.120} & \textcolor{black}{3.438} & \textcolor{black}{8.792} & \cellcolor[HTML]{641A80}{\textcolor{white}{96}}\\
-\cmidrule{1-9}
- & hc & \textcolor{black}{2.4088} & \textcolor{black}{0.7261} & \textcolor{black}{1.6153} & \textcolor{black}{0.120} & \textcolor{black}{0.652} & \textcolor{black}{1.980} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{2.0912} & \textcolor{black}{0.5899} & \textcolor{black}{1.4577} & \textcolor{black}{0.091} & \textcolor{black}{0.566} & \textcolor{black}{1.738} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{4.6278} & \textcolor{black}{1.9526} & \textcolor{black}{2.5372} & \textcolor{black}{0.048} & \textcolor{black}{0.632} & \textcolor{black}{2.960} & \cellcolor[HTML]{B6367A}{\textcolor{white}{98}}\\
-\cmidrule{1-9}
-\textbf{} & \textbf{hc} & \textbf{\textcolor{black}{2.5152}} & \textbf{\textcolor{black}{0.5087}} & \textbf{\textcolor{black}{1.9849}} & \textbf{\textcolor{black}{0.024}} & \textbf{\textcolor{green}{0.321}} & \textbf{\textcolor{green}{1.512}} & \textbf{\cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}}\\
-\midrule
-\cmidrule{2-9}
- & kmeans & \textcolor{green}{1.7930} & \textcolor{green}{0.3527} & \textcolor{green}{1.4344} & \textcolor{black}{0.062} & \textcolor{black}{0.593} & \textcolor{black}{2.547} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{6.9275} & \textcolor{black}{2.7461} & \textcolor{black}{4.0985} & \textcolor{black}{0.044} & \textcolor{black}{3.177} & \textcolor{black}{8.535} & \cellcolor[HTML]{641A80}{\textcolor{white}{96}}\\
-\cmidrule{1-9}
- & hc & \textcolor{black}{11.4938} & \textcolor{red}{9.1746} & \textcolor{black}{2.2913} & \textcolor{black}{0.027} & \textcolor{black}{8.899} & \textcolor{black}{1.980} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{11.1438} & \textcolor{black}{9.0384} & \textcolor{black}{2.0912} & \textcolor{black}{0.096} & \textcolor{red}{9.059} & \textcolor{black}{1.682} & \cellcolor[HTML]{F76F5C}{\textcolor{white}{100}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{red}{14.6998} & \textcolor{black}{8.7649} & \textcolor{black}{5.8029} & \textcolor{black}{0.220} & \textcolor{black}{8.135} & \textcolor{black}{8.018} & \cellcolor[HTML]{641A80}{\textcolor{white}{96}}\\
-\cmidrule{1-9}
- & hc & \textcolor{black}{5.6809} & \textcolor{black}{3.7272} & \textcolor{black}{1.7452} & \textcolor{red}{0.410} & \textcolor{black}{5.772} & \textcolor{black}{4.299} & \cellcolor[HTML]{641A80}{\textcolor{white}{96}}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{5.7063} & \textcolor{black}{3.6759} & \textcolor{black}{1.7900} & \textcolor{black}{0.390} & \textcolor{black}{5.788} & \textcolor{black}{4.357} & \cellcolor[HTML]{641A80}{\textcolor{white}{96}}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{5.8175} & \textcolor{black}{3.8142} & \textcolor{black}{1.7592} & \textcolor{black}{0.350} & \textcolor{black}{5.819} & \textcolor{black}{4.349} & \cellcolor[HTML]{000004}{\textcolor{white}{93}}\\
-\bottomrule
-\end{tabu}}
-\end{table}
-
-\newpage
-
-\begin{table}[!h]
-
-\caption{\label{tab:HD-overlapping-spherical-pdf}MSE and Bias associated to scenarios 5a) and 6a), in Table
+\caption{\label{tab:HD-overlapping-spherical-pdf}MSE and Bias associated to scenarios HD5a) and HD6a), in Table
 \ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). We delimite each scenario by doubled backslashes with respectively balanced and unbalanced clusters.}
 \centering
 \resizebox{\linewidth}{!}{
@@ -3336,125 +3433,157 @@ Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of par
 \toprule
 \multicolumn{1}{c}{\textbf{Package}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Initialisation\\Method}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ MSE $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\MSE $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\MSE $\sigma$}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ Bias $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\Bias $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\Bias $\sigma$}}} & \multicolumn{1}{c}{\textbf{$\%$ Success}}\\
 \midrule
- & hc & \textcolor{black}{4.2772 // 19.5172} & \textcolor{black}{0.9198 // 1.9835} & \textcolor{black}{3.3027 // 17.4943} & \textcolor{black}{0.017 // 0.069} & \textcolor{black}{0.995 // 0.6} & \textcolor{black}{3.571 // 4.381} & \textcolor{red}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{3.9776 // 17.2212} & \textcolor{black}{0.8279 // 1.6336} & \textcolor{black}{3.1111 // 15.5684} & \textcolor{black}{0.072 // 0.069} & \textcolor{black}{0.841 // 0.82} & \textcolor{black}{3.023 // 5.034} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{4.2772 // 19.5172} & \textcolor{black}{0.9198 // 1.9835} & \textcolor{black}{3.3027 // 17.4943} & \textcolor{black}{0.017 // 0.069} & \textcolor{black}{0.995 // 0.6} & \textcolor{black}{3.571 // 4.381} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{3.9776 // 17.2212} & \textcolor{black}{0.8279 // 1.6336} & \textcolor{black}{3.1111 // 15.5684} & \textcolor{black}{0.072 // 0.069} & \textcolor{black}{0.841 // 0.82} & \textcolor{black}{3.023 // 5.034} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{9.3136 // 25.8028} & \textcolor{black}{2.7793 // 4.2893} & \textcolor{black}{6.4009 // 21.3519} & \textcolor{black}{0.15 // 0.22} & \textcolor{black}{3.619 // 2.507} & \textcolor{black}{9.061 // 11.826} & \textcolor{black}{96 // 80}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{2.9743 // 18.1175} & \textcolor{black}{0.5862 // 1.7729} & \textcolor{black}{2.3612 // 16.3168} & \textcolor{green}{0.024 // 0.057} & \textcolor{green}{0.449 // 0.514} & \textcolor{green}{2.127 // 4.412} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{2.5629 // 15.2959} & \textcolor{green}{0.4642 // 1.5608} & \textcolor{black}{2.0855 // 13.7206} & \textcolor{black}{0.085 // 0.086} & \textcolor{black}{0.671 // 1.047} & \textcolor{black}{1.67 // 5.801} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{2.9743 // 18.1175} & \textcolor{black}{0.5862 // 1.7729} & \textcolor{black}{2.3612 // 16.3168} & \textcolor{green}{0.024 // 0.057} & \textcolor{green}{0.449 // 0.514} & \textcolor{green}{2.127 // 4.412} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{2.5629 // 15.2959} & \textcolor{green}{0.4642 // 1.5608} & \textcolor{black}{2.0855 // 13.7206} & \textcolor{black}{0.085 // 0.086} & \textcolor{black}{0.671 // 1.047} & \textcolor{black}{1.67 // 5.801} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{8.2907 // 23.7588} & \textcolor{black}{2.6468 // 4.1629} & \textcolor{black}{5.5421 // 19.4579} & \textcolor{black}{0.12 // 0.22} & \textcolor{black}{3.438 // 2.543} & \textcolor{black}{8.792 // 11.94} & \textcolor{black}{96 // 69}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{2.4088 // 33.8392} & \textcolor{black}{0.7261 // 9.0609} & \textcolor{black}{1.6153 // 24.6796} & \textcolor{black}{0.12 // 0.038} & \textcolor{black}{0.652 // 1.986} & \textcolor{black}{1.98 // 10.77} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{2.0912 // 28.5103} & \textcolor{black}{0.5899 // 7.5426} & \textcolor{black}{1.4577 // 20.8989} & \textcolor{black}{0.091 // 0.025} & \textcolor{black}{0.566 // 1.45} & \textcolor{black}{1.738 // 9.783} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{2.4088 // 33.8392} & \textcolor{black}{0.7261 // 9.0609} & \textcolor{black}{1.6153 // 24.6796} & \textcolor{black}{0.12 // 0.038} & \textcolor{black}{0.652 // 1.986} & \textcolor{black}{1.98 // 10.77} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{2.0912 // 28.5103} & \textcolor{black}{0.5899 // 7.5426} & \textcolor{black}{1.4577 // 20.8989} & \textcolor{black}{0.091 // 0.025} & \textcolor{black}{0.566 // 1.45} & \textcolor{black}{1.738 // 9.783} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{4.6278 // 35.9294} & \textcolor{black}{1.9526 // 11.0184} & \textcolor{black}{2.5372 // 24.6276} & \textcolor{black}{0.048 // 0.22} & \textcolor{black}{0.632 // 2.023} & \textcolor{black}{2.96 // 12.729} & \textcolor{black}{98 // 86}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{2.5152 // 17.7053} & \textcolor{black}{0.5087 // 2.1191} & \textcolor{black}{1.9849 // 15.5379} & \textcolor{black}{0.024 // 0.12} & \textcolor{black}{0.321 // 0.929} & \textcolor{black}{1.512 // 5.611} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{green}{1.793 // 12.8799} & \textcolor{black}{0.3527 // 1.6839} & \textcolor{green}{1.4344 // 11.155} & \textcolor{black}{0.062 // 0.24} & \textcolor{black}{0.593 // 2.177} & \textcolor{black}{2.547 // 9.595} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{2.5152 // 17.7053} & \textcolor{black}{0.5087 // 2.1191} & \textcolor{black}{1.9849 // 15.5379} & \textcolor{black}{0.024 // 0.12} & \textcolor{black}{0.321 // 0.929} & \textcolor{black}{1.512 // 5.611} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{green}{1.793 // 12.8799} & \textcolor{black}{0.3527 // 1.6839} & \textcolor{green}{1.4344 // 11.155} & \textcolor{black}{0.062 // 0.24} & \textcolor{black}{0.593 // 2.177} & \textcolor{black}{2.547 // 9.595} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{6.9275 // 23.0817} & \textcolor{black}{2.7461 // 5.4713} & \textcolor{black}{4.0985 // 17.4511} & \textcolor{black}{0.044 // 0.32} & \textcolor{black}{3.177 // 3.836} & \textcolor{black}{8.535 // 15.437} & \textcolor{black}{96 // 70}\\
 \midrule
 \cmidrule{1-9}
- & hc & \textcolor{black}{11.4938 // 49.4328} & \textcolor{black}{9.1746 // 12.2155} & \textcolor{black}{2.2913 // 36.5886} & \textcolor{black}{0.027 // 0.91} & \textcolor{red}{8.899 // 9.56} & \textcolor{black}{1.98 // 19.55} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{11.1438 // 40.4749} & \textcolor{black}{9.0384 // 11.9946} & \textcolor{black}{2.0912 // 28.0385} & \textcolor{black}{0.096 // 0.7} & \textcolor{black}{9.059 // 9.024} & \textcolor{black}{1.682 // 16.35} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{11.4938 // 49.4328} & \textcolor{black}{9.1746 // 12.2155} & \textcolor{black}{2.2913 // 36.5886} & \textcolor{black}{0.027 // 0.91} & \textcolor{red}{8.899 // 9.56} & \textcolor{black}{1.98 // 19.55} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{11.1438 // 40.4749} & \textcolor{black}{9.0384 // 11.9946} & \textcolor{black}{2.0912 // 28.0385} & \textcolor{black}{0.096 // 0.7} & \textcolor{black}{9.059 // 9.024} & \textcolor{black}{1.682 // 16.35} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{red}{14.6998 // 47.2364} & \textcolor{red}{8.7649 // 12.6715} & \textcolor{red}{5.8029 // 33.929} & \textcolor{red}{0.22 // 0.92} & \textcolor{black}{8.135 // 9.145} & \textcolor{red}{8.018 // 21.824} & \textcolor{black}{96 // 70}\\
 \cmidrule{1-9}
  & hc & \textcolor{black}{5.6809 // 21.1181} & \textcolor{black}{3.7272 // 6.1206} & \textcolor{black}{1.7452 // 14.9126} & \textcolor{black}{0.41 // 0.019} & \textcolor{black}{5.772 // 3.645} & \textcolor{black}{4.299 // 12.812} & \textcolor{black}{96 // 45}\\
-\cmidrule{2-9}
+
  & kmeans & \textcolor{black}{5.7063 // 21.3775} & \textcolor{black}{3.6759 // 6.589} & \textcolor{black}{1.79 // 14.5681} & \textcolor{black}{0.39 // 0.17} & \textcolor{black}{5.788 // 4.08} & \textcolor{black}{4.357 // 13.352} & \textcolor{black}{96 // 40}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{5.8175 // 19.9703} & \textcolor{black}{3.8142 // 6.3202} & \textcolor{black}{1.7592 // 13.5389} & \textcolor{black}{0.35 // 0.033} & \textcolor{black}{5.819 // 4.402} & \textcolor{black}{4.349 // 13.812} & \textcolor{green}{93 // 34}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{5.8175 // 19.9703} & \textcolor{black}{3.8142 // 6.3202} & \textcolor{black}{1.7592 // 13.5389} & \textcolor{black}{0.35 // 0.033} & \textcolor{black}{5.819 // 4.402} & \textcolor{black}{4.349 // 13.812} & \textcolor{red}{93 // 34}\\
+\bottomrule
+\end{tabu}}
+\end{table}
+
+\begin{table}[!h]
+
+\caption{\label{tab:HD-overlapping-spherical-pdf-offterms}Minimal example setting apart MSE and Bias whether it proceeds from
+  diagonal or offset terms of the covariance matrix, for scenarios HD5a) and HD6a), in Table
+\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components).
+      We delimite each scenario by doubled backslashes with respectively balanced and unbalanced clusters.}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabu} to \linewidth {>{}l>{}l>{}l>{}l>{}l>{}l}
+\toprule
+\multicolumn{1}{c}{\textbf{Package}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Initialisation\\Method}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global\\MSE $\text{diag} (\boldsymbol{\Sigma})$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\MSE $\text{upper.tri} (\boldsymbol{\Sigma})$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\Bias $\text{diag} (\boldsymbol{\Sigma})$}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global\\Bias $\text{upper.tri} (\boldsymbol{\Sigma})$}}}\\
+\midrule
+ & hc & \textcolor{black}{1.1 // 5.9} & \textcolor{black}{2.2 // 12} & \textcolor{black}{0.9194 // 2.3003} & \textcolor{black}{2.651 // 2.081}\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & kmeans & \textcolor{black}{0.99 // 5.6} & \textcolor{black}{2.1 // 10} & \textcolor{black}{0.8929 // 2.7422} & \textcolor{black}{2.13 // 2.292}\\
+\cmidrule{1-6}
+ & hc & \textcolor{black}{0.76 // 5.5} & \textcolor{black}{1.6 // 11} & \textcolor{green}{0.5698 // 2.418} & \textcolor{black}{1.557 // 1.994}\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & kmeans & \textcolor{green}{0.67 // 5.2} & \textcolor{black}{1.4 // 8.5} & \textcolor{black}{0.6909 // 3.4316} & \textcolor{black}{0.979 // 2.37}\\
+\cmidrule{1-6}
+ & hc & \textcolor{black}{0.67 // 11} & \textcolor{red}{0.94 // 14} & \textcolor{black}{0.7755 // 6.9204} & \textcolor{red}{1.205 // 3.849}\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash \textbf{bgmm}} & kmeans & \textcolor{black}{0.58 // 9.1} & \textcolor{black}{0.88 // 12} & \textcolor{black}{0.6004 // 6.124} & \textcolor{black}{1.138 // 3.659}\\
+\cmidrule{1-6}
+ & hc & \textcolor{black}{0.62 // 6.1} & \textcolor{black}{1.4 // 9.5} & \textcolor{black}{0.4985 // 3.4685} & \textcolor{black}{1.013 // 2.143}\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & kmeans & \textcolor{black}{0.48 // 7.5} & \textcolor{black}{0.95 // 3.6} & \textcolor{black}{0.9269 // 7.6352} & \textcolor{black}{1.621 // 1.96}\\
+\midrule
+\cmidrule{1-6}
+ & hc & \textcolor{red}{0.72 // 26} & \textcolor{black}{1.6 // 11} & \textcolor{red}{0.5383 // 17.2225} & \textcolor{black}{1.441 // 2.328}\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & kmeans & \textcolor{black}{0.68 // 20} & \textcolor{black}{1.4 // 8.5} & \textcolor{black}{0.7156 // 13.7249} & \textcolor{black}{0.966 // 2.626}\\
+\cmidrule{1-6}
+ & hc & \textcolor{black}{1.6 // 10} & \textcolor{black}{0.13 // 4.6} & \textcolor{black}{3.7632 // 10.0798} & \textcolor{black}{0.536 // 2.733}\\
+
+\multirow{-2}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & kmeans & \textcolor{black}{1.6 // 11} & \textcolor{green}{0.17 // 3.9} & \textcolor{black}{3.7621 // 10.8057} & \textcolor{green}{0.594 // 2.546}\\
 \bottomrule
 \end{tabu}}
 \end{table}
 
 \newpage
 
-\textbackslash begin\{figure\}{[}h{]}
+\begin{figure}
 
-\{\centering \includegraphics[width=0.9\linewidth]{figs/HD/HD-overlapping-spherical}
+{\centering \includegraphics[width=0.8\linewidth]{figs/HD/HD-overlapping-spherical} 
 
-\}
+}
 
-\textbackslash caption\{We gathered on the same plot two multivariate benchmark scenarios, in which we consider a strictly spherical structure of the covariance matrix, but without forcing explictly the benchmarked packages to return parameters asserting this constraint:
-- We represent in Panel A the bivariate projection associated to scenario 5a) in Table \ref{tab:parameter-configuration-HD} (balanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), with the same layout as Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.
-
-\begin{itemize}
-\item
-  In Panel B, we display the boxplots associated to scenario 5a), computing them similarly as in Panel E of Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.
-\item
-  In Panel C, we display the boxplots associated to scenario 6a) (unbalanced and overlapping components, with spherical covariance structure = constant terms in the diagonal structure), computing them similarly as in Panel E of Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.\}\label{fig:HD-overlapping-spherical-plot}
-  \textbackslash end\{figure\}
-\end{itemize}
+\caption{We gathered on the same plot two multivariate benchmark scenarios, in which we consider a strictly spherical structure of the covariance matrix:
+We represent in Panel A and B, respectively the bivariate projection and parallel distribution plot, associated to scenario HD5a) in Table \ref{tab:parameter-configuration-HD}  (balanced and overlapping components, with spherical covariance structure).
+In Panel C, we display the boxplots associated to scenario HD5a), computing them similarly as in Panel E of Figure \ref{fig:HD-separated-unbalanced-ellipsoidal-plot}.
+In Panel D, we display the boxplots associated to scenario HD6a) (unbalanced and overlapping components, with spherical covariance structure).}\label{fig:HD-overlapping-spherical-plot}
+\end{figure}
 
 \newpage
 
 \begin{table}[!h]
 
-\caption{\label{tab:HD-impact-num-observations-pdf-tab1}MSE and Bias associated to scenarios 1a) and 1b), in Table
-      \ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
-      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
-              $n=2000$ observations.}
+\caption{\label{tab:HD-impact-num-observations-pdf-tab1}MSE and Bias associated to scenarios HD1a) and HD1b), in Table
+      \ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components).
+      We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and $n=2000$ observations.}
 \centering
 \resizebox{\linewidth}{!}{
 \begin{tabu} to \linewidth {>{}l>{}l>{}l>{}l>{}l>{}l>{}l>{}l>{}l}
 \toprule
 \multicolumn{1}{c}{\textbf{Package}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Initialisation\\Method}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ MSE $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\MSE $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\MSE $\sigma$}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ Bias $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\Bias $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\Bias $\sigma$}}} & \multicolumn{1}{c}{\textbf{$\%$ Success}}\\
 \midrule
- & hc & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0097 // 0.00071} & \textcolor{green}{0.053 // 0.018} & \textcolor{green}{0.139 // 0.04} & \textcolor{red}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{0.0577 // 0.0058} & \textcolor{black}{0.0288 // 0.0028} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0097 // 0.00071} & \textcolor{black}{0.053 // 0.018} & \textcolor{black}{0.139 // 0.04} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0097 // 0.00071} & \textcolor{green}{0.053 // 0.018} & \textcolor{green}{0.139 // 0.04} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0097 // 0.00071} & \textcolor{green}{0.053 // 0.018} & \textcolor{green}{0.139 // 0.04} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{0.5611 // 0.0058} & \textcolor{black}{0.2364 // 0.0028} & \textcolor{black}{0.3035 // 0.0026} & \textcolor{black}{0.019 // 0.00071} & \textcolor{black}{0.372 // 0.018} & \textcolor{black}{0.915 // 0.04} & \textcolor{black}{98 // 100}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{0.0577 // 0.0058} & \textcolor{black}{0.0288 // 0.0028} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0095 // 0.00071} & \textcolor{black}{0.053 // 0.018} & \textcolor{black}{0.14 // 0.04} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{0.0577 // 0.0058} & \textcolor{black}{0.0288 // 0.0028} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0095 // 0.00071} & \textcolor{black}{0.053 // 0.018} & \textcolor{black}{0.14 // 0.04} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0095 // 0.00071} & \textcolor{green}{0.053 // 0.018} & \textcolor{black}{0.14 // 0.04} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0095 // 0.00071} & \textcolor{green}{0.053 // 0.018} & \textcolor{black}{0.14 // 0.04} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{0.3134 // 0.0058} & \textcolor{black}{0.1305 // 0.0029} & \textcolor{black}{0.1729 // 0.0026} & \textcolor{black}{0.0039 // 0.0022} & \textcolor{black}{0.2 // 0.02} & \textcolor{black}{0.537 // 0.044} & \textcolor{black}{88 // 81}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{0.0577 // 0.0058} & \textcolor{black}{0.0288 // 0.0028} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0098 // 0.00071} & \textcolor{black}{0.053 // 0.018} & \textcolor{black}{0.139 // 0.041} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{0.0577 // 0.0058} & \textcolor{black}{0.0288 // 0.0028} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0097 // 0.00071} & \textcolor{black}{0.053 // 0.018} & \textcolor{black}{0.139 // 0.04} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0098 // 0.00071} & \textcolor{green}{0.053 // 0.018} & \textcolor{black}{0.139 // 0.041} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0097 // 0.00071} & \textcolor{green}{0.053 // 0.018} & \textcolor{green}{0.139 // 0.04} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{0.7437 // 0.1977} & \textcolor{black}{0.3409 // 0.0028} & \textcolor{black}{0.3895 // 0.1946} & \textcolor{black}{0.02 // 0.00034} & \textcolor{black}{0.308 // 0.017} & \textcolor{black}{1.602 // 0.926} & \textcolor{black}{97 // 99}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{0.0577 // 0.0058} & \textcolor{black}{0.0289 // 0.0028} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0093 // 0.00061} & \textcolor{black}{0.054 // 0.018} & \textcolor{black}{0.139 // 0.041} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{0.0577 // 0.0058} & \textcolor{black}{0.0288 // 0.0028} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0092 // 0.00039} & \textcolor{black}{0.054 // 0.017} & \textcolor{black}{0.139 // 0.04} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{0.6887 // 0.3391} & \textcolor{black}{0.2466 // 0.1276} & \textcolor{black}{0.4201 // 0.1969} & \textcolor{black}{0.019 // 0.048} & \textcolor{black}{0.519 // 0.289} & \textcolor{black}{1.721 // 0.875} & \textcolor{green}{87 // 81}\\
+ & hc & \textcolor{green}{0.0577 // 0.0058} & \textcolor{black}{0.0289 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0093 // 0.00061} & \textcolor{black}{0.054 // 0.018} & \textcolor{black}{0.139 // 0.041} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{green}{0.0577 // 0.0058} & \textcolor{green}{0.0288 // 0.0028} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0092 // 0.00039} & \textcolor{black}{0.054 // 0.017} & \textcolor{green}{0.139 // 0.04} & \textcolor{green}{100 // 100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{0.6887 // 0.3391} & \textcolor{black}{0.2466 // 0.1276} & \textcolor{black}{0.4201 // 0.1969} & \textcolor{black}{0.019 // 0.048} & \textcolor{black}{0.519 // 0.289} & \textcolor{black}{1.721 // 0.875} & \textcolor{red}{87 // 81}\\
 \midrule
 \cmidrule{1-9}
- & hc & \textcolor{black}{11.3787 // 11.3322} & \textcolor{black}{11.3499 // 11.3293} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0094 // 0.00071} & \textcolor{black}{11.166 // 11.179} & \textcolor{black}{0.139 // 0.04} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{11.3831 // 11.3301} & \textcolor{black}{11.3543 // 11.3271} & \textcolor{black}{0.0264 // 0.0026} & \textcolor{black}{0.0094 // 0.00068} & \textcolor{black}{11.162 // 11.181} & \textcolor{black}{0.139 // 0.04} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{red}{11.5949 // 11.6085} & \textcolor{red}{11.5167 // 11.6055} & \textcolor{black}{0.072 // 0.0026} & \textcolor{green}{0.0024 // 0.0022} & \textcolor{red}{11.227 // 11.369} & \textcolor{black}{0.27 // 0.044} & \textcolor{black}{87 // 81}\\
+ & hc & \textcolor{black}{11.3787 // 11.3322} & \textcolor{black}{11.3499 // 11.3293} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0094 // 0.00071} & \textcolor{black}{11.166 // 11.179} & \textcolor{green}{0.139 // 0.04} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{11.3831 // 11.3301} & \textcolor{black}{11.3543 // 11.3271} & \textcolor{green}{0.0264 // 0.0026} & \textcolor{black}{0.0094 // 0.00068} & \textcolor{black}{11.162 // 11.181} & \textcolor{green}{0.139 // 0.04} & \textcolor{green}{100 // 100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{red}{11.5949 // 11.6085} & \textcolor{red}{11.5167 // 11.6055} & \textcolor{black}{0.072 // 0.0026} & \textcolor{green}{0.0024 // 0.0022} & \textcolor{red}{11.227 // 11.369} & \textcolor{black}{0.27 // 0.044} & \textcolor{red}{87 // 81}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{5.9739 // 5.9149} & \textcolor{black}{4.0397 // 3.9727} & \textcolor{black}{1.8288 // 1.8228} & \textcolor{black}{0.32 // 0.47} & \textcolor{black}{6.999 // 7.042} & \textcolor{black}{4.25 // 4.296} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{5.972 // 5.8863} & \textcolor{black}{4.0431 // 3.9596} & \textcolor{red}{1.8283 // 1.8259} & \textcolor{black}{0.33 // 0.43} & \textcolor{black}{6.997 // 7.051} & \textcolor{red}{4.255 // 4.34} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{5.9835 // 5.9078} & \textcolor{black}{4.0477 // 3.9671} & \textcolor{black}{1.8257 // 1.8244} & \textcolor{red}{0.37 // 0.46} & \textcolor{black}{6.994 // 7.045} & \textcolor{black}{4.232 // 4.301} & \textcolor{black}{87 // 81}\\
+ & hc & \textcolor{black}{5.9739 // 5.9149} & \textcolor{black}{4.0397 // 3.9727} & \textcolor{black}{1.8288 // 1.8228} & \textcolor{black}{0.32 // 0.47} & \textcolor{black}{6.999 // 7.042} & \textcolor{black}{4.25 // 4.296} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{5.972 // 5.8863} & \textcolor{black}{4.0431 // 3.9596} & \textcolor{red}{1.8283 // 1.8259} & \textcolor{black}{0.33 // 0.43} & \textcolor{black}{6.997 // 7.051} & \textcolor{red}{4.255 // 4.34} & \textcolor{green}{100 // 100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMMIXmfa}} & rebmix & \textcolor{black}{5.9835 // 5.9078} & \textcolor{black}{4.0477 // 3.9671} & \textcolor{black}{1.8257 // 1.8244} & \textcolor{red}{0.37 // 0.46} & \textcolor{black}{6.994 // 7.045} & \textcolor{black}{4.232 // 4.301} & \textcolor{red}{87 // 81}\\
 \bottomrule
 \end{tabu}}
 \end{table}
 
-\newpage
-
 \begin{table}[!h]
 
-\caption{\label{tab:HD-impact-num-observations-pdf-tab2}MSE and Bias associated to scenarios 8a) and 8b), in Table
-      \ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components). 
+\caption{\label{tab:HD-impact-num-observations-pdf-tab2}MSE and Bias associated to scenarios HD8a) and HD8b), in Table
+      \ref{tab:parameter-configuration-HD} (overlapping components with full covariance structure).
       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
               $n=2000$ observations.}
 \centering
@@ -3463,35 +3592,35 @@ Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of par
 \toprule
 \multicolumn{1}{c}{\textbf{Package}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Initialisation\\Method}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ MSE $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\MSE $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\MSE $\sigma$}}} & \multicolumn{1}{c}{\textbf{\makecell[r]{Global \\ Bias $p$}}} & \multicolumn{1}{c}{\textbf{\makecell[l]{Global\\Bias $\mu$}}} & \multicolumn{1}{c}{\textbf{\makecell[c]{Global\\Bias $\sigma$}}} & \multicolumn{1}{c}{\textbf{$\%$ Success}}\\
 \midrule
- & hc & \textcolor{black}{18.6085 // 0.6735} & \textcolor{black}{3.566 // 0.0536} & \textcolor{black}{14.9495 // 0.6193} & \textcolor{black}{0.23 // 0.0017} & \textcolor{black}{3.327 // 0.107} & \textcolor{black}{14.475 // 0.649} & \textcolor{red}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{green}{16.7452 // 0.6735} & \textcolor{green}{2.9065 // 0.0536} & \textcolor{green}{13.7662 // 0.6193} & \textcolor{green}{0.2 // 0.0016} & \textcolor{green}{2.819 // 0.107} & \textcolor{green}{12.552 // 0.649} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{18.6085 // 0.6735} & \textcolor{black}{3.566 // 0.0536} & \textcolor{black}{14.9495 // 0.6193} & \textcolor{black}{0.23 // 0.0017} & \textcolor{black}{3.327 // 0.107} & \textcolor{black}{14.475 // 0.649} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{green}{16.7452 // 0.6735} & \textcolor{green}{2.9065 // 0.0536} & \textcolor{green}{13.7662 // 0.6193} & \textcolor{green}{0.2 // 0.0016} & \textcolor{green}{2.819 // 0.107} & \textcolor{green}{12.552 // 0.649} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{mixtools / Rmixmod / RGMMBench}} & rebmix & \textcolor{black}{22.2986 // 0.6738} & \textcolor{black}{4.3127 // 0.0536} & \textcolor{black}{17.8418 // 0.6196} & \textcolor{black}{0.25 // 0.0021} & \textcolor{black}{3.768 // 0.108} & \textcolor{black}{16.249 // 0.648} & \textcolor{black}{95 // 100}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{20.6916 // 0.728} & \textcolor{black}{4.5672 // 0.0696} & \textcolor{black}{16.0328 // 0.6557} & \textcolor{black}{0.28 // 0.064} & \textcolor{black}{4.381 // 0.459} & \textcolor{black}{18.656 // 2.07} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{17.9622 // 0.7169} & \textcolor{black}{3.7547 // 0.0671} & \textcolor{black}{14.1405 // 0.6474} & \textcolor{black}{0.27 // 0.062} & \textcolor{black}{3.88 // 0.465} & \textcolor{black}{16.802 // 2.049} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{20.6916 // 0.728} & \textcolor{black}{4.5672 // 0.0696} & \textcolor{black}{16.0328 // 0.6557} & \textcolor{black}{0.28 // 0.064} & \textcolor{black}{4.381 // 0.459} & \textcolor{black}{18.656 // 2.07} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{17.9622 // 0.7169} & \textcolor{black}{3.7547 // 0.0671} & \textcolor{black}{14.1405 // 0.6474} & \textcolor{black}{0.27 // 0.062} & \textcolor{black}{3.88 // 0.465} & \textcolor{black}{16.802 // 2.049} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{mclust / flexmix / GMKMcharlie}} & rebmix & \textcolor{black}{22.4636 // 0.7553} & \textcolor{black}{4.7502 // 0.0678} & \textcolor{black}{17.5784 // 0.6853} & \textcolor{black}{0.26 // 0.0054} & \textcolor{black}{4.165 // 0.158} & \textcolor{black}{17.735 // 0.725} & \textcolor{black}{94 // 98}\\
 \cmidrule{1-9}
- & hc & \textcolor{black}{35.6085 // 13.8411} & \textcolor{black}{12.8826 // 3.6502} & \textcolor{black}{22.3428 // 10.0718} & \textcolor{black}{0.29 // 0.46} & \textcolor{black}{6.212 // 5.661} & \textcolor{black}{26.812 // 23.753} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{33.8007 // 12.5545} & \textcolor{black}{11.7236 // 3.1419} & \textcolor{black}{21.7292 // 9.2934} & \textcolor{black}{0.28 // 0.47} & \textcolor{black}{6.348 // 5.654} & \textcolor{black}{26.546 // 23.141} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{black}{35.6085 // 13.8411} & \textcolor{black}{12.8826 // 3.6502} & \textcolor{black}{22.3428 // 10.0718} & \textcolor{black}{0.29 // 0.46} & \textcolor{black}{6.212 // 5.661} & \textcolor{black}{26.812 // 23.753} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{33.8007 // 12.5545} & \textcolor{black}{11.7236 // 3.1419} & \textcolor{black}{21.7292 // 9.2934} & \textcolor{black}{0.28 // 0.47} & \textcolor{black}{6.348 // 5.654} & \textcolor{black}{26.546 // 23.141} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{bgmm}} & rebmix & \textcolor{black}{35.3167 // 13.106} & \textcolor{black}{12.2374 // 3.3747} & \textcolor{black}{22.6615 // 9.6213} & \textcolor{black}{0.37 // 0.42} & \textcolor{black}{6.007 // 5.273} & \textcolor{black}{26.287 // 23.02} & \textcolor{black}{96 // 100}\\
 \cmidrule{1-9}
  & hc & \textcolor{black}{23.4472 // 16.4192} & \textcolor{black}{6.2451 // 4.9191} & \textcolor{black}{17.0777 // 11.3124} & \textcolor{red}{0.35 // 0.51} & \textcolor{black}{5.469 // 6.279} & \textcolor{black}{23.503 // 22.821} & \textcolor{black}{99 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{21.0058 // 14.6852} & \textcolor{black}{5.9951 // 4.1684} & \textcolor{black}{14.9329 // 10.4293} & \textcolor{black}{0.38 // 0.42} & \textcolor{black}{5.604 // 6.592} & \textcolor{black}{24.628 // 24.706} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
-\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{23.0408 // 19.7372} & \textcolor{black}{6.4923 // 7} & \textcolor{black}{16.3824 // 12.5099} & \textcolor{black}{0.36 // 0.35} & \textcolor{black}{5.272 // 5.454} & \textcolor{black}{23.419 // 23.9} & \textcolor{green}{93 // 98}\\
+
+ & kmeans & \textcolor{black}{21.0058 // 14.6852} & \textcolor{black}{5.9951 // 4.1684} & \textcolor{black}{14.9329 // 10.4293} & \textcolor{black}{0.38 // 0.42} & \textcolor{black}{5.604 // 6.592} & \textcolor{black}{24.628 // 24.706} & \textcolor{green}{100 // 100}\\
+
+\multirow{-3}{*}{\raggedright\arraybackslash \textbf{EMCluster}} & rebmix & \textcolor{black}{23.0408 // 19.7372} & \textcolor{black}{6.4923 // 7} & \textcolor{black}{16.3824 // 12.5099} & \textcolor{black}{0.36 // 0.35} & \textcolor{black}{5.272 // 5.454} & \textcolor{black}{23.419 // 23.9} & \textcolor{red}{93 // 98}\\
 \midrule
 \cmidrule{1-9}
- & hc & \textcolor{red}{36.5924 // 33.4077} & \textcolor{red}{16.108 // 14.4007} & \textcolor{red}{20.3809 // 18.8638} & \textcolor{black}{0.3 // 0.44} & \textcolor{red}{12.706 // 13.085} & \textcolor{red}{25.393 // 29.363} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
- & kmeans & \textcolor{black}{34.7935 // 30.1935} & \textcolor{black}{15.4329 // 13.78} & \textcolor{black}{19.2529 // 16.2816} & \textcolor{black}{0.4 // 0.41} & \textcolor{black}{12.766 // 12.756} & \textcolor{black}{24.988 // 25.151} & \textcolor{black}{100 // 100}\\
-\cmidrule{2-9}
+ & hc & \textcolor{red}{36.5924 // 33.4077} & \textcolor{red}{16.108 // 14.4007} & \textcolor{red}{20.3809 // 18.8638} & \textcolor{black}{0.3 // 0.44} & \textcolor{red}{12.706 // 13.085} & \textcolor{red}{25.393 // 29.363} & \textcolor{green}{100 // 100}\\
+
+ & kmeans & \textcolor{black}{34.7935 // 30.1935} & \textcolor{black}{15.4329 // 13.78} & \textcolor{black}{19.2529 // 16.2816} & \textcolor{black}{0.4 // 0.41} & \textcolor{black}{12.766 // 12.756} & \textcolor{black}{24.988 // 25.151} & \textcolor{green}{100 // 100}\\
+
 \multirow{-3}{*}{\raggedright\arraybackslash \textbf{HDclassif}} & rebmix & \textcolor{black}{38.9707 // 24.0327} & \textcolor{black}{16.134 // 12.9266} & \textcolor{black}{22.6961 // 11.0138} & \textcolor{black}{0.25 // 0.21} & \textcolor{black}{12.811 // 12.275} & \textcolor{black}{25.79 // 15.996} & \textcolor{black}{95 // 98}\\
 \bottomrule
 \end{tabu}}
@@ -3499,81 +3628,23 @@ Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of par
 
 \newpage
 
-\begin{figure}[h]
+\begin{figure}
 
-{\centering \includegraphics[width=0.9\linewidth]{figs/HD/HD-impact-nobservations} 
-
-}
-
-\caption{Benchmark summary plots of respectively scenarios 1 and 8 in Table \ref{tab:parameter-configuration-HD} comparing the performance of the algorithms in respectvely the easiest scenario (equi-balanced clusters, with no overlap and spherical covariance structure)  and the most complex one (highly-overlapping and unblanced clusters, with full covariance structure without specific latent structure). The idea was to compare the performance of the algorithms with respect to the number of observations avalaible. Indeed, from the asymptotic properties of the estimate returned by the EM algorithm, we expect the simulated intervals to get narrower and closer to the true estimate with an increasing number of observations.
-Each scenario is pictured on each row, with the left column displaying the boxplots of the estimated parameters from simulations with $n=200$ obervations to the left, and $n=2000$ observations to the right.}\label{fig:HD-impact-num-observations}
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics[width=1\linewidth]{./figs/HD/heatmap_global_HD} 
+{\centering \includegraphics[width=0.8\linewidth]{figs/HD/HD-impact-nobservations} 
 
 }
 
-\caption{Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, k-means and rebmix) in the most discriminating scenario 8a), using the same process described in Figure \ref{fig:dichotomy-package-conclusion}.}\label{fig:heatmap-all-correlation-plots-HD}
+\caption{Overview of scenarios HD1 a) and b) and HD8 a) and b) in Table \ref{tab:parameter-configuration-HD} comparing the performance of the algorithms in the most complex scenario (highly overlapping and unbalanced clusters, with a full covariance structure). The left-hand column shows box plots of the estimated parameters from simulations with $n=200$ observations on the left and $n=2000$ observations on the right.}\label{fig:HD-impact-num-observations}
 \end{figure}
 
-\hypertarget{em-implementation-differences-across-reviewed-packages}{%
-\subsection{EM-implementation differences across reviewed packages}\label{em-implementation-differences-across-reviewed-packages}}
+\begin{figure}
 
-\label{sec:em-differences}
+{\centering \includegraphics[width=0.8\linewidth]{./figs/HD/heatmap_global_HD} 
 
-Most of the distinct behaviours between the packages result from additional choices external to the EM algorithm itself, aiming at partly overcoming its main limitations (Panel B, Figure \ref{fig:heatmap-all-correlation-plots-univariate}). We detail below their differences ranked by decreasing order of their leverage effect on the final estimate:
+}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Most of the differences between the two classes of packages (Figure \ref{fig:dichotomy-package-conclusion}) are
-  related to the either relative or absolute choice for the termination criterion of the EM algorithm. Given an user-defined threshold, the \emph{absolute method} early stops the estimation by comparing the difference between two consecutive log-likelihoods, \(|\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)|\), while the \emph{relative method} examines the variation rate, \(\left\lvert\frac{\ell(\hat{\theta}_{q}|X) - \ell(\hat{\theta}_{q-1}|X)}{\ell(\hat{\theta}_{q-1}|X)}\right\lvert\).
-\item
-  Several methods can be used to deal with numerical underflow, mostly happening with highly unlikely observations, distant from any centroid.
-
-  \begin{itemize}
-  \item
-    The least elaborate feature is from \pkg{Rmixmod}, returning an error when either any of the posterior probabilities or any of the estimated parameters goes below to the precision threshold of the machine (\ensuremath{2.22\times 10^{-16}} for most OS).
-  \item
-    If the maximal value of any posterior probability is null, \pkg{bgmm} subtracts the minimal logarithm posterior probability to any log-computed probability. This method avoids numerical
-    underflow by preventing computation of null ratios but the correctness of the estimates is no longer enforced\footnote{Additionally, \pkg{bgmm} does
-      not update the estimated variances if any newly computed variance is
-      below the criterion stop. A remarkable side-effect of these features, as
-      shown in Figure \ref{fig:outliers}, is that the \pkg{bgmm} package is
-      less sensitive to the presence of outliers.}.
-  \item
-    The remaining packages handled numeric underflow in a more convincing
-    manner as they guarantee to return the MLE estimate. The \pkg{flexmix}, \pkg{GMKMcharlie} and \pkg{EMCluster}
-    packages use the same log-rescaling tip detailed in (\protect\hyperlink{application-of-the-em-algorithm-to-gmms}{Application of the EM algorithm to GMMs}). The \pkg{mixtools} and
-    \pkg{mclust} packages use a variant of this trick, taking profit of the factorisation
-    by the greatest element (Equation \eqref{eq:trick-underflow}, Equation 3 p.5 Benaglia et al. (2009)), but without exploiting the tip of Taylor's development over \(\log(1+x)\):
-  \end{itemize}
-\end{enumerate}
-
-\begin{equation}
-\eta_{i} (j) = \frac{p_{j} \, \varphi_{\zeta_j} (x)}{\sum_{j=1}^k p_{j} \, \varphi_{\zeta_j} (x)}=\frac{\frac{p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}{1+ \frac{\sum_{j\neq j_{\min}} p_{j} \, \varphi_{\zeta_j} (x)}{p_{j_{\min}} \, \varphi_{\zeta_{j_{\min}}} (x)}}
-    \label{eq:trick-underflow}
-\end{equation}
-
-In both cases, the computation of the smallest posterior probability, the most proned to be assigned a null value, is avoided, avoiding inconsistent ratios of type \(0/0\).
-
-\begin{itemize}
-\tightlist
-\item
-  The previous two items deal with specific numeric limitations, but do not directly address one of the main theoretical limitation of the EM algorithm, namely the risk of falling into a suboptimal maximum, plateau or getting trapped on the boundary space (occurs when the proportion of one of the component converges to zero). Some packages specifically handle the case of a vanishing component during the EM optimization: the \pkg{mixtools} package performs random re-initialisations in case one of the computed variance goes below a user-defined threshold (default \(10^{-8}\)). \pkg{flexmix} and \pkg{GMKMcharlie} deal explicitly with the removal of a component, by updating the corresponding MLE parameters. \pkg{flexmix} removes any component whose associated weight is by default below \(0.05\) (such a stringent limitation tends to an underestimation of the true number of components in highly unbalanced mixtures)\footnote{Indeed, at least one of the component was removed in \(80\%\) of our estimations in the unbalanced and overlapping case (scenario U9 in \ref{tab:parameter-configuration-univariate}) and in \(20\%\) of the simulations in the unbalanced and well-separated case (scenario U3 in \ref{tab:parameter-configuration-univariate}).}, while GMKMcharlie both implements a lower limit on the proportions of the components and an upper threshold over the ratio of the maximum and minimal eigenvalue resulting from the factorisation of the covariance matrix (Equation \eqref{eq:covariance-decomposition})\footnote{These options are set respectively to 0 and \(+\infty\) by default, thus they did not impact our simulations}.
-\end{itemize}
-
-We enumerate below some additional features supplied by the packages:
-
-\begin{itemize}
-\item
-  In addition to log rescaling, \pkg{GMKMcharlie} includes an additional argument, \emph{embedNoise}, to avoid degenerate GMMs by adding a small constant to any diagonal term (by default \(10^{-6}\)). Besides, instead of controlling whether there was a relative change of the log-likelihood, the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations\footnote{In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class. However, the use of an Euclidean distance criterion may be problematic when parameters are not on the same order of magnitude, requiring their prior normalisation}. Finally, since \pkg{GMKMcharlie} has implemented a parallelised version of the algorithm, it ensures using a a time limit that the algorithm indeed terminates (by default, set to one hour).
-\item
-  \pkg{flexmix} performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor \(n-1\) instead of the number of observations \(n\)). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
-\end{itemize}
+\caption{Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, \textit{k}-means and rebmix) in the most discriminating scenario HD8a), using the same process described in Figure \ref{fig:dichotomy-package-conclusion}.}\label{fig:heatmap-all-correlation-plots-HD}
+\end{figure}
 
 \newpage
 

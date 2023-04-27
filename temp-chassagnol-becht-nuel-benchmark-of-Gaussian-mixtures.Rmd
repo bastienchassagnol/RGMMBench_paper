@@ -2261,6 +2261,13 @@ plotly::ggplotly(download_trends)
 download_trends
 ```
 
+\color{green}
+Only the packages dedicated to high-dimensionality, listed in our first bullet point, are relevant to compare in a benchmark comparing performance of algorithms with an exponential number of features. Indeed, while some packages computing mixtures of regressions do implement features to deal with high-dimensional datasets, such as , they all assume a diagonal or even a spherical covariance structure, and accordingly independent features^[Note that with only some workarounds, moving from a regression framework to a more standard clustering task is straightforward, replacing the design matrix storing covariates by a constant term.].
+
+
+The two existing strategies are then limited to projection to a smaller, informative subspace, usually within the theoretical framework of factor analysis, including principal component analysis (PCA), or to various variable selection strategies.  
+We quickly discard \pkg{fabMix}, since it retrieve the parameters of GMMs within a Bayesian framework, such as  
+\color{black}
 ## Practical details for the implementation of our benchmark {.appendix}
 \label{subsec:benchmark-details}
 
