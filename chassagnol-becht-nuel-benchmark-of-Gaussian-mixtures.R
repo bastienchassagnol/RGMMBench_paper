@@ -200,7 +200,7 @@ univariate_configuration <- readRDS("./tables/univariate/univariate_configuratio
 
 formatted_univariate_distribution_parameters <- univariate_distribution_parameters %>%
   rename_with(~gsub("^sd", "sigma", .x)) %>%
-  mutate(color=dplyr::if_else(package %in% c("RGMMBench", "Rmixmod", "mixtools"), 'red', 'green'),
+  mutate(color=dplyr::if_else(package %in% c("RGMMBench", "Rmixmod", "mixtools"), "#E7298A", "#1B9E77"),
          package=dplyr::if_else(package %in% c("flexmix", "mclust", "mixtools"),
                                 glue::glue("<b style='color:{color}; font-size:22pt'>{package}</b>"),
                                 glue::glue("<p style='color:{color}'>{package}</p>")))
@@ -238,7 +238,7 @@ bivariate_time_computation <- readRDS("./tables/bivariate/bivariate_time_computa
 bivariate_configuration <- readRDS("./tables/bivariate/bivariate_configuration_scenario.rds")
 
 formatted_bivariate_parameters <- bivariate_parameters %>%
-  mutate(color=dplyr::if_else(package %in% c("RGMMBench", "Rmixmod", "mixtools"), 'red', 'green'),
+  mutate(color=dplyr::if_else(package %in% c("RGMMBench", "Rmixmod", "mixtools"), "#E7298A", "#1B9E77"),
          package=dplyr::if_else(package %in% c("flexmix", "mclust", "mixtools"),
                                 glue::glue("<b style='color:{color}; font-size:22pt'>{package}</b>"),
                                 glue::glue("<p style='color:{color}'>{package}</p>")))
@@ -282,8 +282,8 @@ formatted_HD_distributions <- HD_distributions %>%
                                       "bgmm", "EMCluster", "HDclassif", "EMMIXmfa")) %>% 
   arrange(ID, initialisation_method, N.bootstrap, package) %>% 
   mutate(color=dplyr::case_match(package, 
-                                 c("RGMMBench", "Rmixmod", "mixtools") ~ "red", 
-                                 c("HDclassif", "EMMIXmfa") ~"blue", .default = "green"), 
+                                 c("RGMMBench", "Rmixmod", "mixtools") ~ "#E7298A", 
+                                 c("HDclassif", "EMMIXmfa") ~"#7570B3", .default = "#1B9E77"), 
          package=dplyr::case_match(package, 
                                    c("flexmix", "mclust", "mixtools") ~ glue::glue("<b style='color:{color}; font-size:22pt'>{package}</b>"), 
                                    c("HDclassif", "EMMIXmfa") ~ glue::glue("<i style='color:{color}'>{package}</i>"),
@@ -526,7 +526,7 @@ gridExtra::grid.arrange(grobs=list(overlap_plot_pairwise_balanced_1, overlap_plo
 #>                         top="", ncol=2, nrow=2)
 
 
-## ----outliers, fig.cap="A) Execution times for the nine reviewed packages using hc initialisation, with on the left $2\\%$ of outliers in proportion and on the right, $4\\%$ of outliers.  B) and C) Boxplots of the estimated parameters with $N=200$ repetitions, $n=2000$ observations and respectively $2\\%$ and $4\\%$ of outliers. The red dashed horizontal line corresponds to the true value of the parameters."----
+## ----outliers, fig.cap="A) Execution times for the nine reviewed packages using hierarchical clustering initialisation, with on the left $2\\%$ of outliers in proportion and on the right, $4\\%$ of outliers.  B) and C) Boxplots of the estimated parameters with $N=200$ repetitions, $n=2000$ observations and respectively $2\\%$ and $4\\%$ of outliers. The red dashed horizontal line corresponds to the true value of the parameters."----
 outliers_time_data <- readRDS("./tables/univariate/univariate_outliers_time_computations.rds")
 outliers_time_computations <- cowplot::plot_grid(plot_time_computations(outliers_time_data %>% filter(ID=="O1")) +
                                                    labs(tag="A") + theme(plot.tag = element_text(size=18, face = "bold")),
@@ -544,8 +544,8 @@ outliers_plot <- gridExtra::arrangeGrob(outliers_time_computations,
                                           labs(tag="D")+ theme(plot.tag = element_text(size=18, face = "bold")),
                                         top="",nrow=3, padding = unit(1, "line"))
 
-ggsave("figs/univariate/outliers.png", outliers_plot, width = 18, height = 24,dpi = 75)
-knitr::include_graphics("figs/univariate/outliers.png", dpi = 75)
+ggsave("figs/univariate/outliers.png", outliers_plot, width = 18, height = 24,dpi = 300)
+knitr::include_graphics("figs/univariate/outliers.png", dpi = 300)
 
 
 
@@ -747,8 +747,8 @@ univariate_balanced_separated <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_balanced_separated.png", univariate_balanced_separated,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_balanced_separated.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_balanced_separated.png", dpi = 300)
 
 
 ## ----compute-unbalanced-well-separated-table-univariate-table-----------------
@@ -822,8 +822,8 @@ univariate_unbalanced_separated <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_unbalanced_separated.png", univariate_unbalanced_separated,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_unbalanced_separated.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_unbalanced_separated.png", dpi = 300)
 
 
 ## ----compute-balanced-overlapping-table-univariate-table----------------------
@@ -899,8 +899,8 @@ univariate_balanced_overlapping <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_balanced_overlapping.png", univariate_balanced_overlapping,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_balanced_overlapping.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_balanced_overlapping.png", dpi = 300)
 
 
 ## ----compute-unbalanced-overlapping-table-univariate-table--------------------
@@ -976,8 +976,8 @@ univariate_unbalanced_overlapping <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_unbalanced_overlapping.png", univariate_unbalanced_overlapping,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_unbalanced_overlapping.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_unbalanced_overlapping.png", dpi = 300)
 
 
 ## ----four-components-midbalanced, fig.cap=if (univariate_html_ouput) html_caption_intermediate_scenario_univariate else pdf_caption_intermediate_scenario_univariate----
@@ -997,8 +997,8 @@ four_components_midbalanced_separated <- gridExtra::arrangeGrob(plot_univariate_
                                                                 top="", layout_matrix = matrix(c(1, 2, 3, 3, 4, 4), byrow = TRUE, nrow = 3), heights = c(2, 2.5, 2.5), padding = unit(1, "line"))
 
 ggsave("figs/univariate/univariate_midbalanced.png", four_components_midbalanced_separated,
-       width = 22, height = 26,dpi = 75)
-knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi=75)
+       width = 22, height = 26,dpi = 300)
+knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi = 300)
 
 
 ## ----heatmap-all-correlation-plots-univariate, fig.cap= if (univariate_html_ouput) html_global_heatmap_univariate else pdf_global_heatmap_univariate----
@@ -1009,18 +1009,18 @@ univariate_correlation_heatmaps <- plot_correlation_Heatmap(discriminating_data)
 
 univariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=univariate_correlation_heatmaps %>% purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                           top="", ncol = 2)
-ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
+ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 300)
 
-knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 75)
+knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
 
 
 ## ----univariate-initialisation-time-computations, fig.cap= if (univariate_html_ouput) html_univariate_init_time else pdf_univariate_init_time----
 
 initialisation_time_data <- readRDS("./tables/univariate/univariate_initialisation_time_computation.rds")
 inialisation_plot <- plot_initialisation_time_computations(initialisation_time_data, size=4, x = 2.6)
-ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 75)
+ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 300)
 
-knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 75)
+knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 300)
 
 
 ## ----parameter-configuration-bivariate----------------------------------------
@@ -1169,9 +1169,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi = 300)
 
 
 ## ----compute-bivariate-overlapping-unbalanced-opposite-correlated-------------
@@ -1256,9 +1256,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi = 300)
 
 
 ## ----compute-bivariate-overlapping-unbalanced-positive-correlated-------------
@@ -1343,9 +1343,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi = 300)
 
 
 ## ----compute-bivariate-overlapping-unbalanced-uncorrelated--------------------
@@ -1430,9 +1430,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_uncorrelated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_uncorrelated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_uncorrelated.png", dpi = 300)
 
 
 ## ----general-balanced-overlapping-bivariate, fig.cap=if (bivariate_html_output) html_balanced_overlapping_general_bivariate else pdf_balanced_overlapping_general_bivariate----
@@ -1460,9 +1460,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/bivariate/multivariate_balanced_overlapping.png",
-       global_figure, width = 20, height = 24,dpi=75)
+       global_figure, width = 20, height = 24,dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_balanced_overlapping.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_balanced_overlapping.png", dpi = 300)
 
 
 ## ----general-balanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_balanced_well_separated_general_bivariate else pdf_balanced_well_separated_general_bivariate----
@@ -1490,9 +1490,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/bivariate/multivariate_balanced_well_separated.png",
-       global_figure, width = 20, height = 24,dpi=75)
+       global_figure, width = 20, height = 24,dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_balanced_well_separated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_balanced_well_separated.png", dpi = 300)
 
 
 ## ----general-unbalanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_unbalanced_well_separated_general_bivariate else pdf_unbalanced_well_separated_general_bivariate----
@@ -1520,9 +1520,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/bivariate/multivariate_unbalanced_well_separated.png",
-       global_figure, width = 20, height = 24,dpi=75)
+       global_figure, width = 20, height = 24,dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_well_separated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_well_separated.png", dpi = 300)
 
 
 ## ----heatmap-all-correlation-plots-bivariate, fig.cap= if (bivariate_html_output) html_global_heatmap_bivariate else pdf_global_heatmap_bivariate----
@@ -1533,8 +1533,8 @@ multivariate_correlation_heatmaps <- plot_correlation_Heatmap(bivariate_paramete
 multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
                                                               purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                             top="", ncol = 2)
-ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
-knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 75)
+ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 300)
+knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 300)
 
 
 ## ----parameter-configuration-HD-----------------------------------------------
@@ -1548,7 +1548,7 @@ HD_configuration_formatted <- HD_configuration  %>%
 
 HD_configuration_formatted %>%
   kbl(booktabs=T, caption = "The 16 parameter configurations tested to generate the samples in a high dimensional context. The first digit of each ID index refers
-      to an unique parameter configuration (uniquely identified by its level of overlap, entropy and topological structure, either circular or ellippsoidal,
+      to an unique parameter configuration (identified by its level of overlap, entropy and topological structure, either circular or ellipsoidal,
       of the covariance matrix, while the lowercase letter depicts the number of observations, a) with $n=200$ and b) with $n=2000$.",
       escape=F, align = "c",
       col.names = linebreak(c("ID", "OVL", "Number of \nobservations", "Proportions", "Spherical"))) %>%
@@ -1706,9 +1706,9 @@ global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
                                         boxplot_parameter_HD +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
-ggsave("figs/HD/HD-separated-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=75)
+ggsave("figs/HD/HD-separated-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-separated-unbalanced-ellipsoidal.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-separated-unbalanced-ellipsoidal.png", dpi = 300)
 
 
 ## ----compute-HD-overlapping-balanced-ellipsoidal------------------------------
@@ -1805,9 +1805,9 @@ global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
                                         boxplot_parameter_HD +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
-ggsave("figs/HD/HD-overlapping-balanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=75)
+ggsave("figs/HD/HD-overlapping-balanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-overlapping-balanced-ellipsoidal.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-overlapping-balanced-ellipsoidal.png", dpi = 300)
 
 
 ## ----compute-HD-overlapping-spherical-----------------------------------------
@@ -2017,9 +2017,9 @@ global_figure <- cowplot::plot_grid(HD_density, boxplot_parameter_HD_balanced +
                                     boxplot_parameter_HD_unbalanced +
                                       theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "D"),
                                     nrow = 3, align = 'hv', axis="tblr")
-ggsave("figs/HD/HD-overlapping-spherical.png",global_figure, width = 24, height = 32, dpi=75)
+ggsave("figs/HD/HD-overlapping-spherical.png",global_figure, width = 24, height = 32, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-overlapping-spherical.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-overlapping-spherical.png", dpi = 300)
 
 
 ## ----compute-HD-impact-num-observations-tab1----------------------------------
@@ -2042,7 +2042,7 @@ specific_HD_parameters_local_scores <- HD_parameters_local_scores_smalln  %>%
 
 specific_HD_parameters_local_scores_kable <- specific_HD_parameters_local_scores %>%
   kbl(booktabs=T, caption = "MSE and Bias associated to scenarios HD1a) and HD1b), in Table
-      \\ref{tab:parameter-configuration-HD} (overlapping and spherical-distributed components).
+      \\ref{tab:parameter-configuration-HD} (well-separated and spherical-distributed components).
       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and $n=2000$ observations.", escape=F,
       col.names = linebreak(c("Package", "Initialisation\nMethod",
                               "Global \n MSE $p$", "Global\nMSE $\\mu$", "Global\nMSE $\\sigma$",
@@ -2073,7 +2073,7 @@ specific_HD_parameters_local_scores_kable %>%
 ## ----HD-impact-num-observations-html-tab1, eval=knitr::is_html_output(), layout = "l-body-outset"----
 #> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
 #>   set_caption(caption = "MSE and Bias associated to scenarios HD1a) and HD1b), in Table
-#>       \\@ref(tab:parameter-configuration-HD) (overlapping and spherical-distributed components).
+#>       \\@ref(tab:parameter-configuration-HD) (well-separated and spherical-distributed components).
 #>       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with \\$n=200\\$ and \\$n=2000\\$ observations.", html_escape = F)
 #> 
 #> for (metric_col in c(metric_colnames, "Success")) {
@@ -2208,9 +2208,9 @@ global_figure <- cowplot::plot_grid(                              boxplot_parame
                                       theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "B"),
                                     nrow = 2, ncol=2, align = 'hv', axis="tblr")
 
-ggsave("figs/HD/HD-impact-nobservations.png",global_figure, width = 30, height = 40, dpi=75)
+ggsave("figs/HD/HD-impact-nobservations.png",global_figure, width = 30, height = 40, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-impact-nobservations.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-impact-nobservations.png", dpi = 300)
 
 
 ## ----heatmap-all-correlation-plots-HD, fig.cap= if (HD_html_output) html_global_heatmap_HD else pdf_global_heatmap_HD, out.width="80%"----
@@ -2218,6 +2218,6 @@ multivariate_correlation_heatmaps <- plot_correlation_Heatmap(HD_distributions %
 multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
                                                               purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                             top="", ncol = 3, nrow = 1)
-ggsave("./figs/HD/heatmap_global_HD.png", multivariate_correlation_heatmaps, width = 18, height = 6,dpi=75)
-knitr::include_graphics("./figs/HD/heatmap_global_HD.png", dpi=75)
+ggsave("./figs/HD/heatmap_global_HD.png", multivariate_correlation_heatmaps, width = 18, height = 6,dpi = 300)
+knitr::include_graphics("./figs/HD/heatmap_global_HD.png", dpi = 300)
 

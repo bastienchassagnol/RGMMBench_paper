@@ -2,7 +2,7 @@
 title: "Gaussian Mixture Models in R"
 abstract: >
   Gaussian mixture models (GMMs) are widely used for modelling stochastic problems. Indeed, a wide diversity of packages have been developed in R. However, no recent review describing the main features offered by these packages and comparing their performances has been performed. In this article, we first introduce GMMs and the EM algorithm used to retrieve the parameters of the model and analyse the main features implemented among seven of the most widely used R packages. We then empirically compare their statistical and computational performances in relation with the choice of the initialisation algorithm and the complexity of the mixture. 
-  We demonstrate that the best estimation with well-separated components or with a small number of components with distinguishable modes is obtained with REBMIX initialisation, implemented in the \CRANpkg{rebmix} package, while the best estimation with highly overlapping components is obtained with *k*-means or random initialisation. Importantly, we show that implementation details in the EM algorithm yield differences in the parameters' estimation. Especially, packages \CRANpkg{mixtools} [@R-mixtools]  and \CRANpkg{Rmixmod} [@R-Rmixmod]  estimate the parameters of the mixture with smaller bias, while the RMSE and variability of the estimates is smaller with packages \CRANpkg{bgmm} [@R-bgmm] , \CRANpkg{EMCluster} [@R-EMCluster] , \CRANpkg{GMKMcharlie} [@R-GMKMcharlie] , \CRANpkg{flexmix} [@R-flexmix]  and \CRANpkg{mclust} [@R-mclust]. 
+  We demonstrate that the best estimation with well-separated components or with a small number of components with distinguishable modes is obtained with REBMIX initialisation, implemented in the \CRANpkg{rebmix} package, while the best estimation with highly overlapping components is obtained with *k*-means or random initialisation. Importantly, we show that implementation details in the EM algorithm yield differences in the parameters' estimation. Especially, packages \CRANpkg{mixtools} [@R-mixtools]  and \CRANpkg{Rmixmod} [@R-Rmixmod]  estimate the parameters of the mixture with smaller bias, while the RMSE and variability of the estimates is smaller with packages \CRANpkg{bgmm} [@R-bgmm] , \CRANpkg{EMCluster} [@R-EMCluster] , \CRANpkg{GMKMcharlie} [@R-GMKMcharlie], \CRANpkg{flexmix} [@R-flexmix]  and \CRANpkg{mclust} [@R-mclust]. 
   The comparison of these packages provides R users with useful recommendations for improving the computational and statistical performance of their clustering and for identifying  common deficiencies. Additionally, we propose several improvements in the development of a future, unified mixture model package.
 draft: true
 author:  
@@ -565,7 +565,7 @@ info_package <- info_package %>% dplyr::inner_join(
 
 
 
-In parallel, we include two additional packages dedicated specifically to high-dimensional settings (they are not tailored to deal with univariate or bivariate dimensions), namely \CRANpkg{EMMIXmfa} and \CRANpkg{HDclassif} to compare their performance with standard multivariate approaches in complex, but non degenerate cases. We summarise the main features and use cases of the seven + two reviewed
+In parallel, we include two additional packages dedicated specifically to high-dimensional settings (they are not tailored to deal with univariate or bivariate dimensions), namely \CRANpkg{EMMIXmfa} [@R-EMMIXmfa] and \CRANpkg{HDclassif} [@R-HDclassif] to compare their performance with standard multivariate approaches in complex, but non degenerate cases. We summarise the main features and use cases of the seven + two reviewed
 packages in Table
 `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:low-comparison-package-html)', '\\@ref(tab:low-comparison-package-pdf)'))`.
 The three most commonly used packages are \pkg{mixtools}, \pkg{mclust} and \pkg{flexmix}. However, the \pkg{mclust} package is by far the most complete with many features provided to visualise and evaluate the quality of the GMM estimate. \pkg{bgmm} requires the greatest number of packages for its installation, making its upkeep
@@ -628,7 +628,7 @@ We briefly review the most common initialisation algorithms in section [Initiali
 ([Model selection] and row 5). Due to the complexity of computing the true distribution of the parameters estimated, bootstrap methods are commonly used used to derive confidence intervals (see [Derivation of
 confidence intervals in GMMs] and row 6 in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`.
 
-<!-- - \color{green}To generate random samples and build bootstrap confidence intervals of the estimated parameters, we first need to design a function that mimics the effect of drawing a random observation from a GMM, given user defined parameters. Packages able to do so are gathered as parametric. An alternative way consists of providing the user either real or toy datasets, the last ones having the major advantage that we know the expected values of the parameters. -->
+<!-- - \color{blue}To generate random samples and build bootstrap confidence intervals of the estimated parameters, we first need to design a function that mimics the effect of drawing a random observation from a GMM, given user defined parameters. Packages able to do so are gathered as parametric. An alternative way consists of providing the user either real or toy datasets, the last ones having the major advantage that we know the expected values of the parameters. -->
 <!-- However, especially in high-dimensional settings, it is rather cumbersome to provide each of the parameters required to uniquely identify a GMM. Indeed, without any constraint on the parameters and full covariance matrices, a multivariate GMM of dimension $D$ and with $k$ components requires $k - 1 +kD +\frac{D(D+1)}{2}$ free parameters. \pkg{bgmm} is the only package among the ones we benchmarked that partly : in the absence of prior information from the user, the proportions are supposed to be all equal, the mean values are drawn independently from an univariate Normal distribution and the covariance matrix is set equal to the sample covariance of a $D$ independent-wise Normal draw^[Expecting the user to provide their own estimates is relatively expected in packages that only estimate parameters using variants of maximum likelihood techniques. Indeed, in such methods, no prior distribution of the parameters is assumed, in opposition to Bayesian approaches]. \color{black} -->
 
 - Six packages supply several visualisations, summarised in the last row of Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:high-comparison-packages-html)', '\\@ref(tab:high-comparison-packages-pdf)'))`, to display either the distributions corresponding to the estimated parameters or compare quickly the performance between the packages. However, \pkg{mclust} is by far the most complete one with performance plots to quickly set apart several parametrisations with respect to a performance metric, density plots (in the univariate setting) and isodensity plots (bi-dimensional in the bivariate setting or in higher dimensions after appropriate dimensionality reduction), with the additional possibility of integrating custom confidence intervals and critical regions, and finally boxplot bootstrap representations to take in at a glance the distribution of the benchmarked estimated parameters.
@@ -768,7 +768,7 @@ with $k$ the number of components and $p_j=\mathbb{P}(S=j)$ the frequency of cla
 
 
 We considered 9 distinct configuration parameters, associated with distinct values of $\operatorname{OVL}$ and entropy in the univariate setting, 20 scenarios in the bivariate setting and 16 scenarios in the high-dimensional setting. Briefly, we compute any combination, with the same components means (0, 4, 8 and 12), three sets of ratio parametrisations $\left[(0.25, 0.25, 0.25, 0.25); (0.2, 0.4, 0.2, 0.2); (0.1, 0.7, 0.1, 0.1) \right]$ and three variances: $(0.3, 1, 2)$ in the univariate setting. In the bivariate setting, we consider two sets of proportions: $\left[(0.5, 0.5); (0.9, 0.1) \right]$, two sets of coordinate centroids: $\left[(0; 20), (20, 0) \right]$ and $\left[(0; 2), (2, 0) \right]$, the same variance of 1 for each feature and for each component for illustrative purposes of the direct relation linking the correlation and the level of OVL and five correlation sets: $\left[(-0.8, -0.8); (0.8, -0.8); (-0.8, 0.8); (0.8, 0.8); (0, 0)\right]$. 
-\color{green}And finally, we tested eight scenarios in the high-dimensional framework, setting to $D=10$ the number of dimensions, playing on the level of overlap, imbalance between the components' proportions and the underlying constraint assigned to the covariance matrix (either fully parametrised or spherical), without explicitly providing this restriction to the packages. Each of the parameter configuration tested in the high-dimensional setting was evaluated with $n=200$ observations and $n=2000$ observations. Additionally, instead of defining manually interesting parameters for a high-dimensional scenario, we take profit of the simulation framework set up in `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("MixSim::MixSim"),   '\\code{MixSim}'))` function, from the \CRANpkg{MixSim} package [@R-MixSim]. This function returns the user a fully parametrised GMM, with a prior defined level of maximum or average overlap^[Unfortunately, as discussed in further details in Appendix [An analytic formula of the overlap for univariate Gaussian mixtures], the MixSim package does not compute the global distribution overlap, but instead returns the mean of pairwise overlap between any component (however, with two components, these two alternative definitions match.) Finally, it is not possible to set the proportions of the components before the generation of the parameters, except for clusters with equal proportions, and contrary to the expect behaviour of additional parameter *PiLow*, supposed to define the smallest mixing proportion.].
+\color{blue}And finally, we tested eight scenarios in the high-dimensional framework, setting to $D=10$ the number of dimensions, playing on the level of overlap, imbalance between the components' proportions and the underlying constraint assigned to the covariance matrix (either fully parametrised or spherical), without explicitly providing this restriction to the packages. Each of the parameter configuration tested in the high-dimensional setting was evaluated with $n=200$ observations and $n=2000$ observations. Additionally, instead of defining manually interesting parameters for a high-dimensional scenario, we take profit of the simulation framework set up in `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("MixSim::MixSim"),   '\\code{MixSim}'))` function, from the \CRANpkg{MixSim} package [@R-MixSim]. This function returns the user a fully parametrised GMM, with a prior defined level of maximum or average overlap^[Unfortunately, as discussed in further details in Appendix [An analytic formula of the overlap for univariate Gaussian mixtures], the MixSim package does not compute the global distribution overlap, but instead returns the mean of pairwise overlap between any component (however, with two components, these two alternative definitions match.) Finally, it is not possible to set the proportions of the components before the generation of the parameters, except for clusters with equal proportions, and contrary to the expect behaviour of additional parameter *PiLow*, supposed to define the smallest mixing proportion.].
 \color{black}
 
 The complete list of parameters used is reported respectively in Table \@ref(tab:parameter-configuration-univariate) for the univariate setting, Table \@ref(tab:parameter-configuration-bivariate) for the bivariate setting and \@ref(tab:parameter-configuration-HD) for the high-dimensional setting. We benchmarked simulations where the components were alternatively very distinct or instead very overlapping, as well as of equal proportions or instead very unbalanced. The adjustments made to meet the specific requirements of high dimensional packages are detailed in [Practical details for the implementation of our benchmark].
@@ -815,7 +815,7 @@ the package has only small impact.
 We detail expensively in our bivariate simulations two scenarios featuring both strongly unbalanced and well-separated components, similarly to scenario U3 in Table \@ref(tab:parameter-configuration-univariate): the scenarios B12 (Figure \@ref(fig:multivariate-overlapping-unbalanced-opposite-correlated) and Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-opposite-correlated-pdf)'))`) and B14 (Figure \@ref(fig:multivariate-overlapping-unbalanced-positive-correlated) and Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-html)', '\\@ref(tab:multivariate-overlapping-unbalanced-positive-correlated-pdf)'))`). Similarly, scenarios B16, B17 and B20 (Table \@ref(tab:parameter-configuration-bivariate)) with similar characteristics are summarised in supplementary Figure \@ref(fig:general-unbalanced-well-separated-bivariate). For all these scenarios, neither the initialisation method nor the package have a statistical significant impact on the overall performance.
 
 \color{blue}
-Similarly,  scenarios HD1a-HD4b in Table \@ref(tab:parameter-configuration-HD)) in the high dimensional setting, display well-separated clusters, with a representative outcome represented in Supplementary Figure \@ref(fig:HD-separated-unbalanced-ellipsoidal-plot) and Table  `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:HD-separated-unbalanced-ellipsoidal-html)', '\\@ref(tab:HD-separated-unbalanced-ellipsoidal-pdf)'))`. Consistently with results from the corresponding univariate and bivariate scenarios, most of the previously benchmarked packages return sensibly the same estimates with the hierarchical clustering and *k*-means initialisation. However, \pkg{bgmm} and \pkg{EMCluster} clearly differentiate by lower performances with the rebmix initialisation method, even though rebmix is globally less performant, no matter the package or the type of parameter to estimate. Notably, initialisations with the rebmix package tend to display a much larger number of poor estimations, some of which can be identified with the local maxima associated with parameter switching between the two classes. Finally, the two additional packages dedicated to high-dimensional clustering display the worst performances, with \pkg{EMMIXmfa} returning the most biased parameters and \pkg{HDclassif} the most noisy estimates. \pkg{EMMIXmfa} is the only package that returned highly biased estimates of the components' proportions in this setting.
+Similarly,  scenarios HD1a-HD4b in Table \@ref(tab:parameter-configuration-HD)) in the high dimensional setting, display well-separated clusters, with a representative outcome represented in Supplementary Figure \@ref(fig:HD-separated-unbalanced-ellipsoidal-plot) and Table  `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:HD-separated-unbalanced-ellipsoidal-html)', '\\@ref(tab:HD-separated-unbalanced-ellipsoidal-pdf)'))`. Consistently with results from the corresponding univariate and bivariate scenarios, most of the previously benchmarked packages return sensibly the same estimates with the hierarchical clustering and *k*-means initialisation. However, \pkg{bgmm} and \pkg{EMCluster} clearly differ by lower performances with the rebmix initialisation method (however, overall, rebmix performs poorly, regardless of the package used for estimation). Notably, initialisations with the rebmix package tend to display a much larger number of poor estimations, some of which can be identified with the local maxima associated with parameter switching between the two classes. Finally, the two additional packages dedicated to high-dimensional clustering display the worst performances, with \pkg{EMMIXmfa} returning the most biased parameters and \pkg{HDclassif} the most noisy estimates. \pkg{EMMIXmfa} is the only package that returned highly biased estimates of the components' proportions in this setting.
 \color{black}
 
 
@@ -885,7 +885,7 @@ the initialisation algorithm are not met.
 
 Panels A, B and C display, respectively in the univariate, bivariate and high-dimensional setting, the heatmap of the Pearson correlation between the estimated parameters across the benchmarked packages for the most discriminative scenario (the one featuring the most unbalanced and overlapping components): scenario U9, Table \@ref(tab:parameter-configuration-univariate) in the univariate setting, scenario B11, Table \@ref(tab:parameter-configuration-bivariate), for the bivariate simulation and scenario HD8, Table \@ref(tab:parameter-configuration-HD) for the high-dimensional simulation, with the *k*-means initialisation.
 
-We further identified with this representation minor differences for the estimation of the parameters between \pkg{Rmixmod} and \pkg{mixtools}, while three subgroups can be identified in the second class of packages: the first subset with \pkg{bgmm} and \pkg{mclust}, the second subset with \pkg{EMCluster} and \pkg{GMKMcharlie} packages and the \pkg{flexmix} package, which clearly stands out from the others, as being the one most likely to be trapped at the boundaries of the parameter space. After examining the source codes of the packages, we attribute this differences to custom implementation choices of the EM algorithm, such as the way numerical underflow is managed or the choice of a relative or absolute scale to compare consecutive computed log-likelihoods (see [EM-implementation differences across reviewed packages] and Panel D, Figure \@ref(fig:dichotomy-package-conclusion)). \color{green} In the high-dimensional setting, the second class of packages showed additional heterogeneity, with \pkg{EMCluster} and \pkg{bgmm} setting themselves apart from the other three packages.\color{black}
+We further identified with this representation minor differences for the estimation of the parameters between \pkg{Rmixmod} and \pkg{mixtools}, while three subgroups can be identified in the second class of packages: the first subset with \pkg{bgmm} and \pkg{mclust}, the second subset with \pkg{EMCluster} and \pkg{GMKMcharlie} packages and the \pkg{flexmix} package, which clearly stands out from the others, as being the one most likely to be trapped at the boundaries of the parameter space. After examining the source codes of the packages, we attribute this differences to custom implementation choices of the EM algorithm, such as the way numerical underflow is managed or the choice of a relative or absolute scale to compare consecutive computed log-likelihoods (see [EM-implementation differences across reviewed packages] and Panel D, Figure \@ref(fig:dichotomy-package-conclusion)). \color{blue} In the high-dimensional setting, the second class of packages showed additional heterogeneity, with \pkg{EMCluster} and \pkg{bgmm} setting themselves apart from the other three packages.\color{black}
 
 
 
@@ -1054,7 +1054,7 @@ Removing errors proceeding from the initialisation method, only the \pkg{flexmix
 \color{blue}
 In a relatively high dimensional framework, as tested on our third benchmark (Table \@ref(tab:parameter-configuration-HD)), none of the initialisations performed with the random method, carried out with `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("EMCluster::rand.EM()"),   '\\code{EMCluster::rand.EM()}'))`, succeed in returning a valid parametrisation. Indeed, over the 16 scenarios tested, the covariance returned during the initialisation was systematically non-positive definite for at least one of the components, violating the properties of covariance matrices.
 Furthermore, as shown by the comparison of summary metrics with  $n=200$ and $n=2000$ observations in Tables  `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:HD-impact-num-observations-html-tab1)', '\\@ref(tab:HD-impact-num-observations-pdf-tab1)'))`
- and  `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:HD-impact-num-observations-html-tab2)', '\\@ref(tab:HD-impact-num-observations-pdf-tab2)'))`, respectively for the simplest scenario HD1 and the most complex one HD8, the rebmix initialization on the one hand, and the packages dedicated to high dimensionality or those of the second class of packages that show a particular behaviour, present much more failures than the *k*-means or hc initialisation, especially with the first class or the other packages of the second class. 
+ and  `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:HD-impact-num-observations-html-tab2)', '\\@ref(tab:HD-impact-num-observations-pdf-tab2)'))`, respectively for the simplest scenario HD1 and the most complex one HD8, the rebmix initialization on the one hand, and the packages dedicated to high dimensionality or those of the second class of packages that show a particular behaviour, present much more failures than the *k*-means or hierarchical clustering initialisation, especially with the first class or the other packages of the second class. 
 \color{black}
 
 
@@ -1079,7 +1079,7 @@ inefficient estimators when the components of the GMM under study highly overlap
 
 
 When all components are well-separated or with a relatively small number of components (three or fewer), we found that the best
-estimation (lowest MSE and bias) is reached with the latest initialisation method developed, namely the rebmix one. Notably, the global maximum is always properly found in our simulations with distinguishable components. Yet, with overlapping components, the least biased and variable estimates overall are obtained with *k*-means initialisation, enforcing the robustness of the method while the assumptions for using it are not met. On the contrary, with unbalanced and numerous components (above three), the quantiles initialisation leads to the most biased estimates while the rebmix initialisation induces the highest variability. Indeed, rebmix initialisation is not fitted for highly overlapping mixtures, since one of its most restrictive assumption is that each generated interval of the empirical mixture distribution can be associated unambiguously to a component (see [Initialisation of the EM algorithm] and p15 in @rebmix2015a). \color{green} Furthermore, rebmix is not particularly adjusted to deal with high-dimensionality, displaying systematically poorer performance compared to other initialisation strategies, such as *k*-means or hierarchical clustering, as illustrated by the summary metrics listed in Appendix [Supplementary Figures and Tables in the HD simulation]. Higher risk of returning a sub-optimal extremum likely arises from the increased data sparsity in high dimensional datasets, which grows as the square root of the number of dimensions $\sqrt{D}$ [Convergence of distance definitions](https://en.wikipedia.org/wiki/Curse_of_dimensionality#Distance_function). Thus, we expect that most of the equally-large intervals binning the sampling space and that are used to initiate the rebmix algorithm contain either no or only observation, preventing from retrieving the numerically defined mode of the distribution and increasing the risk of initiating the algorithm in a spurious neighbourhood. \color{black}
+estimation (lowest MSE and bias) is reached with the latest initialisation method developed, namely the rebmix one. Notably, the global maximum is always properly found in our simulations with distinguishable components. Yet, with overlapping components, the least biased and variable estimates overall are obtained with *k*-means initialisation, enforcing the robustness of the method while the assumptions for using it are not met. On the contrary, with unbalanced and numerous components (above three), the quantiles initialisation leads to the most biased estimates while the rebmix initialisation induces the highest variability. Indeed, rebmix initialisation is not fitted for highly overlapping mixtures, since one of its most restrictive assumption is that each generated interval of the empirical mixture distribution can be associated unambiguously to a component (see [Initialisation of the EM algorithm] and p15 in @rebmix2015a). \color{blue} Furthermore, rebmix is not particularly adjusted to deal with high-dimensionality, displaying systematically poorer performance compared to other initialisation strategies, such as *k*-means or hierarchical clustering, as illustrated by the summary metrics listed in Appendix [Supplementary Figures and Tables in the HD simulation]. Higher risk of returning a sub-optimal extremum likely arises from the increased data sparsity in high dimensional datasets, which grows as the square root of the number of dimensions $\sqrt{D}$ [Convergence of distance definitions](https://en.wikipedia.org/wiki/Curse_of_dimensionality#Distance_function). Thus, we expect that most of the equally-large intervals binning the sampling space and that are used to initiate the rebmix algorithm contain either no or only observation, preventing from retrieving the numerically defined mode of the distribution and increasing the risk of initiating the algorithm in a spurious neighbourhood. \color{black}
 
 About the remaining initialisation strategies, we observed that random initialisation yields for some simulations, even in the well-separated case, highly biased estimates, far from the true
 parameters. Consistent with our observations, it was shown in
@@ -1107,7 +1107,7 @@ an unbiased but non MLE-estimate of the covariance matrix, without any clear imp
 of the overall performance in our simulations.
 
 
-Based on these results, we design a decision tree indicating the best choice of package and initialisation method in relation with the shape of the distribution, displayed in Figure \@ref(fig:decision-tree-GMMs). Interestingly, our conclusions are consistent between the univariate and bivariate settings. \color{green} Furthermore, most of the general recommendations on the best choices of packages with respect to the characteristics of the mixture model generally hold in a relatively higher dimensional setting^[We should note, however, that a larger sample space revealed that the packages \textit{bgmm} and \textit{EMCluster} display more biased and noisy parameters compared to the other packages benchmarked and that their performance was surprisingly unaffected by the number of simulated realisations]. From this, we assume that projection into a lower-dimensional space is only beneficial in a really high-dimensional setting, for example when the number of dimensions exceeds the number of observations, or when unrestricted parameter estimation (with the full covariance structure) is practically infeasible for computational reasons.
+Based on these results, we design a decision tree indicating the best choice of package and initialisation method in relation with the shape of the distribution, displayed in Figure \@ref(fig:decision-tree-GMMs). Interestingly, our conclusions are consistent between the univariate and bivariate settings. \color{blue} Furthermore, most of the general recommendations on the best choices of packages with respect to the characteristics of the mixture model generally hold in a relatively higher dimensional setting^[We should note, however, that a larger sample space revealed that the packages \textit{bgmm} and \textit{EMCluster} display more biased and noisy parameters compared to the other packages benchmarked and that their performance was surprisingly unaffected by the number of simulated realisations]. From this, we assume that projection into a lower-dimensional space is only beneficial in a really high-dimensional setting, for example when the number of dimensions exceeds the number of observations, or when unrestricted parameter estimation (with the full covariance structure) is practically infeasible for computational reasons.
 <!-- Finally,  Notably, just like the packages dedicated to high dimensional setting, the inferred confidence intervals from bootstrap simulations disprove the expected predictions of the multivariate version of the Central -->
 <!-- Limit Theorem (CLT)^[Indeed, the multidimensional CLT states that the empirical mean of a vector of unbiased parameters, each inferred independently (such the bootstrap distribution we estimated using the EM algorithm with a bootstrap strategy, expected theoretically to be asymptomatically unbiased) converges to a multivariate normal distribution, whose covariance matrix is proportional to the inverse of the square root of the number of observations. Notably, we would expect narrower confidence bands and less biased estimations by increasing the number of observations.].  -->
 color{black}
@@ -1311,7 +1311,7 @@ Using the calculus formulas derived in the previous boxes, a closed form for the
 \end{equation}
 ```
 
-Explicitly optimising the equations (\@ref(eq:univariate-auxiliary)-\@ref(eq:multivariate-auxiliary)) yield the following MLE parameters in both the univariate and multivariate settings (Table `r knitr::asis_output(ifelse(knitr::is_html_output(), ' \\@ref(tab:summary-em-html)', '\\@ref(tab:summary-em-pdf)'))`), as detailled in [@leytham84; @redner_walker84]:
+Explicitly optimising the equations (\@ref(eq:univariate-auxiliary)-\@ref(eq:multivariate-auxiliary)) yield the following MLE parameters in both the univariate and multivariate settings (Table `r knitr::asis_output(ifelse(knitr::is_html_output(), ' \\@ref(tab:summary-em-html)', '\\@ref(tab:summary-em-pdf)'))`), as detailed in [@leytham84; @redner_walker84]:
 
 
 ```{r summary-em-html, layout="l-body-outset", eval = knitr::is_html_output()}
@@ -1441,7 +1441,7 @@ data %>% kbl(booktabs=T, caption = "The 14 canonical parametrisations of the wit
 ```
 
 
-* The first column describes in general and understandable terms each parametrisation, with I meaning invariant (alternatively, not used in the parametrisation), E means equal and V variable while the second column matches the corresponding matrix decomposition of the covariance matrix. These 14 models are all included in one of the three super-families: spherical, diagonal and ellipsoidal listed before. As an example, the model VEI has variable volumes $\lambda_j$ in relation with the cluster, however shares same general shape (as we can note on the Representations, all isodensities are spread out along the $x$-axis) and invariant directions (in other words, the transition matrix is the identity matrix, entailing that all scatter plots are aligned with the Cartesian coordinate axes).
+* The first column describes in general and understandable terms each parametrisation, with I meaning invariant (alternatively, not used in the parametrisation), E means equal and V variable while the second column matches the corresponding matrix decomposition of the covariance matrix. These 14 models are all included in one of the three super-families: spherical, diagonal and ellipsoidal listed before. As an example, the model VEI has variable volumes $\lambda_j$ in relation with the cluster, however shares same general shape (as we can note on the Representations, all isodensities are distributed along the $x$-axis) and invariant directions (in other words, the transition matrix is the identity matrix, entailing that all scatter plots are aligned with the Cartesian coordinate axes).
 
 
 * Varying the volume $\lambda_j$, given a fixed $\boldsymbol{Q}$ and $\boldsymbol{D}$, amounts to an *enlargement* (when all dimensions of a figure are changed in the same scale, also referred to as *isotropic* transformation),  varying the eigenvectors $\boldsymbol{Q}_j$, given a fixed volume $\lambda_j$ and $\boldsymbol{D}$ is equivalent to a rotation and finally varying the diagonal matrix $\boldsymbol{D}_j$, given the other parameters of Equation \@ref(eq:covariance-decomposition) are fixed, results in a *distortion* of the representation.
@@ -1469,8 +1469,8 @@ When the sub dimension $d_j$ is known, a closed version is generally available f
 
 Taking a concrete use case from the help documentation of the package \pkg{HDclassif}, it enabled to cluster a dataset of 10 classes with 130 observations overall and described in a 1024-dimensional space (consider the famous machine-learning digit recognition problem). Variants of these approaches have been developed in the following packages: \pkg{HDclassif}, \pkg{fabMix}, \pkg{EMMIXmfa} and \pkg{pgmm}. We refer the interested reader to the educational vignette of \pkg{HDclassif}: `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::href_topic("HDclassif", "HDclassif"),  paste0('\\href{', downlit::href_topic('HDclassif', 'HDclassif'),'}{HDclassif}')))` and papers [@mcnicholas_murphy08; @mcnicholas_etal10;@mcnicholas_murphy10].
 
-\color{green}
-Historically, the first mention of a probabilistic framework with an application to dimension reduction in the context of finite mixture models goes back to @tipping_bishop99, based on principal component analysis. @mclachlan_etal03 and @mclachlan_peel00a extend this original model by postulating that the distribution of the data within any latent class could be described using the tools of the factor analysis field^[Although principal component analysis and factor analysis are closely related, we can differentiate both approaches by their differing objective: while PCA seeks to capture the overall variability of the dataset, factor analysis focuses on describing the intra-variability between covariates. In practice, the differences between the two approaches are minor, we can notably show that the output of PCA is one of the solutions suggested by standard factor analysis.] Finally, building on the parsimonious parametrisations already theorised for GMMs (see previous section) , @mcnicholas_murphy08b, @mcnicholas_etal10a and @bouveyron_etal07 proposed a variety of constraints, but this time directly defined on the projected subspace. Since all methods based on factor analysis provide a transition matrix, using the two or three most informative eigen values and their associated eigen vectors in order to project the dataset on a smaller subspace provides a simple visualisation tool for representing high dimensional datasets. 
+\color{blue}
+Historically, the first mention of a probabilistic framework with an application to dimension reduction in the context of finite mixture models goes back to @tipping_bishop99, based on principal component analysis. @mclachlan_etal03 and @mclachlan_peel00a extend this original model by postulating that the distribution of the data within any latent class could be described using the tools of the factor analysis field^[Although principal component analysis and factor analysis are closely related, we can differentiate both approaches by their differing objective: while PCA seeks to capture the overall variability of the dataset, factor analysis focuses on describing the intra-variability between covariates. In practice, the differences between the two approaches are minor, we can notably show that the output of PCA is one of the solutions suggested by standard factor analysis.] Finally, building on the parsimonious parametrisations already theorised for GMMs (see previous section) , @mcnicholas_murphy08, @mcnicholas_etal10 and @bouveyron_etal07 proposed a variety of constraints, but this time directly defined on the projected subspace. Since all methods based on factor analysis provide a transition matrix, using the two or three most informative eigen values and their associated eigen vectors in order to project the dataset on a smaller subspace provides a simple visualisation tool for representing high dimensional datasets. 
 However, this method may is not suitable for unravelling the clustering structure. Instead, *the GMMDR method*, first proposed by @scrucca10 and implemented in the  `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("mclust::MclustDR()"),   '\\code{MclustDR}'))` function, from \pkg{mclust} package, aims at recovering the subspace that best captures the underlying latent clustering structure (we notably expect invariance of the global overlap in the sampling space and the corresponding projected subspace). More precisely, the main objective of the GMMDR technique is to infer the global *change-of-basis matrix* $\boldsymbol{Q}$ that minimises the differences in the a posteriori probabilities of assigning each observation $i$ to a given cluster $s_i$, knowing the value of the vector of observed covariates $\boldsymbol{x}_i$. Namely, we are looking for the orientation matrix $\boldsymbol{Q}$ that maximally ensures the following objective (Eq. \@ref(eq:GMMDR)):
 ```{=tex}
 \begin{equation}
@@ -2059,7 +2059,7 @@ the five reviewed initialisation methods, except with \pkg{otrimle}
 which has its own hierarchical clustering initialisation method.
 
 
-```{r outliers, fig.cap="A) Execution times for the nine reviewed packages using hc initialisation, with on the left $2\\%$ of outliers in proportion and on the right, $4\\%$ of outliers.  B) and C) Boxplots of the estimated parameters with $N=200$ repetitions, $n=2000$ observations and respectively $2\\%$ and $4\\%$ of outliers. The red dashed horizontal line corresponds to the true value of the parameters."}
+```{r outliers, fig.cap="A) Execution times for the nine reviewed packages using hierarchical clustering initialisation, with on the left $2\\%$ of outliers in proportion and on the right, $4\\%$ of outliers.  B) and C) Boxplots of the estimated parameters with $N=200$ repetitions, $n=2000$ observations and respectively $2\\%$ and $4\\%$ of outliers. The red dashed horizontal line corresponds to the true value of the parameters."}
 outliers_time_data <- readRDS("./tables/univariate/univariate_outliers_time_computations.rds")
 outliers_time_computations <- cowplot::plot_grid(plot_time_computations(outliers_time_data %>% filter(ID=="O1")) +
                                                    labs(tag="A") + theme(plot.tag = element_text(size=18, face = "bold")),
@@ -2077,8 +2077,8 @@ outliers_plot <- gridExtra::arrangeGrob(outliers_time_computations,
                                           labs(tag="D")+ theme(plot.tag = element_text(size=18, face = "bold")),
                                         top="",nrow=3, padding = unit(1, "line"))
 
-ggsave("figs/univariate/outliers.png", outliers_plot, width = 18, height = 24,dpi = 75)
-knitr::include_graphics("figs/univariate/outliers.png", dpi = 75)
+ggsave("figs/univariate/outliers.png", outliers_plot, width = 18, height = 24,dpi = 300)
+knitr::include_graphics("figs/univariate/outliers.png", dpi = 300)
 
 ```
 
@@ -2172,12 +2172,12 @@ criteria:
     subspace using a factor analysis model. Hence, these packages can
     not learn a GMM for an univariate distribution, as we can not
     project on a smaller space than the unidimensional space. This led
-    to the exclusion of \CRANpkg{HDclassif} [@R-HDclassif] ,
-    \CRANpkg{fabMix} [@R-fabMix] , \CRANpkg{EMMIXmfa} [@R-EMMIXmfa] and
+    to the exclusion of \pkg{HDclassif},
+    \CRANpkg{fabMix} [@R-fabMix] , \pkg{EMMIXmfa} and
     \CRANpkg{pgmm} [@R-pgmm] packages. The \CRANpkg{sensory}
     [@R-sensory] package both imputes missing data and performs factor
     regression on a subspace up to 3 dimensions at most, but requires
-    the user to provide its own initial estimates. \color{green} Alternatively, \CRANpkg{clustvarsel} [@R-clustvarsel] discards the least informative variables, in an attempt to find a locally optimal subset of variables that best discriminate clusters. \color{black}
+    the user to provide its own initial estimates. \color{blue} Alternatively, \CRANpkg{clustvarsel} [@R-clustvarsel] discards the least informative variables, in an attempt to find a locally optimal subset of variables that best discriminate clusters. \color{black}
 
 -   We assume that our original data is continuous. However, some
     packages are dedicated to deal with discrete data, for instance
@@ -2224,9 +2224,7 @@ unconstrained GMM model was an ancillary task:
     \CRANpkg{Rmixmod} package.
 
 -   Some extend the EM algorithm on Gaussian distributions and overcome
-    its main limitations. \CRANpkg{ManlyMix} [@R-ManlyMix] forces the
-    data to resemble a Gaussian distribution by using a Manly
-    transformation. The \CRANpkg{MGMM} [@R-MGMM] package deal with
+    its main limitations. The \CRANpkg{MGMM} [@R-MGMM] package deal with
     missing data, which is not relevant in unique dimension. The
     \pkg{mixsmsn} package estimates skewed GMMs. \CRANpkg{SMNCensReg}
     [@R-SMNCensReg] fit univariate right, left or interval censored
@@ -2289,13 +2287,13 @@ download_trends
 ```
 
 
-\color{green}
+\color{blue}
 Only the packages dedicated to high-dimensionality, listed in our first bullet point, are relevant to benchmark their performance as a function of the number of dimensions. Indeed, although some packages computing mixtures of regressions do implement features allowing to to handle high-dimensional datasets, such as \pkg{RobMixReg} and \pkg{fmerPack}, they all assume a diagonal covariance structure, and accordingly independent covariates.
 
 The two existing strategies are then limited to projection to a smaller subspace, usually within the theoretical framework of factor analysis or to perform a feature selection strategy.  
 We quickly discarded \pkg{fabMix}, since it only retrieves the parameters of GMMs within a Bayesian framework, while we focused on strategies retrieving the MLE via the EM algorithm. The core function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("pgmm::pgmmEM"),   '\\code{pgmmEM}'))` in the \pkg{pgmm} package unfortunately includes a seed for the the algorithm's initialization that cannot be disabled. Such a feature is generally not recommended for reproducibility, since by defining the seed internally in the function, we were not able to independently generate  new reproducible datasets in our benchmark (instead, it is recommended to set the seed value once and for all at the beginning of the virtual simulation).
 
-Finally, \pkg{clustvarsel} is not really tailored for datasets with a large number of dimensions, but rather for datasets with a small number of observations. Indeed, by performing a sequential search in the model space in a  forward-backward process (namely by adding variables to the null model till we recover the full model, with all features), the algorithm requires intensive computational resources (for instance, there are already $2^{10}=1024$ models to be tested in dimension 10). Instead of a greedy strategy, it would have been interesting to implement a in independent and highly parallelisable feature selection process by sampling the model space. To do so, [@chen_chen08; @he_chen16] suggests a shochastic and greedy feature selection strategy, using notably the *eBIC* criteria in order to have an equal chance to draw a model of any dimension^[Indeed, by simply uniformly sampling among the $2^D$ models available, the probability of getting models with $D/2$ features is much higher than drawing models at the boundaries, displaying either few or close to $|D|$ covariates.]. Such a strategy is commonly used in *ensemble learning*. 
+Finally, \pkg{clustvarsel} is not really tailored for datasets with a large number of dimensions, but rather for datasets with a small number of observations. Indeed, by performing a sequential search in the model space in a  forward-backward process (namely by adding variables to the null model till we recover the full model, with all features), the algorithm requires intensive computational resources (for instance, there are already $2^{10}=1024$ models to be tested in dimension 10). Instead of a greedy strategy, it would have been interesting to implement a in independent and highly parallelizable feature selection process by sampling the model space. To do so, [@chen_chen08; @he_chen16] suggests a stochastic and greedy feature selection strategy, using notably the *eBIC* criteria in order to have an equal chance to draw a model of any dimension^[Indeed, by simply uniformly sampling among the $2^D$ models available, the probability of getting models with $D/2$ features is much higher than drawing models at the boundaries, displaying either few or close to $|D|$ covariates.]. Such a strategy is commonly used in *ensemble learning*. 
 
 <!-- ^[Note that with only some workarounds, moving from a regression framework to a more standard clustering task is straightforward, replacing the design matrix storing covariates by a constant term.]. -->
 
@@ -2314,12 +2312,12 @@ First, the number of observations ($n=200$ and $n=500$ respectively in the univa
 (\#eq:random-sampling-risk)
 \end{equation}
 
-Interestingly, the probability of generating a sample among the $N$ repetitions increases exponentially as the level of imbalance increases. For instance, considering $N=100$ repetitions, $n=200$ observations per sample and proportion for the minor component $p_j=0.1$, the probability of generating a degenerate simulation is insignificant: $1.63 \times 10^{-6}$ while the risk considerably increases, keeping the same general simulation parameters and setting minor proportion to $p_j=0.05$, with a probability of $0.04$. \color{green} We have focused on one of the impacts of high dimensionality, namely that related to the uniformisation of distance norms and the increase in sparsity in relation with the number of features added. We deliberately do not consider the case where the number of dimensions exceeds the number of observations (namely, when $D>n$), since in this configuration, the covariance matrix is no longer of full rank and invertible, implying that the corresponding probability distribution does spans completely over a smaller subspace. However, with so few observations, ($n=200$ in scenarios identified as a), we reveal the impact in terms of the quality of the estimation when the number of observations is closed to the number of free parameters required to parametrise the full GMM model (with $k=2$ clusters and $D=10$ dimensions, $k \times \frac{D(D+1)}{2} + kD + 1 = 131$ are needed.).\color{black}
+Interestingly, the probability of generating a sample among the $N$ repetitions increases exponentially as the level of imbalance increases. For instance, considering $N=100$ repetitions, $n=200$ observations per sample and proportion for the minor component $p_j=0.1$, the probability of generating a degenerate simulation is insignificant: $1.63 \times 10^{-6}$ while the risk considerably increases, keeping the same general simulation parameters and setting minor proportion to $p_j=0.05$, with a probability of $0.04$. \color{blue} We have focused on one of the impacts of high dimensionality, namely that related to the homogenisation and convergence of any distance norm and the increase in sparsity in relation with the number of features added. We deliberately do not consider the case where the number of dimensions exceeds the number of observations (namely, when $D>n$), since in this configuration, the covariance matrix is no longer of full rank and invertible, implying that the corresponding probability distribution does spans completely over a smaller subspace. However, with so few observations, ($n=200$ in scenarios identified as a), we reveal the impact in terms of the quality of the estimation when the number of observations is closed to the number of free parameters required to parametrise the full GMM model (with $k=2$ clusters and $D=10$ dimensions, $k \times \frac{D(D+1)}{2} + kD + 1 = 131$ are needed.).\color{black}
 
 
 Unless stated explicitly, we keep the default hyper-parameters and custom global options provided by each package. For instance, the \pkg{flexmix} package has a default option, *minprior*, set by default to 0.05 which removes any component present in the mixture with a ratio below $0.05$. Besides, we only implement the fully unconstrained model in both univariate and multivariate settings, as it is the only parametrisation implemented in all the seven packages and the most popular to perform classic GMM clustering, as no restrictive and difficult-to-test assumptions are required. 
 
-\color{green} Additionally, as stated in [Parameters estimation in a high-dimensional context], the intrinsic dimension $d_j$ for each cluster $j$ is a hyperparameter, which is generally inferred independently from the GMM estimation itself. While a variety of methods from the field of factor analysis, enumerated in [Factor criteria selection](https://en.wikipedia.org/wiki/Factor_analysis#Criteria_for_determining_the_number_of_factors), have been developed to estimate the intrinsic dimension, to our knowledge, only two of them have been implemented in CRAN packages: the *Cattell’s scree-test* [@cattell66] or the dimension selection graph using one of the *penalty metric* discussed in the appendix [Model selection] [@berge_etal12]. However, while \pkg{HDclassif} natively implements a performance criterion method for determining the dimension of the spanning space, performed under the hood by function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("HDclassif::hdcc()"),   '\\code{mixsmsn::hdcc}'))`, none of the other packages evaluated implemented a dimension selection feature. Instead, we infer it for each of the packages dedicated to high-dimensionality with HDclassif, using using the so-called model "AkjBkQkD", for which the intrinsic dimension is common to all components but the characteristics unique for each component Finally, we use among all supplied parametrisations, the least constrained one. Namely, we used the model "AkjBkQkDk" with HDclassif, in which not only the individual features of the covariance matrix but also the spanning dimension are unique for each cluster, and function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("EMMIXmfa::mcfa()"),   '\\code{mcfa}'))` of the \pkg{ EMMIXmfa} package, in which the *transition matrix* is common to all components (referred to as the orientation matrix in Appendix [Parameters estimation in a high-dimensional context]. \color{black}
+\color{blue} Additionally, as stated in [Parameters estimation in a high-dimensional context], the intrinsic dimension $d_j$ for each cluster $j$ is a hyperparameter, which is generally inferred independently from the GMM estimation itself. While a variety of methods from the field of factor analysis, enumerated in [Factor criteria selection](https://en.wikipedia.org/wiki/Factor_analysis#Criteria_for_determining_the_number_of_factors), have been developed to estimate the intrinsic dimension, to our knowledge, only two of them have been implemented in CRAN packages: the *Cattell’s scree-test* [@cattell66] or the dimension selection graph using one of the *penalty metric* discussed in the appendix [Model selection] [@berge_etal12]. However, while \pkg{HDclassif} natively implements a performance criterion method for determining the dimension of the spanning space, performed under the hood by function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("HDclassif::hdcc()"),   '\\code{mixsmsn::hdcc}'))`, none of the other packages evaluated implemented a dimension selection feature. Instead, we infer it for each of the packages dedicated to high-dimensionality with HDclassif, using using the so-called model "AkjBkQkD", for which the intrinsic dimension is common to all components but the characteristics unique for each component Finally, we use among all supplied parametrisations, the least constrained one. Namely, we used the model "AkjBkQkDk" with HDclassif, in which not only the individual features of the covariance matrix but also the spanning dimension are unique for each cluster, and function `r knitr::asis_output(ifelse(knitr::is_html_output(), downlit::autolink("EMMIXmfa::mcfa()"),   '\\code{mcfa}'))` of the \pkg{ EMMIXmfa} package, in which the *transition matrix* is common to all components (referred to as the orientation matrix in Appendix [Parameters estimation in a high-dimensional context]. \color{black}
 
 
 If all the seven reviewed packages accept initial estimates provided by the user, both the input and the output format differ between them, requiring an intensive processing to standardise both the initial estimates input, and the output estimates. Notably, a well-known issue with the mixture models is that they identifiable up to a permutation of the components (alternatively, changing the index of the labels do not change the likelihood of the model). Assigning one component of the mixture to a specific index is generally immaterial, as the main objective is to return the estimates. However, when it comes to compare the estimated parameters with the true estimates, we must associate unequivocally each component to a  specific index. To do so, we set a partial ordering, sorting the components by increasing order of their mean components. Actually, if the ratio or the covariance estimates can be equal for all the components, it is generally not the case for the centroids, as this would result into a degenerate distribution. The consequence and some illustrations of the non-identifiability of the mixture distributions are discussed in section [Identifiability of finite mixture models](https://stats.stackexchange.com/questions/265898/why-is-a-normal-mixture-model-not-identifiable-and-why-does-it-matter), in @dai_mukherjea01 and in Book @robert_casella10.
@@ -2334,7 +2332,7 @@ We detail below some additional functions we implement to both homogenise input 
 
 + \pkg{flexmix} starts by the M-step of the EM algorithm instead of the E-step. Hence, it expects the posterior probabilities assigned to each cluster $j$ for each observation $i$, $\eta_i(j)$ (Equation \@ref(eq:posteriori)), instead of the initial estimates. Both approaches are, however, equivalent.
 
-\color{green}
+\color{blue}
 On the contrary, none of the packages we evaluated that were dedicated to high-dimensional datasets allow the user to provide its own estimates. Thus, when any of the benchmarked initialization methods listed in Table `r knitr::asis_output(ifelse(knitr::is_html_output(), '\\@ref(tab:general-parameter-description-html)', '\\ref{tab: general-parameter-description-pdf}'))`, was internally available in the package, we use it with the same hyperparameters described in [Initialization of the EM algorithm]. If not, we provide instead a vector containing the MAP assignments inferred by the native initialisation method, in a process similar to that used used with hierarchical clustering.
 \color{black}
 
@@ -2570,8 +2568,8 @@ univariate_balanced_separated <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_balanced_separated.png", univariate_balanced_separated,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_balanced_separated.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_balanced_separated.png", dpi = 300)
 ```
 
 
@@ -2653,8 +2651,8 @@ univariate_unbalanced_separated <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_unbalanced_separated.png", univariate_unbalanced_separated,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_unbalanced_separated.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_unbalanced_separated.png", dpi = 300)
 ```
 
 
@@ -2741,8 +2739,8 @@ univariate_balanced_overlapping <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_balanced_overlapping.png", univariate_balanced_overlapping,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_balanced_overlapping.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_balanced_overlapping.png", dpi = 300)
 ```
 
 
@@ -2826,8 +2824,8 @@ univariate_unbalanced_overlapping <- gridExtra::arrangeGrob(upper_part,
                                                                labs(tag = "C"), top="", nrow = 2, heights = c(1.2, 2), padding = unit(1, "line"))
 
 ggsave("./figs/univariate/univariate_unbalanced_overlapping.png", univariate_unbalanced_overlapping,
-       width = 24, height = 18,dpi = 75)
-knitr::include_graphics("./figs/univariate/univariate_unbalanced_overlapping.png", dpi=75)
+       width = 24, height = 18,dpi = 300)
+knitr::include_graphics("./figs/univariate/univariate_unbalanced_overlapping.png", dpi = 300)
 ```
 
 
@@ -2851,8 +2849,8 @@ four_components_midbalanced_separated <- gridExtra::arrangeGrob(plot_univariate_
                                                                 top="", layout_matrix = matrix(c(1, 2, 3, 3, 4, 4), byrow = TRUE, nrow = 3), heights = c(2, 2.5, 2.5), padding = unit(1, "line"))
 
 ggsave("figs/univariate/univariate_midbalanced.png", four_components_midbalanced_separated,
-       width = 22, height = 26,dpi = 75)
-knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi=75)
+       width = 22, height = 26,dpi = 300)
+knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi = 300)
 ```
 
 
@@ -2867,9 +2865,9 @@ univariate_correlation_heatmaps <- plot_correlation_Heatmap(discriminating_data)
 
 univariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=univariate_correlation_heatmaps %>% purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                           top="", ncol = 2)
-ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
+ggsave("./figs/univariate/heatmap_univariate.png", univariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 300)
 
-knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 75)
+knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 300)
 ```
 
 \newpage
@@ -2877,9 +2875,9 @@ knitr::include_graphics("./figs/univariate/heatmap_univariate.png", dpi = 75)
 
 initialisation_time_data <- readRDS("./tables/univariate/univariate_initialisation_time_computation.rds")
 inialisation_plot <- plot_initialisation_time_computations(initialisation_time_data, size=4, x = 2.6)
-ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 75)
+ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_plot, dpi = 300)
 
-knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 75)
+knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 300)
 ```
 
 
@@ -3105,9 +3103,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_negatively_correlated.png", dpi = 300)
 ```
 
 
@@ -3202,9 +3200,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_opposite_correlated.png", dpi = 300)
 ```
 
 
@@ -3298,9 +3296,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_overlapping_positive_correlated.png", dpi = 300)
 ```
 
 
@@ -3393,9 +3391,9 @@ global_figure <- gridExtra::arrangeGrob(upper_part,
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 2, heights = c(1.5, 1), padding = unit(1, "line"))
 ggsave("figs/bivariate/multivariate_unbalanced_uncorrelated.png",
-       global_figure, width = 20, height = 24, dpi=75)
+       global_figure, width = 20, height = 24, dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_uncorrelated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_uncorrelated.png", dpi = 300)
 ```
 
 
@@ -3430,9 +3428,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/bivariate/multivariate_balanced_overlapping.png",
-       global_figure, width = 20, height = 24,dpi=75)
+       global_figure, width = 20, height = 24,dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_balanced_overlapping.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_balanced_overlapping.png", dpi = 300)
 ```
 
 \newpage
@@ -3462,9 +3460,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/bivariate/multivariate_balanced_well_separated.png",
-       global_figure, width = 20, height = 24,dpi=75)
+       global_figure, width = 20, height = 24,dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_balanced_well_separated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_balanced_well_separated.png", dpi = 300)
 ```
 
 \newpage
@@ -3495,9 +3493,9 @@ global_figure <- gridExtra::arrangeGrob(grobs=list(ellipse_v1 + labs(tag="A") + 
                                     hellinger_v3 + labs(tag = "F") + theme(plot.tag = element_text(size=24, face = "bold"))),
                                     ncol = 2, nrow=3, widths = c(1.5, 1))
 ggsave("figs/bivariate/multivariate_unbalanced_well_separated.png",
-       global_figure, width = 20, height = 24,dpi=75)
+       global_figure, width = 20, height = 24,dpi = 300)
 
-knitr::include_graphics("figs/bivariate/multivariate_unbalanced_well_separated.png", dpi=75)
+knitr::include_graphics("figs/bivariate/multivariate_unbalanced_well_separated.png", dpi = 300)
 ```
 
 ```{r heatmap-all-correlation-plots-bivariate, fig.cap= if (bivariate_html_output) html_global_heatmap_bivariate else pdf_global_heatmap_bivariate}
@@ -3508,8 +3506,8 @@ multivariate_correlation_heatmaps <- plot_correlation_Heatmap(bivariate_paramete
 multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
                                                               purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                             top="", ncol = 2)
-ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 75)
-knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 75)
+ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatmaps, width = 10.5, height = 13.5,dpi = 300)
+knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 300)
 ```
 
 
@@ -3696,9 +3694,9 @@ global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
                                         boxplot_parameter_HD +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
-ggsave("figs/HD/HD-separated-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=75)
+ggsave("figs/HD/HD-separated-unbalanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-separated-unbalanced-ellipsoidal.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-separated-unbalanced-ellipsoidal.png", dpi = 300)
 ```
 
 \newpage
@@ -3801,9 +3799,9 @@ global_figure <- gridExtra::arrangeGrob(HD_density, upper_part,
                                         boxplot_parameter_HD +
                                           theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "E"),
                                         top="", nrow = 3, heights = c(2, 1.5, 2), padding = unit(1, "line"))
-ggsave("figs/HD/HD-overlapping-balanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi=75)
+ggsave("figs/HD/HD-overlapping-balanced-ellipsoidal.png",global_figure, width = 24, height = 32, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-overlapping-balanced-ellipsoidal.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-overlapping-balanced-ellipsoidal.png", dpi = 300)
 ```
 
 \newpage
@@ -4023,9 +4021,9 @@ global_figure <- cowplot::plot_grid(HD_density, boxplot_parameter_HD_balanced +
                                     boxplot_parameter_HD_unbalanced +
                                       theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "D"),
                                     nrow = 3, align = 'hv', axis="tblr")
-ggsave("figs/HD/HD-overlapping-spherical.png",global_figure, width = 24, height = 32, dpi=75)
+ggsave("figs/HD/HD-overlapping-spherical.png",global_figure, width = 24, height = 32, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-overlapping-spherical.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-overlapping-spherical.png", dpi = 300)
 ```
 
 \newpage
@@ -4216,9 +4214,9 @@ global_figure <- cowplot::plot_grid(                              boxplot_parame
                                       theme(plot.tag = element_text(size=24, face = "bold")) + labs(tag = "B"),
                                     nrow = 2, ncol=2, align = 'hv', axis="tblr")
 
-ggsave("figs/HD/HD-impact-nobservations.png",global_figure, width = 30, height = 40, dpi=75)
+ggsave("figs/HD/HD-impact-nobservations.png",global_figure, width = 30, height = 40, dpi = 300)
 
-knitr::include_graphics("figs/HD/HD-impact-nobservations.png", dpi=75)
+knitr::include_graphics("figs/HD/HD-impact-nobservations.png", dpi = 300)
 ```
 
 
@@ -4227,8 +4225,8 @@ multivariate_correlation_heatmaps <- plot_correlation_Heatmap(HD_distributions %
 multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
                                                               purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),
                                                             top="", ncol = 3, nrow = 1)
-ggsave("./figs/HD/heatmap_global_HD.png", multivariate_correlation_heatmaps, width = 18, height = 6,dpi=75)
-knitr::include_graphics("./figs/HD/heatmap_global_HD.png", dpi=75)
+ggsave("./figs/HD/heatmap_global_HD.png", multivariate_correlation_heatmaps, width = 18, height = 6,dpi = 300)
+knitr::include_graphics("./figs/HD/heatmap_global_HD.png", dpi = 300)
 ```
 
 
