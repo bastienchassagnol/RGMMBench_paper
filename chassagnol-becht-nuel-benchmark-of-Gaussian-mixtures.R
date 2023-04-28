@@ -118,7 +118,7 @@ readr::read_delim("./tables/package_comparison_low_level.csv", delim=";", show_c
                               "Regression", "Implemented \n models", "Downloads \n per day",
                               "Last \n update", "Imports", "Recursive \n dependencies", "Language"))) %>%
   row_spec(0,bold=T, align = "c", hline_after = T) %>%
-  row_spec(7,  bold=TRUE, hline_after = T) %>% 
+  row_spec(7,  hline_after = T) %>% 
   kable_styling(latex_options=c("hold_position", "scale_down"))
 
 
@@ -330,11 +330,11 @@ metric_colnames <- c("global_mse_p", "global_mse_mu", "global_mse_sigma", "globa
 
 ## ----prepare-legend-final-figure----------------------------------------------
 html_ouput <- knitr::is_html_output()  
-html_final_legend <- paste("Panels A, B and C show respectively the heatmap of the Pearson correlation in the univariate, bivariate and high-dimensional framework between the parameters estimated by the packages, evaluated for the most discriminating and complex scenario. The correlation matrix was computed using the function", downlit::autolink('stats::cor'), "with option *complete* to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \\BIOpkg{Complexheatmap}.
+html_final_legend <- paste("Panels A, B and C show respectively the heatmap of the Pearson correlation in the univariate, bivariate and high-dimensional framework between the parameters estimated by the packages, evaluated for the most discriminating and complex scenario. The correlation matrix was computed using the function", downlit::autolink('stats::cor'), "with option *complete* to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \\BIOpkg{ComplexHeatmap}.
 
 Panel D represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix [EM-implementation differences across reviewed packages].")
 
-pdf_final_legend <- "Panels A, B and C show respectively the heatmap of the Pearson correlation in the univariate, bivariate and high-dimensional framework between the parameters estimated by the packages, evaluated for the most discriminating and complex scenario. The correlation matrix was computed using the function \\code{stats::cor} with option \\textit{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \\BIOpkg{Complexheatmap}. Panel D represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix \\nameref{sec:em-differences}."
+pdf_final_legend <- "Panels A, B and C show respectively the heatmap of the Pearson correlation in the univariate, bivariate and high-dimensional framework between the parameters estimated by the packages, evaluated for the most discriminating and complex scenario. The correlation matrix was computed using the function \\code{stats::cor} with option \\textit{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \\BIOpkg{ComplexHeatmap}. Panel D represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix \\nameref{sec:em-differences}."
 
 
 ## ----dichotomy-package-conclusion, fig.cap=if (html_ouput) html_final_legend else pdf_final_legend----
@@ -353,7 +353,7 @@ knitr::include_graphics("./figs/dichotomy_package_conclusion.png")
 # unbalanced_variability <- unbalanced_numerous_components$AddChild("Optimise variability and MSE")
 # second_class <- unbalanced_variability$AddChild("Second class of packages \n with *k*-means initialisation, \n preferentially with GMKMcharlie \n or EMCluster")
 # unbalanced_bias <- unbalanced_numerous_components$AddChild("Optimise bias")
-# first_class <- unbalanced_bias$AddChild("First class of packages \n with *k*-means initialization \n for proportions and variability \n estimations and random \n for centroids estimation")
+# first_class <- unbalanced_bias$AddChild("First class of packages \n with *k*-means initialisation \n for proportions and variability \n estimations and random \n for centroids estimation")
 # unbalanced_few_components <- overlapping$AddChild("Unbalanced and number of clusters < 4")
 # decision_unbalanced_few_components <- unbalanced_few_components$AddChild("rebmix or random initialisation \n with the second class of packages.")
 #
@@ -419,7 +419,7 @@ data %>% kbl(booktabs=T, caption = "The 14 canonical parametrisations of the wit
   column_spec(column = 1:6, width = c("2cm", "3cm", "3cm", "2cm", "4.5cm", "5cm"), latex_valign = "m")
 
 
-## ----generate-overlap-plot-univariate-----------------------------------------
+## ----generate-overlap-plot-univariate, layout = "l-body-outset"---------------
 temp_simu <- tibble::tibble(x=seq(0, 15, length.out = 1000))
 true_theta <- list(p=c(0.5, 0.5), mu=c(5.28, 8.45), sigma=c(1, 3),skew=c(0,0))
 for (i in 1:2) {
@@ -574,7 +574,7 @@ caption = "Meta-analysis summary about the selection of packages implementing th
   kable_styling(latex_options=c("hold_position", "scale_down"))
 
 
-## ----generate-plot-packages-trends--------------------------------------------
+## ----generate-plot-packages-trends, layout = "l-body-outset"------------------
 downloaded_mixture_packages <- cranlogs::cran_downloads(package = c("mclust", "flexmix","mixtools", "Rmixmod",
                                                                     "EMCluster", "bgmm", "DCEM", "GMKMcharlie", "EMMIXmfa", "HDclassif"),
                                                         from = "2022-01-01", to = "2022-04-30")
@@ -604,7 +604,7 @@ download_trends <- ggplot(downloaded_mixture_packages, aes(x=date, y=count, shap
 download_trends
 
 
-## ----parameter-configuration-univariate---------------------------------------
+## ----parameter-configuration-univariate, layout = "l-body-outset"-------------
 univariate_configuration  %>%   mutate(Proportions=purrr::map_chr(true_parameters, ~paste(.x$p, collapse = " / ")),
                                        Means=purrr::map_chr(true_parameters, ~paste(.x$mu, collapse = " / ")),
                                        Correlations=purrr::map_chr(true_parameters, ~paste(.x$sigma, collapse = " / "))) %>%
@@ -621,15 +621,18 @@ univariate_configuration  %>%   mutate(Proportions=purrr::map_chr(true_parameter
 univariate_html_ouput <- knitr::is_html_output()  # change to TRUE for larger figures
 
 html_caption_balanced_well_separated_univariate <- "Benchmark summary plots of scenario U1 in Table \\@ref(tab:parameter-configuration-univariate) (balanced and well-separated components), organised as such:
+
 - The panel A displays the distribution of the global mixture distribution $f_{\\theta}(X)$
 (pink solid line) and of each of its constitutive components scaled by
 their respective proportions (dotted lines).
+
 - Running times are displayed in Panel B with the *k*-means initialisation. The number of observations
 (x-axis) and the running time (y-axis) is in $\\log(10)$ scale, implying
 that any linear relationship between the running time and the number of
 observations is represented by a slope of 1. The points represent median
 running time. The coloured bands represent the 5th and 95th percentiles
 of the running time.
+
 - In panel C are represented the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method. The median is displayed with bold
 black line, the mean with a yellow cross and the 0.25 and 0.95 quantiles
 match the edges of the rectangular band. Solid black lines extending
@@ -707,7 +710,7 @@ univariate_parameters_local_scores_balanced_separated_kable
 #> # latex + collapse rows + determine min and max
 #> 
 #> univariate_parameters_local_scores_balanced_separated_flex <- univariate_parameters_local_scores_balanced_separated %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario U1, in Table [Table parameter in the univariate setting](#tab:parameter-configuration-univariate) (balanced and well-separated components)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario U1, in Table \\@ref(tab:parameter-configuration-univariate) (balanced and well-separated components)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   univariate_parameters_local_scores_balanced_separated_flex <- univariate_parameters_local_scores_balanced_separated_flex %>%
@@ -782,7 +785,7 @@ univariate_parameters_local_scores_unbalanced_separated_kable
 
 ## ----unbalanced-well-separated-table-univariate-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
 #> univariate_parameters_local_scores_unbalanced_separated_flex <- univariate_parameters_local_scores_unbalanced_separated %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario U7, in Table [Table parameter in the univariate setting](#tab:parameter-configuration-univariate) (unbalanced and well-separated components)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario U7, in Table \\@ref(tab:parameter-configuration-univariate) (unbalanced and well-separated components)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   univariate_parameters_local_scores_unbalanced_separated_flex <- univariate_parameters_local_scores_unbalanced_separated_flex %>%
@@ -859,7 +862,7 @@ univariate_parameters_local_scores_balanced_overlapping_kable
 #> # latex + collapse rows + determine min and max
 #> 
 #> univariate_parameters_local_scores_balanced_overlapping_flex <- univariate_parameters_local_scores_balanced_overlapping %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario U3, in Table [Table parameter in the univariate setting](#tab:parameter-configuration-univariate) (balanced and overlapping components)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario U3, in Table \\@ref(tab:parameter-configuration-univariate) (balanced and overlapping components)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   univariate_parameters_local_scores_balanced_overlapping_flex <- univariate_parameters_local_scores_balanced_overlapping_flex %>%
@@ -936,7 +939,7 @@ univariate_parameters_local_scores_unbalanced_overlapping_kable
 #> # latex + collapse rows + determine min and max
 #> 
 #> univariate_parameters_local_scores_unbalanced_overlapping_flex <- univariate_parameters_local_scores_unbalanced_overlapping %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario U9, in Table [Table parameter in the univariate setting](#tab:parameter-configuration-univariate) (unbalanced and overlapping components)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario U9, in Table \\@ref(tab:parameter-configuration-univariate) (unbalanced and overlapping components)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   univariate_parameters_local_scores_unbalanced_overlapping_flex <- univariate_parameters_local_scores_unbalanced_overlapping_flex %>%
@@ -1001,7 +1004,7 @@ ggsave("figs/univariate/univariate_midbalanced.png", four_components_midbalanced
 knitr::include_graphics("figs/univariate/univariate_midbalanced.png", dpi = 300)
 
 
-## ----heatmap-all-correlation-plots-univariate, fig.cap= if (univariate_html_ouput) html_global_heatmap_univariate else pdf_global_heatmap_univariate----
+## ----heatmap-all-correlation-plots-univariate, fig.cap= if (univariate_html_ouput) html_global_heatmap_univariate else pdf_global_heatmap_univariate, layout = "l-body-outset"----
 discriminating_data <- univariate_distribution_parameters %>% dplyr::filter(ID=="U9") %>%
   dplyr::bind_rows(readRDS("./tables/univariate/univariate_small_EM.rds"))
 
@@ -1023,7 +1026,7 @@ ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_pl
 knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 300)
 
 
-## ----parameter-configuration-bivariate----------------------------------------
+## ----parameter-configuration-bivariate, layout = "l-body-outset"--------------
 bivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, ~paste(.x$p, collapse = " / ")),
                                        Means=purrr::map_chr(true_parameters, ~paste0("(", paste0(.x$mu[,1], collapse = ","), ");(", paste0(.x$mu[,2], collapse = ","), ")")),
                                        Correlations=purrr::map_chr(true_parameters, ~paste(c(.x$sigma[1, 2, 1], .x$sigma[1, 2, 2]), collapse = " / "))) %>%
@@ -1037,13 +1040,14 @@ bivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, 
 
 
 ## ----prepare-legend-bivariate-------------------------------------------------
-bivariate_html_output <- knitr::is_html_output()  # change to TRUE for larger figures
+html_output <- knitr::is_html_output()  # change to TRUE for larger figures
 
-html_caption_unbalanced_negative_correlated_bivariate <- "Results of scenario B11 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components), organised as such:
+html_caption_unbalanced_negative_correlated_bivariate <- paste("Results of scenario B11 in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components), organised as such:
 
  - The panel A displays the bivariate contour maps associated to the two-components multivariate Gaussian distribution corresponding to the parametrisation described by the scenario, warmer colours corresponding to regions of higher densities. The two centroids, whose coordinates are given by the mean components' elements, are represented with distinct shaped and coloured point estimates.
 
-  - In both Panels A and B, the ellipsoids correspond to the $95\\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the `r downlit::autolink('mixtools::ellipse()')` and website [How to draw ellipses](https://cookierobotics.com/007/). To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
+  - In both Panels A and B, the ellipsoids correspond to the $95\\%$ confidence region associated to each component's distribution. To generate them, we largely inspired from the",
+downlit::autolink('mixtools::ellipse()'), "and website [How to draw ellipses](https://cookierobotics.com/007/). To generate them, we retain for each individual parameter its mean (similar results with the median) over the $N=100$ sampling experiments, restrained to the random initialisation method.
 
 - The running times are displayed in Panel C with the *k*-means initialisation. The number of observations
 (x-axis) and the running time (y-axis) is in $\\log(10)$ scale. The points represent median
@@ -1052,7 +1056,7 @@ of the running time.
 
 - The distributions of the Hellinger distances (a closed form is only available for the Gaussian multivariate distribution, not the mixture) are computed for each component, each initialisation method and each package with respect to the true Gaussian distribution expected for each component. The more dissimilar are the distributions, the higher is the Hellinger distance, knowing it is normalised between 0 and 1^[More on the Hellinger distance as a quantifier of the similarity between two probability distributions in [Hellinger distance](https://en.wikipedia.org/wiki/Hellinger_distance)]. We represent them using boxplot representations in Panel D.
 
-- In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same convenstions detailed in [Supplementary Figures and Tables in the univariate simulation]. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2."
+- In panel E we represent the boxplots associated with the distribution of the estimates, with one box per pair of package and initialisation method, using the same convenstions detailed in [Supplementary Figures and Tables in the univariate simulation]. As the correlation is a symmetric operator, we only represent the distribution of the lower part of the lower matrix. Each column is associated to the parameters of a component. First row represents the distribution of the estimated ratios, second and third respectively the distributions of the mean vector on the x-axis and on the y-axis, third and four the distributions of the individual variances of each feature and finally the fifth row shows the distribution of the correlation between dimension 1 and 2.")
 
 
 pdf_caption_unbalanced_negative_correlated_bivariate <- "Results of scenario B11 in Table \\ref{tab:parameter-configuration-bivariate} (unbalanced, overlapping and negative correlated components),  organised as such:
@@ -1078,10 +1082,10 @@ pdf_caption_unbalanced_uncorrelated_bivariate <- "Results of scenario B15 in Tab
 html_balanced_overlapping_general_bivariate <- "Benchmark summary plots of scenarios B1, B2 and B5 in Table \\@ref(tab:parameter-configuration-bivariate) featuring balanced and overlapping clusters. Summary plots of B1, B2 and B5 are represented in this order on each row, with the left column displaying the 95% confidence ellipsoidal regions associated to the mean estimated parameters across each package and the right column the distribution of the Hellinger distances."
 pdf_balanced_overlapping_general_bivariate <- "Benchmark summary plots of respectively scenarios B1, B2 and B5 in Table \\ref{tab:parameter-configuration-bivariate} featuring balanced and overlapping clusters. Summary plots of B1, B2 and B5 are represented in this order on each row, with the left column displaying the $95\\%$ confidence ellipsoidal regions associated to the mean estimated parameters across each package and the right column the distribution of the Hellinger distances."
 
-html_balanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B6, B7 and B10 in Table \\@ref(tab:parameter-configuration-bivariate) featuring balanced and well-separated clusters, with the same layout as Figure @\\ref(fig:general-balanced-overlapping-bivariate)."
+html_balanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B6, B7 and B10 in Table \\@ref(tab:parameter-configuration-bivariate) featuring balanced and well-separated clusters, with the same layout as Figure \\@ref(fig:general-balanced-overlapping-bivariate)."
 pdf_balanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B6, B7 and B10 in Table \\ref{tab:parameter-configuration-bivariate} featuring balanced and well-separated clusters, with the same layout as Figure \\ref{fig:general-balanced-overlapping-bivariate}."
 
-html_unbalanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\@ref(tab:parameter-configuration-bivariate) featuring unbalanced and well-separated clusters, with the same layout as Figure @\\ref(fig:general-balanced-overlapping-bivariate).."
+html_unbalanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\@ref(tab:parameter-configuration-bivariate) featuring unbalanced and well-separated clusters, with the same layout as Figure \\@ref(fig:general-balanced-overlapping-bivariate).."
 pdf_unbalanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\ref{tab:parameter-configuration-bivariate} featuring unbalanced and well-separated clusters, with the same layout as Figure \\ref{fig:general-balanced-overlapping-bivariate}."
 
 html_global_heatmap_bivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure \\@ref(fig:dichotomy-package-conclusion)."
@@ -1120,7 +1124,7 @@ specific_bivariate_parameters_local_scores_kable
 
 ## ----multivariate-overlapping-unbalanced-negative-correlated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
 #> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario B11, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components.)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario B11, in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and negative correlated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
@@ -1146,7 +1150,7 @@ specific_bivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_negative_correlated_bivariate else pdf_caption_unbalanced_negative_correlated_bivariate, out.width="60%"----
+## ----multivariate-overlapping-unbalanced-negative-correlated, fig.cap=if (html_output) html_caption_unbalanced_negative_correlated_bivariate else pdf_caption_unbalanced_negative_correlated_bivariate, out.width="60%", layout = "l-body-outset"----
 true_theta <- bivariate_configuration %>% filter(ID=="B11") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -1206,7 +1210,7 @@ specific_bivariate_parameters_local_scores_kable
 
 ## ----multivariate-overlapping-unbalanced-opposite-correlated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
 #> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario B12, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate)(unbalanced, overlapping and opposite correlated components.)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario B12, in Table \\@ref(tab:parameter-configuration-bivariate)(unbalanced, overlapping and opposite correlated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
@@ -1232,7 +1236,7 @@ specific_bivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-opposite-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_opposite_correlated_bivariate else pdf_caption_unbalanced_opposite_correlated_bivariate----
+## ----multivariate-overlapping-unbalanced-opposite-correlated, fig.cap=if (html_output) html_caption_unbalanced_opposite_correlated_bivariate else pdf_caption_unbalanced_opposite_correlated_bivariate, layout = "l-body-outset"----
 true_theta <- bivariate_configuration %>% filter(ID=="B12") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -1293,7 +1297,7 @@ specific_bivariate_parameters_local_scores_kable
 
 ## ----multivariate-overlapping-unbalanced-positive-correlated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
 #> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario B14, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate) (unbalanced, overlapping and positive correlated components.)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario B14, in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and positive correlated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
@@ -1319,7 +1323,7 @@ specific_bivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-positive-correlated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_positive_correlated_bivariate else pdf_caption_unbalanced_positive_correlated_bivariate----
+## ----multivariate-overlapping-unbalanced-positive-correlated, fig.cap=if (html_output) html_caption_unbalanced_positive_correlated_bivariate else pdf_caption_unbalanced_positive_correlated_bivariate, layout = "l-body-outset"----
 true_theta <- bivariate_configuration %>% filter(ID=="B14") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -1380,7 +1384,7 @@ specific_bivariate_parameters_local_scores_kable
 
 ## ----multivariate-overlapping-unbalanced-uncorrelated-html, eval=knitr::is_html_output(), layout = "l-body-outset"----
 #> specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores %>% flextable() %>%
-#>   set_caption(caption = "MSE and Bias associated to scenario B15, in Table [Table parameter in the bivariate setting](#tab:parameter-configuration-bivariate) (unbalanced, overlapping and uncorrelated components.)", html_escape = F)
+#>   set_caption(caption = "MSE and Bias associated to scenario B15, in Table \\@ref(tab:parameter-configuration-bivariate) (unbalanced, overlapping and uncorrelated components.)", html_escape = F)
 #> 
 #> for (metric_col in metric_colnames) {
 #>   specific_bivariate_parameters_local_scores_flex <- specific_bivariate_parameters_local_scores_flex %>%
@@ -1406,7 +1410,7 @@ specific_bivariate_parameters_local_scores_kable
 #> 
 
 
-## ----multivariate-overlapping-unbalanced-uncorrelated, fig.cap=if (bivariate_html_output) html_caption_unbalanced_uncorrelated_bivariate else pdf_caption_unbalanced_uncorrelated_bivariate----
+## ----multivariate-overlapping-unbalanced-uncorrelated, fig.cap=if (html_output) html_caption_unbalanced_uncorrelated_bivariate else pdf_caption_unbalanced_uncorrelated_bivariate, layout = "l-body-outset"----
 true_theta <- bivariate_configuration %>% filter(ID=="B15") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -1435,7 +1439,7 @@ ggsave("figs/bivariate/multivariate_unbalanced_uncorrelated.png",
 knitr::include_graphics("figs/bivariate/multivariate_unbalanced_uncorrelated.png", dpi = 300)
 
 
-## ----general-balanced-overlapping-bivariate, fig.cap=if (bivariate_html_output) html_balanced_overlapping_general_bivariate else pdf_balanced_overlapping_general_bivariate----
+## ----general-balanced-overlapping-bivariate, fig.cap=if (html_output) html_balanced_overlapping_general_bivariate else pdf_balanced_overlapping_general_bivariate, layout = "l-body-outset"----
 true_theta_v1 <- bivariate_configuration %>% filter(ID=="B1") %>% pull(true_parameters) %>% magrittr::extract2(1)
 ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B1"), true_theta_v1) +
   theme(legend.title = element_blank())
@@ -1465,7 +1469,7 @@ ggsave("figs/bivariate/multivariate_balanced_overlapping.png",
 knitr::include_graphics("figs/bivariate/multivariate_balanced_overlapping.png", dpi = 300)
 
 
-## ----general-balanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_balanced_well_separated_general_bivariate else pdf_balanced_well_separated_general_bivariate----
+## ----general-balanced-well-separated-bivariate, fig.cap=if (html_output) html_balanced_well_separated_general_bivariate else pdf_balanced_well_separated_general_bivariate, layout = "l-body-outset"----
 true_theta_v1 <- bivariate_configuration %>% filter(ID=="B6") %>% pull(true_parameters) %>% magrittr::extract2(1)
 ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B6"), true_theta_v1) +
   theme(legend.title = element_blank())
@@ -1495,7 +1499,7 @@ ggsave("figs/bivariate/multivariate_balanced_well_separated.png",
 knitr::include_graphics("figs/bivariate/multivariate_balanced_well_separated.png", dpi = 300)
 
 
-## ----general-unbalanced-well-separated-bivariate, fig.cap=if (bivariate_html_output) html_unbalanced_well_separated_general_bivariate else pdf_unbalanced_well_separated_general_bivariate----
+## ----general-unbalanced-well-separated-bivariate, fig.cap=if (html_output) html_unbalanced_well_separated_general_bivariate else pdf_unbalanced_well_separated_general_bivariate, layout = "l-body-outset"----
 true_theta_v1 <- bivariate_configuration %>% filter(ID=="B16") %>% pull(true_parameters) %>% magrittr::extract2(1)
 ellipse_v1 <- plot_ellipses_bivariate(bivariate_parameters %>% filter(ID=="B16"), true_theta_v1) +
   theme(legend.title = element_blank())
@@ -1525,7 +1529,7 @@ ggsave("figs/bivariate/multivariate_unbalanced_well_separated.png",
 knitr::include_graphics("figs/bivariate/multivariate_unbalanced_well_separated.png", dpi = 300)
 
 
-## ----heatmap-all-correlation-plots-bivariate, fig.cap= if (bivariate_html_output) html_global_heatmap_bivariate else pdf_global_heatmap_bivariate----
+## ----heatmap-all-correlation-plots-bivariate, fig.cap= if (html_output) html_global_heatmap_bivariate else pdf_global_heatmap_bivariate, layout = "l-body-outset"----
 bivariate_parameters <- readRDS("./tables/bivariate/bivariate_distributions.rds")%>%
   dplyr::group_by(ID, package, initialisation_method) %>%
   dplyr::mutate(N.bootstrap=dplyr::row_number()) %>% dplyr::ungroup()
@@ -1537,7 +1541,7 @@ ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatma
 knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 300)
 
 
-## ----parameter-configuration-HD-----------------------------------------------
+## ----parameter-configuration-HD, layout = "l-body-outset"---------------------
 HD_configuration_formatted <- HD_configuration  %>%
   rename(Entropy=entropy, Spherical=is_diagonal, `Number of observations`=nobservations) %>% 
   mutate(Proportions=purrr::map_chr(true_parameters, ~paste(round(.x$p, digits = 2), collapse = " / ")),
@@ -1558,7 +1562,7 @@ HD_configuration_formatted %>%
 
 
 ## ----prepare-legend-HD--------------------------------------------------------
-HD_html_output <- knitr::is_html_output()  # change to TRUE for larger figures
+html_output <- knitr::is_html_output()  # change to TRUE for larger figures
 
 html_caption_HD_separated_unbalanced_ellipsoidal <- paste("Results of scenario HD4a) in Table \\@ref(tab:parameter-configuration-HD) (unbalanced, overlapping and negative correlated components), organised as such:
 
@@ -1604,7 +1608,7 @@ In Panel D, we display the boxplots associated to scenario HD6a) (unbalanced and
 
 
 
-html_caption_HD_impact_num_observations <- "Overview of scenarios HD1 a) and b) and HD8 a) and b) in Table \\@ref(tab:parameter-configuration-HD) comparing the performance of the algorithms in the most complex scenario (highly overlapping and unbalanced clusters, with a full covariance structure). The left-hand column shows box plots of the estimated parameters from simulations with $n=200$ observations on the left and $n=2000$ observations on the right."
+html_caption_HD_impact_num_observations <- "Overview of scenarios HD1 a) and b) and HD8 a) and b) in Table \\@ref(tab:parameter-configuration-HD) comparing the performance of the algorithms in the most complex scenario (highly overlapping and unbalanced clusters, with a full covariance structure). The left-hand column shows box plots of the estimated parameters from simulations with n=200 observations on the left and n=2000 observations on the right."
 pdf_caption_HD_impact_num_observations <- "Overview of scenarios HD1 a) and b) and HD8 a) and b) in Table \\ref{tab:parameter-configuration-HD} comparing the performance of the algorithms in the most complex scenario (highly overlapping and unbalanced clusters, with a full covariance structure). The left-hand column shows box plots of the estimated parameters from simulations with $n=200$ observations on the left and $n=2000$ observations on the right."
 
 
@@ -1684,7 +1688,7 @@ specific_HD_parameters_local_scores_kable %>%
 #> 
 
 
-## ----HD-separated-unbalanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_separated_unbalanced_ellipsoidal else pdf_caption_HD_separated_unbalanced_ellipsoidal, out.width="40%"----
+## ----HD-separated-unbalanced-ellipsoidal-plot, fig.cap=if (html_output) html_caption_HD_separated_unbalanced_ellipsoidal else pdf_caption_HD_separated_unbalanced_ellipsoidal, out.width="60%", layout = "l-body-outset"----
 true_theta <- HD_configuration %>% filter(ID=="4a") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -1783,7 +1787,7 @@ specific_HD_parameters_local_scores_kable %>%
 #> 
 
 
-## ----HD-overlapping-balanced-ellipsoidal-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_balanced_ellipsoidal else pdf_caption_HD_overlapping_balanced_ellipsoidal, out.width="80%"----
+## ----HD-overlapping-balanced-ellipsoidal-plot, fig.cap=if (html_output) html_caption_HD_overlapping_balanced_ellipsoidal else pdf_caption_HD_overlapping_balanced_ellipsoidal, out.width="80%", layout = "l-body-outset"----
 true_theta <- HD_configuration %>% filter(ID=="7a") %>% pull(true_parameters) %>% magrittr::extract2(1)
 
 # generate plots
@@ -1993,7 +1997,7 @@ spherical_HD_parameters_local_scores_kable %>%
 #>   flextable::autofit()
 
 
-## ----HD-overlapping-spherical-plot, fig.cap=if (HD_html_output) html_caption_HD_overlapping_spherical else pdf_caption_HD_overlapping_spherical, out.width="80%"----
+## ----HD-overlapping-spherical-plot, fig.cap=if (html_output) html_caption_HD_overlapping_spherical else pdf_caption_HD_overlapping_spherical, out.width="80%", layout = "l-body-outset"----
 true_theta_balanced <- HD_configuration %>% filter(ID=="5a") %>%
   pull(true_parameters) %>% magrittr::extract2(1) %>% RGMMBench:::enforce_identifiability()
 true_theta_unbalanced <- HD_configuration %>% filter(ID=="6a") %>% pull(true_parameters) %>%
@@ -2074,7 +2078,7 @@ specific_HD_parameters_local_scores_kable %>%
 #> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
 #>   set_caption(caption = "MSE and Bias associated to scenarios HD1a) and HD1b), in Table
 #>       \\@ref(tab:parameter-configuration-HD) (well-separated and spherical-distributed components).
-#>       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with \\$n=200\\$ and \\$n=2000\\$ observations.", html_escape = F)
+#>       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with n=200 and n=2000 observations.", html_escape = F)
 #> 
 #> for (metric_col in c(metric_colnames, "Success")) {
 #>   averaged_metric <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
@@ -2158,8 +2162,8 @@ specific_HD_parameters_local_scores_kable %>%
 #> specific_HD_parameters_local_scores_flex <- specific_HD_parameters_local_scores %>% flextable() %>%
 #>   set_caption(caption = "MSE and Bias associated to scenarios HD8a) and HD8b), in Table
 #>       \\@ref(tab:parameter-configuration-HD) (overlapping and spherical-distributed components).
-#>       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with $n=200$ and
-#>               $n=2000$ observations.", html_escape = F)
+#>       We delimite by doubled backslashes for each entry of the summary metrics table respectively the scores with n=200 and
+#>               n=2000 observations.", html_escape = F)
 #> 
 #> for (metric_col in c(metric_colnames, "Success")) {
 #>   averaged_metric <- purrr::map_dbl(specific_HD_parameters_local_scores %>% pull(metric_col) %>%
@@ -2189,7 +2193,7 @@ specific_HD_parameters_local_scores_kable %>%
 #>   flextable::autofit()
 
 
-## ----HD-impact-num-observations, fig.cap=if (HD_html_output) html_caption_HD_impact_num_observations else pdf_caption_HD_impact_num_observations, out.width="80%"----
+## ----HD-impact-num-observations, fig.cap=if (html_output) html_caption_HD_impact_num_observations else pdf_caption_HD_impact_num_observations, out.width="80%"----
 hard_theta_small_n <- HD_configuration %>% filter(ID=="8a") %>% pull(true_parameters) %>% magrittr::extract2(1)
 hard_theta_high_n <- HD_configuration %>% filter(ID=="8b") %>% pull(true_parameters) %>% magrittr::extract2(1)
 boxplot_parameter_hard_small <- plot_boxplots_parameters(formatted_HD_distributions %>% filter(ID == "8a"),
@@ -2213,7 +2217,7 @@ ggsave("figs/HD/HD-impact-nobservations.png",global_figure, width = 30, height =
 knitr::include_graphics("figs/HD/HD-impact-nobservations.png", dpi = 300)
 
 
-## ----heatmap-all-correlation-plots-HD, fig.cap= if (HD_html_output) html_global_heatmap_HD else pdf_global_heatmap_HD, out.width="80%"----
+## ----heatmap-all-correlation-plots-HD, fig.cap= if (html_output) html_global_heatmap_HD else pdf_global_heatmap_HD, out.width="80%", layout = "l-body-outset"----
 multivariate_correlation_heatmaps <- plot_correlation_Heatmap(HD_distributions %>% filter(ID=="7a"), row_km = 3)
 multivariate_correlation_heatmaps <- gridExtra::arrangeGrob(grobs=multivariate_correlation_heatmaps %>%
                                                               purrr::map(~grid::grid.grabExpr(ComplexHeatmap::draw(.x))),

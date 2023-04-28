@@ -461,7 +461,7 @@ Rmixmod & 2.1.5 & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & $\include
 EMCluster & 0.2-13 & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & 33 & 12/08/2022 & R ($\ge$ 3.0.1), Matrix & 3 & C\\
 \addlinespace
 bgmm & 1.8.4 & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & 27 & 10/10/2021 & \makecell[r]{\\R ($\ge$ 2.0),\\mvtnorm, combinat} & 77 & R\\
-\textbf{GMKMcharlie} & \textbf{1.1.1} & \textbf{$\includegraphics[scale=0.05]{figs/red_cross.png}$} & \textbf{$\includegraphics[scale=0.05]{figs/red_cross.png}$} & \textbf{12} & \textbf{29/05/2021} & \textbf{\makecell[l]{Rcpp, RcppParallel,\\RcppArmadillo}} & \textbf{3} & \textbf{C++}\\
+GMKMcharlie & 1.1.1 & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & 12 & 29/05/2021 & \makecell[l]{Rcpp, RcppParallel,\\RcppArmadillo} & 3 & C++\\
 \midrule
 EMMIXmfa & 2.0.11 & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & 12 & 16/12/2019 & NA & 0 & C\\
 HDclassif & 2.2.0 & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & $\includegraphics[scale=0.05]{figs/red_cross.png}$ & 35 & 12/10/2022 & rARPACK & 13 & R\\
@@ -507,7 +507,7 @@ We further detail features specifically related to GMMs in Table
 \midrule
 \textbf{Models Available (multivariate)} & canonical & unconstrained diagonal or general & unconstrained & canonical & unconstrained & 4 models (diagonal and general, either component specific or global) & unconstrained & 4 models (either component-wise or common, on the intrinsic and diagonal residual error covariance matrices) & canonical on projected dimension\\
 \midrule
-\textbf{Variants of the EM algorithm} & VBEM & SEM, CEM & ECM & SEM, CEM & \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& CW-EM, MML & \includegraphics[scale=0.05]{figs/red_cross.png}& SEM, CEM\\
+\textbf{Variants of the EM algorithm} & VBEM & SEM, CEM & ECM & SEM, CEM & \includegraphics[scale=0.05]{figs/red_cross.png}& \includegraphics[scale=0.05]{figs/red_cross.png}& CW-EM, MML & AECM & SEM, CEM\\
 \midrule
 \textbf{Initialisation} & hierarchical clustering, quantile & short-EM, random & random & random, short-EM, CEM, SEM & random, short-EM & k-means, quantile & k-means & k-means, random, heuristic & short-EM, random, k-means\\
 \midrule
@@ -595,7 +595,8 @@ The level of imbalance may be evaluated with the entropy measure Equation \eqref
 
 with \(k\) the number of components and \(p_j=\mathbb{P}(S=j)\) the frequency of class \(j\).
 
-We considered 9 distinct configuration parameters, associated with distinct values of \(\operatorname{OVL}\) and entropy in the univariate setting, 20 scenarios in the bivariate setting and 16 scenarios in the high-dimensional setting. Briefly, we compute any combination, with the same components means (0, 4, 8 and 12), three sets of ratio parametrisations \(\left[(0.25, 0.25, 0.25, 0.25); (0.2, 0.4, 0.2, 0.2); (0.1, 0.7, 0.1, 0.1) \right]\) and three variances: \((0.3, 1, 2)\) in the univariate setting. In the bivariate setting, we consider two sets of proportions: \(\left[(0.5, 0.5); (0.9, 0.1) \right]\), two sets of coordinate centroids: \(\left[(0; 20), (20, 0) \right]\) and \(\left[(0; 2), (2, 0) \right]\), the same variance of 1 for each feature and for each component for illustrative purposes of the direct relation linking the correlation and the level of OVL and five correlation sets: \(\left[(-0.8, -0.8); (0.8, -0.8); (-0.8, 0.8); (0.8, 0.8); (0, 0)\right]\).
+We considered 9 distinct configuration parameters, associated with distinct values of \(\operatorname{OVL}\) and entropy in the univariate setting, 20 scenarios in the bivariate setting and 16 scenarios in the high-dimensional setting. Briefly, we compute any combination, with the same components means (0, 4, 8 and 12), three sets of ratio parametrisations \(\left[(0.25, 0.25, 0.25, 0.25); (0.2, 0.4, 0.2, 0.2); (0.1, 0.7, 0.1, 0.1) \right]\) and three variances: \((0.3, 1, 2)\) in the univariate setting. In the bivariate setting, we consider two sets of proportions: \(\left[(0.5, 0.5); (0.9, 0.1) \right]\), two sets of coordinate centroids: \(\left[(0; 20), (20, 0) \right]\) and \(\left[(0; 2), (2, 0) \right]\), the same variance of 1 for each feature and for each component for illustrative purposes of the direct relation linking the correlation and the level of OVL and five correlation sets:\([(-0.8, -0.8); (0.8, -0.8);\allowbreak (-0.8, 0.8); (0.8, 0.8); (0, 0)]\).
+
 \color{blue}And finally, we tested eight scenarios in the high-dimensional framework, setting to \(D=10\) the number of dimensions, playing on the level of overlap, imbalance between the components' proportions and the underlying constraint assigned to the covariance matrix (either fully parametrised or spherical), without explicitly providing this restriction to the packages. Each of the parameter configuration tested in the high-dimensional setting was evaluated with \(n=200\) observations and \(n=2000\) observations. Additionally, instead of defining manually interesting parameters for a high-dimensional scenario, we take profit of the simulation framework set up in \code{MixSim} function, from the \CRANpkg{MixSim} package (Melnykov, Chen, and Maitra 2021). This function returns the user a fully parametrised GMM, with a prior defined level of maximum or average overlap\footnote{Unfortunately, as discussed in further details in Appendix \protect\hyperlink{an-analytic-formula-of-the-overlap-for-univariate-gaussian-mixtures}{An analytic formula of the overlap for univariate Gaussian mixtures}, the MixSim package does not compute the global distribution overlap, but instead returns the mean of pairwise overlap between any component (however, with two components, these two alternative definitions match.) Finally, it is not possible to set the proportions of the components before the generation of the parameters, except for clusters with equal proportions, and contrary to the expect behaviour of additional parameter \emph{PiLow}, supposed to define the smallest mixing proportion.}.
 \color{black}
 
@@ -656,7 +657,7 @@ estimates. Similar results are found in the bivariate setting with a balanced an
 
 \color{blue}
 
-Similarly, in the high-dimensional scenario HD7 of Table \ref{tab:parameter-configuration-HD}), presenting balanced but highly overlapping clusters with a full covariance structure, the best performances was obtained with \emph{k}-means initialisation, while the rebmix initialisation returns the most biased and noisy estimates. While \pkg{EMMIXmfa} performed well when it provided estimates, it returned an error in most cases\^{}{[}as we can note out in Column \emph{Success} of Table \ref{tab:HD-overlapping-balanced-ellipsoidal-pdf}. The least biased estimates are returned by \pkg{mixtools} and \pkg{Rmixmod} and the least noisy by \pkg{flexmix}, \pkg{mclust} and \pkg{GMKMCharlie} (smaller MSE). Interestingly, in the high-dimensional setting, the packages \pkg{EMCluster} and \pkg{bgmm} differentiate from the other packages, exhibiting worse performance. In particular, on Panel E of Figure (fig:HD-overlapping-balanced-ellipsoidal-plot), the components' proportions span the \(]0-1[^k\) simplex.
+Similarly, in the high-dimensional scenario HD7 of Table \ref{tab:parameter-configuration-HD}), presenting balanced but highly overlapping clusters with a full covariance structure, the best performances was obtained with \emph{k}-means initialisation, while the rebmix initialisation returns the most biased and noisy estimates. While \pkg{EMMIXmfa} performed well when it provided estimates, it returned an error in most cases (see Column \emph{Success} of Table \ref{tab:HD-overlapping-balanced-ellipsoidal-pdf}). The least biased estimates are returned by \pkg{mixtools} and \pkg{Rmixmod} and the least noisy by \pkg{flexmix}, \pkg{mclust} and \pkg{GMKMCharlie} (smaller MSE). Interestingly, in the high-dimensional setting, the packages \pkg{EMCluster} and \pkg{bgmm} differentiate from the other packages, exhibiting worse performance. In particular, on Panel E of Figure (fig:HD-overlapping-balanced-ellipsoidal-plot), the components' proportions span the \(]0-1[^k\) simplex.
 On the contrary, the \pkg{EMCluster} package, and to a lesser extent, the \pkg{bgmm} package, perform surprisingly well when datasets were simulated with an underlying spherical covariance structure, even though the estimation was not performed explicitly with this constraint (Table \ref{tab:HD-overlapping-spherical-pdf}
 ). Indeed, it seems like that that the off-diagonal terms tend to converge towards 0, as showcased in Figure \ref{fig:HD-overlapping-spherical-plot}, in Panel C, in which the fourth row from top represents the bootstrap intervals associated to the pairwise covariance between dimension 1 and 2 of each cluster.\\
 \color{black}
@@ -671,7 +672,7 @@ estimates are obtained with \emph{k}-means or random initialisation, but with
 a higher variability on the estimates with random initialisation (Table
 \ref{tab:unbalanced-overlapping-table-univariate-pdf}).
 However, deepening the analysis to the individual components' parameter estimates
-reveals that the least unbiased estimate is obtained with rebmix initialization
+reveals that the least unbiased estimate is obtained with rebmix initialisation
 for the two most distinguishable components, namely clusters 2 and 4 (Figure \ref{fig:four-component-unbalanced-overlapping} and
 Table
 \ref{tab:unbalanced-overlapping-table-univariate-pdf}), consistently with this method's assumption to use modes to initialize the components (Nagode 2015). With highly-overlapping distributions and unbalanced components, both the choice of the initialisation algorithm and the package have a
@@ -679,7 +680,7 @@ substantial impact on the quality of the estimation of this mixture.
 
 Two scenarios in our bivariate simulation feature distributions with both strong OVL and unbalanced components. Especially, the scenario B11 (Table \ref{tab:parameter-configuration-bivariate}) has the strongest OVL overall, with notably a risk of wrongly assigning minor component 2 to major component 1 of 0.5 (a random method classifying each observation to cluster 1 or 2 would have the same performance).
 
-First, we observe that the the random and rebmix initialization methods have similar performance, significantly better than \(k\)-means or MBHC (Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}). Specifically, the rebmix method returns the least biased estimates, while the random method is associated with the lowest MSE (respectively for scenarios B11 and B15, the Tables \ref{tab:multivariate-overlapping-unbalanced-negative-correlated-pdf}
+First, we observe that the the random and rebmix initialisation methods have similar performance, significantly better than \(k\)-means or MBHC (Figure \ref{fig:multivariate-overlapping-unbalanced-negative-correlated}). Specifically, the rebmix method returns the least biased estimates, while the random method is associated with the lowest MSE (respectively for scenarios B11 and B15, the Tables \ref{tab:multivariate-overlapping-unbalanced-negative-correlated-pdf}
 and \ref{tab:multivariate-overlapping-unbalanced-uncorrelated-pdf}). Second, the estimates differ across packages only in these two complex scenarios, with packages \pkg{Rmixmod} and \pkg{mixtools} returning more accurate estimates than the others.
 It it is particularly emphasised in Scenario B15, where the component-specific covariance matrices are diagonal with same non-null input, and thus should present spherical density distributions. However, only the first class of packages correctly recovers the spherical bivariate \(95\%\) confidence regions while they are slightly ellipsoidal with the second class of packages (Panel B, Figure \ref{fig:multivariate-overlapping-unbalanced-uncorrelated}).
 
@@ -687,7 +688,7 @@ It it is particularly emphasised in Scenario B15, where the component-specific c
 
 With full covariance structures and unbalanced proportions, as depicted in the high-dimensional Scenario HD8a) and b) of Table \ref{tab:parameter-configuration-HD}, the general observations stated in the previous subsection for the high dimensional setting hold, namely that the least biased estimates are returned by packages not specifically designed for high-dimensional data, with the \emph{k}-means initialisation (Table @ref(tab:HD-impact-num-observations-pdf-tab2 and Figure \ref{fig:HD-impact-num-observations}). Furthermore, the pkg\{EMCluster\} and \pkg{bgmm} packages and the two packages dedicated to high-dimensional, perform similarly with \(n=200\) observations (sub-scenario a) and \(n=2000\) observations (sub-scenario b), whereas we would expect narrower and less biased confidence intervals by increasing the number of observations by a factor of 10.
 
-Finally, with spherical covariance structures and unbalanced proportions, the best performances, both in terms of bias and variability, are obtained with \pkg{flexmix}, \pkg{mclust} and \pkg{GMKMCharlie}. Indeed, as detailed later in \protect\hyperlink{conclusions}{Conclusions}, these packages are more sensitive to the choice of the initialization method and have a greater tendency to get trapped in the neighbourhood of the initial estimates (Table \ref{tab:HD-overlapping-spherical-pdf} and Figure \ref{fig:HD-overlapping-spherical-plot}). Accordingly, \emph{k}-means initialisation performs best since it assumes independent and homoscedastic features for each cluster.
+Finally, with spherical covariance structures and unbalanced proportions, the best performances, both in terms of bias and variability, are obtained with \pkg{flexmix}, \pkg{mclust} and \pkg{GMKMCharlie}. Indeed, as detailed later in \protect\hyperlink{conclusions}{Conclusions}, these packages are more sensitive to the choice of the initialisation method and have a greater tendency to get trapped in the neighbourhood of the initial estimates (Table \ref{tab:HD-overlapping-spherical-pdf} and Figure \ref{fig:HD-overlapping-spherical-plot}). Accordingly, \emph{k}-means initialisation performs best since it assumes independent and homoscedastic features for each cluster.
 Furthermore, \pkg{EMMIXmfa} is the package that best estimates the off-diagonal terms in this setting, as highlighted in Table \ref{tab:HD-overlapping-spherical-pdf-offterms}.
 \color{black}
 
@@ -716,12 +717,12 @@ We further identified with this representation minor differences for the estimat
 
 }
 
-\caption{Panels A, B and C show respectively the heatmap of the Pearson correlation in the univariate, bivariate and high-dimensional framework between the parameters estimated by the packages, evaluated for the most discriminating and complex scenario. The correlation matrix was computed using the function \code{stats::cor} with option \textit{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{Complexheatmap}. Panel D represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix \nameref{sec:em-differences}.}\label{fig:dichotomy-package-conclusion}
+\caption{Panels A, B and C show respectively the heatmap of the Pearson correlation in the univariate, bivariate and high-dimensional framework between the parameters estimated by the packages, evaluated for the most discriminating and complex scenario. The correlation matrix was computed using the function \code{stats::cor} with option \textit{complete} to remove any missing value related to a failed simulation, and the heatmap generated with the Bioconductor package \BIOpkg{ComplexHeatmap}. Panel D represents a tree summarising the main differences between the benchmarked packages, in terms of the EM implementation. They are discussed in more detail in Appendix \nameref{sec:em-differences}.}\label{fig:dichotomy-package-conclusion}
 \end{figure}
 
 \textbf{Failed estimations}
 
-Finally, in some cases, neither the specific EM algorithm implemented by each package nor the initialization method were able to return an estimate with the expected number of components, or even worse fell into a degenerate case (e.g., with infinite or zero variances). In that case, we considered the estimation failed and accordingly we did not include it into the visualizations and the summary metric tables. Most of the failed estimations occurred with the rebmix initialisation, because its mandatory automatic method to estimate the number of components sometimes results in an over or under-estimation of the true number of components, see \protect\hyperlink{methods}{Methods}.
+Finally, in some cases, neither the specific EM algorithm implemented by each package nor the initialisation method were able to return an estimate with the expected number of components, or even worse fell into a degenerate case (e.g., with infinite or zero variances). In that case, we considered the estimation failed and accordingly we did not include it into the visualizations and the summary metric tables. Most of the failed estimations occurred with the rebmix initialisation. Indeed, an updated version of the package forces the user to provide a set of possible positive integer values for the number of components, with at least a difference of two between the model with the most components and the model with the least components (we therefore set the parameter \emph{cmax} to \$k+1 and \emph{cmin} to \(k-1\)). In the most complex scenarios, this constraint leads to an increased risk of returning an overestimation or an underestimation of the actual number of components.
 
 In most cases, this phenomenon occurs with mixtures featuring both strongly unbalanced and highly-overlapping components, with up to \(20\%\) initialisations failed for the most difficult scenario B11 (Table \ref{tab:parameter-configuration-bivariate}), \(10\%\) for the second most difficult one, namely scenario B15 and on average, an over-estimation of three components in \(4\%\) of the estimations.
 
@@ -731,7 +732,7 @@ Removing errors proceeding from the initialisation method, only the \pkg{flexmix
 
 In a relatively high dimensional framework, as tested on our third benchmark (Table \ref{tab:parameter-configuration-HD}), none of the initialisations performed with the random method, carried out with \code{EMCluster::rand.EM()}, succeed in returning a valid parametrisation. Indeed, over the 16 scenarios tested, the covariance returned during the initialisation was systematically non-positive definite for at least one of the components, violating the properties of covariance matrices.
 Furthermore, as shown by the comparison of summary metrics with \(n=200\) and \(n=2000\) observations in Tables \ref{tab:HD-impact-num-observations-pdf-tab1}
-and \ref{tab:HD-impact-num-observations-pdf-tab2}, respectively for the simplest scenario HD1 and the most complex one HD8, the rebmix initialization on the one hand, and the packages dedicated to high dimensionality or those of the second class of packages that show a particular behaviour, present much more failures than the \emph{k}-means or hierarchical clustering initialisation, especially with the first class or the other packages of the second class.
+and \ref{tab:HD-impact-num-observations-pdf-tab2}, respectively for the simplest scenario HD1 and the most complex one HD8, the rebmix initialisation on the one hand, and the packages dedicated to high dimensionality or those of the second class of packages that show a particular behaviour, present much more failures than the \emph{k}-means or hierarchical clustering initialisation, especially with the first class or the other packages of the second class.
 \color{black}
 
 \hypertarget{conclusions}{%
@@ -780,7 +781,7 @@ an unbiased but non MLE-estimate of the covariance matrix, without any clear imp
 of the overall performance in our simulations.
 
 Based on these results, we design a decision tree indicating the best choice of package and initialisation method in relation with the shape of the distribution, displayed in Figure \ref{fig:decision-tree-GMMs}. Interestingly, our conclusions are consistent between the univariate and bivariate settings. \color{blue} Furthermore, most of the general recommendations on the best choices of packages with respect to the characteristics of the mixture model generally hold in a relatively higher dimensional setting\footnote{We should note, however, that a larger sample space revealed that the packages \textit{bgmm} and \textit{EMCluster} display more biased and noisy parameters compared to the other packages benchmarked and that their performance was surprisingly unaffected by the number of simulated realisations}. From this, we assume that projection into a lower-dimensional space is only beneficial in a really high-dimensional setting, for example when the number of dimensions exceeds the number of observations, or when unrestricted parameter estimation (with the full covariance structure) is practically infeasible for computational reasons.
-color\{black\}
+\color{black}
 
 \begin{figure}
 
@@ -801,7 +802,7 @@ Comparing all these packages suggest several improvements.
 \item
   All packages dealing with GMMs should use \emph{k}-means for overlapping, complex mixtures and rebmix initialisation for well-separated components, provided that the dimension of the dataset is relatively small. The final choice between these two could be set after a first run or visual inspection aiming at determining roughly the level of entropy across mixture proportions and the degree of overlap between components.
 \item
-  The packages should allow the user to set their own termination criteria (either relative or absolute log-likelihood or over the estimates after normalisation)
+  The packages should allow the user to set their own termination criteria (either relative or absolute log-likelihood or over the estimates after normalisation). Interestingly, \pkg{EMMIXmfa} is the only package among those examined that allows the user to consider an absolute or relative convergence endpoint of the EM algorithm, through the \texttt{conv\_measure} attribute, with \texttt{diff} and \texttt{ratio} options respectively.
 \item
   With a great number of components or complex overlapping distributions, the optimal package should integrate partial information when available or a Bayesian estimation of the
   estimates.
@@ -816,28 +817,28 @@ We thus strongly believe that our observations will help users identify the most
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
 \leavevmode\vadjust pre{\hypertarget{ref-alberich-carraminana_etal17}{}}%
-Alberich-Carramiñana, Maria, Borja Elizalde, and Federico Thomas. 2017. {``New Algebraic Conditions for the Identification of the Relative Position of Two Coplanar Ellipses.''} \emph{Computer Aided Geometric Design} 54 (May): 35--48. \url{https://doi.org/10.1016/j.cagd.2017.03.013}.
+Alberich-Carramiñana, Maria, Borja Elizalde, and Federico Thomas. 2017. {``New Algebraic Conditions for the Identification of the Relative Position of Two Coplanar Ellipses.''} \emph{Computer Aided Geometric Design}. \url{https://doi.org/10.1016/j.cagd.2017.03.013}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-DPP}{}}%
 Avila, Luis M., Michael R. May, and Jeff Ross-Ibarra. 2018. \emph{DPP: Inference of Parameters of Normal Distributions from a Mixture of Normals}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-bacci_etal12}{}}%
-Bacci, Silvia, Silvia Pandolfi, and Fulvia Pennoni. 2012. {``A Comparison of Some Criteria for States Selection in the Latent {Markov} Model for Longitudinal Data.''}
+Bacci, Silvia, Silvia Pandolfi, and Fulvia Pennoni. 2012. {``A Comparison of Some Criteria for States Selection in the Latent {Markov} Model for Longitudinal Data.''} \url{http://arxiv.org/abs/1212.0352}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-baek_etal10}{}}%
-Baek, Jangsun, Geoffrey J. McLachlan, and Lloyd K. Flack. 2010. {``Mixtures of {Factor} {Analyzers} with {Common} {Factor} {Loadings}: {Applications} to the {Clustering} and {Visualization} of {High}-{Dimensional} {Data}.''} \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence} 32 (7): 1298--1309. \url{https://doi.org/10.1109/TPAMI.2009.149}.
+Baek, Jangsun, Geoffrey J. McLachlan, and Lloyd K. Flack. 2010. {``Mixtures of {Factor} {Analyzers} with {Common} {Factor} {Loadings}: {Applications} to the {Clustering} and {Visualization} of {High}-{Dimensional} {Data}.''} \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}. \url{https://doi.org/10.1109/TPAMI.2009.149}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-polySegratioMM}{}}%
 Baker, Peter. 2018. \emph{polySegratioMM: Bayesian Mixture Models for Marker Dosage in Autopolyploids}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-banfield_raftery93}{}}%
-Banfield, Jeffrey D., and Adrian E. Raftery. 1993. {``Model-{Based Gaussian} and {Non-Gaussian Clustering}.''} \emph{Biometrics} 49 (3): 803--21. \url{https://doi.org/10.2307/2532201}.
+Banfield, Jeffrey D., and Adrian E. Raftery. 1993. {``Model-{Based Gaussian} and {Non-Gaussian Clustering}.''} \emph{Biometrics}. \url{https://doi.org/10.2307/2532201}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-basford_etal97}{}}%
-Basford, K., D. Greenway, G. Mclachlan, and D. Peel. 1997. {``Standard Errors of Fitted Component Means of Normal Mixtures.''} \emph{Computational Statistics} 12.
+Basford, K., D. Greenway, G. Mclachlan, et al. 1997. {``Standard Errors of Fitted Component Means of Normal Mixtures.''} \emph{Computational Statistics}. \url{https://www.researchgate.net/publication/37625647/_Standard/_errors/_of/_fitted/_component/_means/_of/_normal/_mixtures}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mixtools2009}{}}%
-Benaglia, Tatiana, Didier Chauveau, David R. Hunter, and Derek Young. 2009. {``{mixtools}: An {R} Package for Analyzing Finite Mixture Models.''} \emph{Journal of Statistical Software} 32 (6): 1--29.
+Benaglia, Tatiana, Didier Chauveau, David R. Hunter, et al. 2009. {``{mixtools}: An {R} Package for Analyzing Finite Mixture Models.''} \emph{Journal of Statistical Software}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-HDclassif}{}}%
 Berge, Laurent, Charles Bouveyron, and Stephane Girard. 2019. \emph{HDclassif: High Dimensional Supervised Classification and Clustering}.
@@ -846,25 +847,25 @@ Berge, Laurent, Charles Bouveyron, and Stephane Girard. 2019. \emph{HDclassif: H
 Bergé, Laurent, Charles Bouveyron, and Stéphane Girard. 2012. {``{HDclassif}: {An} {R} {Package} for {Model}-{Based} {Clustering} and {Discriminant} {Analysis} of {High}-{Dimensional} {Data}.''} \emph{Journal of Statistical Software}. \url{https://doi.org/10.18637/jss.v046.i06}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-biernacki_etal00}{}}%
-Biernacki, Christophe, Gilles Celeux, and Gerard Govaert. 2000. {``Assessing a {Mixture Model} for {Clustering} with the {Integrated Completed Likelihood}.''} \emph{Pattern Analysis and Machine Intelligence, IEEE Transactions on} 22: 719--25. \url{https://doi.org/10.1109/34.865189}.
+Biernacki, Christophe, Gilles Celeux, and Gerard Govaert. 2000. {``Assessing a {Mixture Model} for {Clustering} with the {Integrated Completed Likelihood}.''} \emph{Pattern Analysis and Machine Intelligence, IEEE Transactions on}. \url{https://doi.org/10.1109/34.865189}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-biernacki_etal03}{}}%
-Biernacki, Christophe, Gilles Celeux, and Gérard Govaert. 2003. {``Choosing Starting Values for the {EM} Algorithm for Getting the Highest Likelihood in Multivariate {Gaussian} Mixture Models.''} \emph{Computational Statistics \& Data Analysis} 41 (3): 561--75. \url{https://doi.org/10.1016/S0167-9473(02)00163-9}.
+Biernacki, Christophe, Gilles Celeux, and Gérard Govaert. 2003. {``Choosing Starting Values for the {EM} Algorithm for Getting the Highest Likelihood in Multivariate {Gaussian} Mixture Models.''} \emph{Computational Statistics \& Data Analysis}. \url{https://doi.org/10.1016/S0167-9473(02)00163-9}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-turboEM}{}}%
 Bobb, Jennifer F., and Ravi Varadhan. 2021. \emph{turboEM: A Suite of Convergence Acceleration Schemes for EM, MM and Other Fixed-Point Algorithms}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-bouveyron_etal11}{}}%
-Bouveyron, Charles, Gilles Celeux, and Stéphane Girard. 2011. {``Intrinsic {Dimension Estimation} by {Maximum Likelihood} in {Isotropic Probabilistic PCA}.''} \emph{Pattern Recognition Letters} 32 (14): 1706--13. \url{https://doi.org/10.1016/j.patrec.2011.07.017}.
+Bouveyron, Charles, Gilles Celeux, and Stéphane Girard. 2011. {``Intrinsic {Dimension Estimation} by {Maximum Likelihood} in {Isotropic Probabilistic PCA}.''} \emph{Pattern Recognition Letters}. \url{https://doi.org/10.1016/j.patrec.2011.07.017}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-bouveyron_girard09}{}}%
-Bouveyron, Charles, and Stéphane Girard. 2009. {``{Robust Supervised Classification} with {Mixture Models}: {Learning} from {Data} with {Uncertain Labels}.''} \emph{Pattern Recognition} 42 (11): 2649--58. \url{https://doi.org/10.1016/j.patcog.2009.03.027}.
+Bouveyron, Charles, and Stéphane Girard. 2009. {``{Robust Supervised Classification} with {Mixture Models}: {Learning} from {Data} with {Uncertain Labels}.''} \emph{Pattern Recognition}. \url{https://doi.org/10.1016/j.patcog.2009.03.027}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-bouveyron_etal07}{}}%
 Bouveyron, Charles, Stéphane Girard, and Cordelia SCHMID. 2007. {``High-{Dimensional} {Data} {Clustering}.''} \emph{Computational Statistics \& Data Analysis}. \url{https://doi.org/10.1016/j.csda.2007.02.009}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-browne_mcnicholas14}{}}%
-Browne, Ryan P., and Paul D. McNicholas. 2014. {``Estimating Common Principal Components in High Dimensions.''} \emph{Advances in Data Analysis and Classification} 8 (2): 217--26. \url{https://doi.org/10.1007/s11634-013-0139-1}.
+Browne, Ryan P., and Paul D. McNicholas. 2014. {``Estimating Common Principal Components in High Dimensions.''} \emph{Advances in Data Analysis and Classification}. \url{https://doi.org/10.1007/s11634-013-0139-1}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-RobMixReg}{}}%
 Cao, Sha, Wennan Chang, and Chi Zhang. 2020. \emph{RobMixReg: Robust Mixture Regression}.
@@ -873,7 +874,7 @@ Cao, Sha, Wennan Chang, and Chi Zhang. 2020. \emph{RobMixReg: Robust Mixture Reg
 Cao, X., and J. C. Spall. 2012. {``Relative Performance of Expected and Observed Fisher Information in Covariance Estimation for Maximum Likelihood Estimates.''} \url{https://doi.org/10.1109/ACC.2012.6315584}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-cattell66}{}}%
-Cattell, Raymond B. 1966. {``The {Scree} {Test} {For} {The} {Number} {Of} {Factors}.''} \emph{Multivariate Behavioral Research}. \url{https://doi.org/10.1207/s15327906mbr0102_10}.
+Cattell, Raymond B. 1966. {``The {Scree} {Test} {For} {The} {Number} {Of} {Factors}.''} \emph{Multivariate Behavioral Research}. \url{https://doi.org/10.1207/s15327906mbr0102/_10}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-celeux_etal12}{}}%
 Celeux, Gilles, Stéphane Chrétien, and Florence Forbes. 2012. {``A {Component-wise EM Algorithm} for {Mixtures}.''}
@@ -882,13 +883,13 @@ Celeux, Gilles, Stéphane Chrétien, and Florence Forbes. 2012. {``A {Component-
 Celeux, Gilles, Sylvia Fruewirth-Schnatter, and Christian P. Robert. 2018. {``Model Selection for Mixture Models - Perspectives and Strategies.''} arXiv. \url{https://doi.org/10.48550/ARXIV.1812.09885}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-celeux_govaert92}{}}%
-Celeux, Gilles, and Gérard Govaert. 1992. {``A Classification {EM} Algorithm for Clustering and Two Stochastic Versions.''} \emph{Computational Statistics \& Data Analysis} 14 (3): 315--32. \url{https://doi.org/10.1016/0167-9473(92)90042-E}.
+Celeux, Gilles, and Gérard Govaert. 1992. {``A Classification {EM} Algorithm for Clustering and Two Stochastic Versions.''} \emph{Computational Statistics \& Data Analysis}. \url{https://doi.org/10.1016/0167-9473(92)90042-E}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-chen_chen08}{}}%
 Chen, J., and Z. Chen. 2008. {``Extended {Bayesian} Information Criteria for Model Selection with Large Model Spaces.''} \emph{Biometrika}. \url{https://doi.org/10.1093/biomet/asn034}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-chen16}{}}%
-Chen, Jiahua. 2016. {``Consistency of the {MLE} Under Mixture Models.''}
+Chen, Jiahua. 2016. {``Consistency of the {MLE} Under Mixture Models.''} \url{https://doi.org/10.1214/16-STS578}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-EMCluster}{}}%
 Chen, Wei-Chen, and Ranjan Maitra. 2022. \emph{EMCluster: EM Algorithm for Model-Based Clustering of Finite Mixture Gaussian Distribution}.
@@ -900,25 +901,25 @@ Chen, Wei-Chen, and George Ostrouchov. 2021. \emph{Pmclust: Parallel Model-Based
 Clark, Katharine M., and Paul D. McNicholas. 2019. \emph{Oclust: Gaussian Model-Based Clustering with Outliers}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-cochran34}{}}%
-Cochran, W. G. 1934. {``The Distribution of Quadratic Forms in a Normal System, with Applications to the Analysis of Covariance.''} \emph{Mathematical Proceedings of the Cambridge Philosophical Society} 30 (2): 178--91. \url{https://doi.org/10.1017/S0305004100016595}.
+Cochran, W. G. 1934. {``The Distribution of Quadratic Forms in a Normal System, with Applications to the Analysis of Covariance.''} \emph{Mathematical Proceedings of the Cambridge Philosophical Society}. \url{https://doi.org/10.1017/S0305004100016595}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-otrimle2016b}{}}%
-Coretto, Pietro, and Christian Hennig. 2016. {``Consistency, Breakdown Robustness, and Algorithms for Robust Improper Maximum Likelihood Clustering.''} \emph{Journal of Machine Learning Research} 18 (142): 1--39.
+Coretto, Pietro, and Christian Hennig. 2016. {``Consistency, Breakdown Robustness, and Algorithms for Robust Improper Maximum Likelihood Clustering.''} \emph{Journal of Machine Learning Research}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-otrimle}{}}%
 ---------. 2021. \emph{Otrimle: Robust Model-Based Clustering}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-dai_mukherjea01}{}}%
-Dai, Ming, and Arunava Mukherjea. 2001. {``Identification of the {Parameters} of a {Multivariate Normal Vector} by the {Distribution} of the {Maximum}.''} \emph{Journal of Theoretical Probability} 14 (1): 267--98. \url{https://doi.org/10.1023/A:1007889519309}.
+Dai, Ming, and Arunava Mukherjea. 2001. {``Identification of the {Parameters} of a {Multivariate Normal Vector} by the {Distribution} of the {Maximum}.''} \emph{Journal of Theoretical Probability}. \url{https://doi.org/10.1023/A:1007889519309}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-clustvarsel}{}}%
-Dean, Nema, Adrian E. Raftery, and Luca Scrucca. 2020. \emph{Clustvarsel: Variable Selection for Gaussian Model-Based Clustering}. \url{https://CRAN.R-project.org/package=clustvarsel}.
+Dean, Nema, Adrian E. Raftery, and Luca Scrucca. 2020. \emph{Clustvarsel: Variable Selection for Gaussian Model-Based Clustering}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-delattre_kuhn19}{}}%
-Delattre, Maud, and Estelle Kuhn. 2019. {``Estimating {Fisher Information Matrix} in {Latent Variable Models} Based on the {Score Function}.''}
+Delattre, Maud, and Estelle Kuhn. 2019. {``Estimating {Fisher Information Matrix} in {Latent Variable Models} Based on the {Score Function}.''} https://doi.org/\url{https://doi.org/10.48550/arXiv.1909.06094}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-dempster_etal77}{}}%
-Dempster, A. P., N. M. Laird, and D. B. Rubin. 1977. {``Maximum {Likelihood} from {Incomplete Data Via} the {\emph{EM}} {Algorithm}.''} \emph{Journal of the Royal Statistical Society} 39 (1): 1--22. \url{https://doi.org/10.1111/j.2517-6161.1977.tb01600.x}.
+Dempster, A. P., N. M. Laird, and D. B. Rubin. 1977. {``Maximum {Likelihood} from {Incomplete Data Via} the {\emph{EM}} {Algorithm}.''} \emph{Journal of the Royal Statistical Society}. \url{https://doi.org/10.1111/j.2517-6161.1977.tb01600.x}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-efron_tibshirani93}{}}%
 Efron, Bradley, and Robert Tibshirani. 1993. \emph{An {Introduction} to the {Bootstrap}}.
@@ -930,13 +931,13 @@ Ewa Szczurek, Przemyslaw Biecek \&. 2021. \emph{Bgmm: Gaussian Mixture Modeling 
 Fallah, Lida, and John Hinde. 2017. \emph{Pcensmix: Model Fitting to Progressively Censored Mixture Data}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-figueiredo_jain02}{}}%
-Figueiredo, M. A. T., and A. K. Jain. 2002. {``Unsupervised Learning of Finite Mixture Models.''} \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence} 24 (3): 381--96. \url{https://doi.org/10.1109/34.990138}.
+Figueiredo, M. A. T., and A. K. Jain. 2002. {``Unsupervised Learning of Finite Mixture Models.''} \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}. \url{https://doi.org/10.1109/34.990138}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-fonseca08}{}}%
-Fonseca, Jaime. 2008. {``The Application of Mixture Modeling and Information Criteria for Discovering Patterns of Coronary Heart Disease.''} \emph{Journal of Applied Quantitative Methods} 3.
+Fonseca, Jaime. 2008. {``The Application of Mixture Modeling and Information Criteria for Discovering Patterns of Coronary Heart Disease.''} \emph{Journal of Applied Quantitative Methods}. \url{https://doi.org/10.1109/EMS.2008.36}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-fraley98}{}}%
-Fraley, Chris. 1998. {``Algorithms for {Model-Based Gaussian Hierarchical Clustering}.''} \emph{SIAM Journal on Scientific Computing} 20 (1): 270--81. \url{https://doi.org/10.1137/S1064827596311451}.
+Fraley, Chris. 1998. {``Algorithms for {Model-Based Gaussian Hierarchical Clustering}.''} \emph{SIAM Journal on Scientific Computing}. \url{https://doi.org/10.1137/S1064827596311451}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-mclust}{}}%
 Fraley, Chris, Adrian E. Raftery, and Luca Scrucca. 2022. \emph{Mclust: Gaussian Mixture Modelling for Model-Based Clustering, Classification, and Density Estimation}.
@@ -945,19 +946,19 @@ Fraley, Chris, Adrian E. Raftery, and Luca Scrucca. 2022. \emph{Mclust: Gaussian
 Franczak, Brian C., Ryan P. Browne, and Paul D. McNicholas. 2016. \emph{Sensory: Simultaneous Model-Based Clustering and Imputation via a Progressive Expectation-Maximization Algorithm}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-gallegos_ritter05}{}}%
-Gallegos, María Teresa, and Gunter Ritter. 2005. {``A Robust Method for Cluster Analysis.''} \emph{The Annals of Statistics} 33 (1): 347--80. \url{https://doi.org/10.1214/009053604000000940}.
+Gallegos, María Teresa, and Gunter Ritter. 2005. {``A Robust Method for Cluster Analysis.''} \emph{The Annals of Statistics}. \url{https://doi.org/10.1214/009053604000000940}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-SMNCensReg}{}}%
 Garay, Aldo M., Monique Bettio Massuia, and Victor Lachos. 2022. \emph{SMNCensReg: Fitting Univariate Censored Regression Model Under the Family of Scale Mixture of Normal Distributions}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-BayesCR}{}}%
-Garay, Aldo M., Monique B. Massuia, Victor H. Lachos, and Eraldo B. Anjos Filho. 2017. \emph{BayesCR: Bayesian Analysis of Censored Regression Models Under Scale Mixture of Skew Normal Distributions}.
+Garay, Aldo M., Monique B. Massuia, Victor H. Lachos, et al. 2017. \emph{BayesCR: Bayesian Analysis of Censored Regression Models Under Scale Mixture of Skew Normal Distributions}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-garcia-escudero_etal08}{}}%
-García-Escudero, Luis A., Alfonso Gordaliza, Carlos Matrán, and Agustin Mayo-Iscar. 2008. {``A General Trimming Approach to Robust Cluster Analysis.''} \emph{The Annals of Statistics} 36 (3): 1324--45. \url{https://doi.org/10.1214/07-AOS515}.
+García-Escudero, Luis A., Alfonso Gordaliza, Carlos Matrán, et al. 2008. {``A General Trimming Approach to Robust Cluster Analysis.''} \emph{The Annals of Statistics}. \url{https://doi.org/10.1214/07-AOS515}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-geary36}{}}%
-Geary, R. C. 1936. {``The {Distribution} of "{Student}'s" {Ratio} for {Non-Normal Samples}.''} \emph{Supplement to the Journal of the Royal Statistical Society} 3 (2): 178--84. \url{https://doi.org/10.2307/2983669}.
+Geary, R. C. 1936. {``The {Distribution} of "{Student}'s" {Ratio} for {Non-Normal Samples}.''} \emph{Supplement to the Journal of the Royal Statistical Society}. \url{https://doi.org/10.2307/2983669}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-flexmix}{}}%
 Gruen, Bettina, and Friedrich Leisch. 2022. \emph{Flexmix: Flexible Mixture Modeling}.
@@ -966,7 +967,7 @@ Gruen, Bettina, and Friedrich Leisch. 2022. \emph{Flexmix: Flexible Mixture Mode
 He, Yawei, and Zehua Chen. 2016. {``The {EBIC} and a Sequential Procedure for Feature Selection in Interactive Linear Models with High-Dimensional Data.''} \emph{Annals of the Institute of Statistical Mathematics}. \url{https://doi.org/10.1007/s10463-014-0497-2}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-RPMM}{}}%
-Houseman, E. Andres, Sc.D., Devin C. Koestler, and Ph.D. 2017. \emph{RPMM: Recursively Partitioned Mixture Model}.
+Houseman, E. Andres, Sc.D., Devin C. Koestler, et al. 2017. \emph{RPMM: Recursively Partitioned Mixture Model}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-MixAll}{}}%
 Iovleff, Serge. 2019. \emph{MixAll: Clustering and Classification Using Model-Based Mixture Models}.
@@ -975,10 +976,10 @@ Iovleff, Serge. 2019. \emph{MixAll: Clustering and Classification Using Model-Ba
 Iscar, Agustin Mayo, Luis Angel Garcia Escudero, and Heinrich Fritz. 2022. \emph{Tclust: Robust Trimmed Clustering}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-jaki_etal18}{}}%
-Jaki, Thomas, Ting-Li Su, Minjung Kim, and M. Lee Van Horn. 2018. {``An Evaluation of the Bootstrap for Model Validation in Mixture Models.''} \emph{Communications in Statistics: Simulation and Computation} 47 (4): 1028--38. \url{https://doi.org/10.1080/03610918.2017.1303726}.
+Jaki, Thomas, Ting-Li Su, Minjung Kim, et al. 2018. {``An Evaluation of the Bootstrap for Model Validation in Mixture Models.''} \emph{Communications in Statistics: Simulation and Computation}. \url{https://doi.org/10.1080/03610918.2017.1303726}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-jin_etal16}{}}%
-Jin, Chi, Yuchen Zhang, Sivaraman Balakrishnan, Martin J Wainwright, and Michael I Jordan. 2016. {``Local {Maxima} in the {Likelihood} of {Gaussian Mixture Models}: {Structural Results} and {Algorithmic Consequences}.''} {Curran Associates, Inc.}
+Jin, Chi, Yuchen Zhang, Sivaraman Balakrishnan, et al. 2016. {``Local {Maxima} in the {Likelihood} of {Gaussian Mixture Models}: {Structural Results} and {Algorithmic Consequences}.''} Curran Associates, Inc. https://doi.org/\url{https://doi.org/10.48550/arXiv.1609.00978}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-EMMIXgene}{}}%
 Jones, Andrew Thomas. 2020. \emph{EMMIXgene: A Mixture Model-Based Approach to the Clustering of Microarray Expression Data}.
@@ -996,22 +997,22 @@ Klein, Hans-Ulrich, and Martin Schaefer. 2022. \emph{Epigenomix: Epigenetic and 
 Komárek, Arnošt. 2022. \emph{mixAK: Multivariate Normal Mixture Models and Mixtures of Generalized Linear Mixed Models Including Model Based Clustering}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-koopman36}{}}%
-Koopman, B. O. 1936. {``On {Distributions Admitting} a {Sufficient Statistic}.''} \emph{Transactions of the American Mathematical Society} 39 (3): 399--409. \url{https://doi.org/10.2307/1989758}.
+Koopman, B. O. 1936. {``On {Distributions Admitting} a {Sufficient Statistic}.''} \emph{Transactions of the American Mathematical Society}. \url{https://doi.org/10.2307/1989758}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-RMixtComp}{}}%
 Kubicki, Vincent, Christophe Biernacki, and Quentin Grimonprez. 2021. \emph{RMixtComp: Mixture Models with Heterogeneous and (Partially) Missing Data}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-kurban_etal17}{}}%
-Kurban, Hasan, Mark Jenne, and Mehmet M. Dalkilic. 2017. {``Using Data to Build a Better {EM}: {EM}* for Big Data.''} \emph{International Journal of Data Science and Analytics} 4 (2): 83--97. \url{https://doi.org/10.1007/s41060-017-0062-1}.
+Kurban, Hasan, Mark Jenne, and Mehmet M. Dalkilic. 2017. {``Using Data to Build a Better {EM}: {EM}\textasteriskcentered for Big Data.''} \emph{International Journal of Data Science and Analytics}. \url{https://doi.org/10.1007/s41060-017-0062-1}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-kwedlo13}{}}%
-Kwedlo, Wojciech. 2013. {``A {New Method} for {Random Initialization} of the {EM Algorithm} for {Multivariate Gaussian Mixture Learning}.''} In \emph{Proceedings of the {8th International Conference} on {Computer Recognition Systems CORES 2013}}, edited by Robert Burduk, Konrad Jackowski, Marek Kurzynski, Michał Wozniak, and Andrzej Zolnierek, 81--90. {Springer International Publishing}. \url{https://doi.org/10.1007/978-3-319-00969-8_8}.
+Kwedlo, Wojciech. 2013. {``A {New Method} for {Random Initialization} of the {EM Algorithm} for {Multivariate Gaussian Mixture Learning}.''} In \emph{Proceedings of the {8th International Conference} on {Computer Recognition Systems CORES 2013}}, edited by Robert Burduk, Konrad Jackowski, Marek Kurzynski, Michał Wozniak, and Andrzej Zolnierek. Springer International Publishing. \url{https://doi.org/10.1007/978-3-319-00969-8/_8}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-Rmixmod}{}}%
-Langrognet, Florent, Remi Lebret, Christian Poli, Serge Iovleff, Benjamin Auder, and Serge Iovleff. 2021. \emph{Rmixmod: Classification with Mixture Modelling}.
+Langrognet, Florent, Remi Lebret, Christian Poli, et al. 2021. \emph{Rmixmod: Classification with Mixture Modelling}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-leytham84}{}}%
-Leytham, K. M. 1984. {``Maximum {Likelihood Estimates} for the {Parameters} of {Mixture Distributions}.''} \emph{Water Resources Research} 20 (7): 896--902. \url{https://doi.org/10.1029/WR020i007p00896}.
+Leytham, K. M. 1984. {``Maximum {Likelihood Estimates} for the {Parameters} of {Mixture Distributions}.''} \emph{Water Resources Research}. \url{https://doi.org/10.1029/WR020i007p00896}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-li91}{}}%
 Li, Ker-Chau. 1991. {``Sliced {Inverse} {Regression} for {Dimension} {Reduction}.''} \emph{Journal of the American Statistical Association}. \url{https://doi.org/10.2307/2290563}.
@@ -1020,19 +1021,22 @@ Li, Ker-Chau. 1991. {``Sliced {Inverse} {Regression} for {Dimension} {Reduction}
 Li, Shaoting, Jiahua Chen, and Pengfei Li. 2016. \emph{MixtureInf: Inference for Finite Mixture Models}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-MMDvariance}{}}%
-Li, Xuan, Yuejiao Fu, Xiaogang Wang, Dawn L. DeMeo, Kelan Tantisira, Scott T. Weiss, and Weiliang Qiu. 2018. \emph{MMDvariance: Detecting Differentially Variable Genes Using the Mixture of Marginal Distributions}.
+Li, Xuan, Yuejiao Fu, Xiaogang Wang, et al. 2018. \emph{MMDvariance: Detecting Differentially Variable Genes Using the Mixture of Marginal Distributions}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-fmerPack}{}}%
 Li, Yan, and Kun Chen. 2021. \emph{fmerPack: Tools of Heterogeneity Pursuit via Finite Mixture Effects Model}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-lindsay95}{}}%
+Lindsay, Bruce G. 1995. {``Mixture {Models}: {Theory}, {Geometry} and {Applications}.''} \emph{NSF-CBMS Regional Conference Series in Probability and Statistics}. \url{https://www.jstor.org/stable/4153184}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-GMKMcharlie}{}}%
 Liu, Charlie Wusuo. 2021. \emph{GMKMcharlie: Unsupervised Gaussian Mixture and Minkowski and Spherical k-Means with Constraints}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-louis82}{}}%
-Louis, Thomas A. 1982. {``Finding the {Observed Information Matrix} When {Using} the {EM Algorithm}.''} \emph{Journal of the Royal Statistical Society} 44 (2): 226--33.
+Louis, Thomas A. 1982. {``Finding the {Observed Information Matrix} When {Using} the {EM Algorithm}.''} \emph{Journal of the Royal Statistical Society}. \url{https://doi.org/10.1111/j.2517-6161.1982.tb01203.x}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-lourens_etal13}{}}%
-Lourens, Spencer, Ying Zhang, Jeffrey D Long, and Jane S Paulsen. 2013. {``Bias in {Estimation} of a {Mixture} of {Normal Distributions}.''} \emph{Journal of Biometrics \& Biostatistics} 4. \url{https://doi.org/10.4172/2155-6180.1000179}.
+Lourens, Spencer, Ying Zhang, Jeffrey D Long, et al. 2013. {``Bias in {Estimation} of a {Mixture} of {Normal Distributions}.''} \emph{Journal of Biometrics \& Biostatistics}. \url{https://doi.org/10.4172/2155-6180.1000179}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-bpgmm}{}}%
 Lu, Xiang, Yaoxiang Li, and Tanzy Love. 2022. \emph{Bpgmm: Bayesian Model Selection Approach for Parsimonious Gaussian Mixture Models}.
@@ -1041,10 +1045,10 @@ Lu, Xiang, Yaoxiang Li, and Tanzy Love. 2022. \emph{Bpgmm: Bayesian Model Select
 Macdonald, Peter, and with contributions from Juan Du. 2018. \emph{Mixdist: Finite Mixture Distribution Models}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-maitra_melnykov10}{}}%
-Maitra, Ranjan, and Volodymyr Melnykov. 2010. {``Simulating {Data} to {Study Performance} of {Finite Mixture Modeling} and {Clustering Algorithms}.''} \emph{Journal of Computational and Graphical Statistics} 19 (2): 354--76. \url{https://doi.org/10.1198/jcgs.2009.08054}.
+Maitra, Ranjan, and Volodymyr Melnykov. 2010. {``Simulating {Data} to {Study Performance} of {Finite Mixture Modeling} and {Clustering Algorithms}.''} \emph{Journal of Computational and Graphical Statistics}. \url{https://doi.org/10.1198/jcgs.2009.08054}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-ariane2022}{}}%
-Marandon, Ariane, Tabea Rebafka, Etienne Roquain, and Nataliya Sokolovska. 2022. {``False Clustering Rate Control in Mixture Models.''} arXiv. \url{https://doi.org/10.48550/ARXIV.2203.02597}.
+Marandon, Ariane, Tabea Rebafka, Etienne Roquain, et al. 2022. {``False Clustering Rate Control in Mixture Models.''} arXiv. \url{https://doi.org/10.48550/ARXIV.2203.02597}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-MGMM}{}}%
 McCaw, Zachary. 2021. \emph{MGMM: Missingness Aware Gaussian Mixture Models}.
@@ -1053,28 +1057,22 @@ McCaw, Zachary. 2021. \emph{MGMM: Missingness Aware Gaussian Mixture Models}.
 McLachlan, G. J., D. Peel, and R. W. Bean. 2003. {``Modelling High-Dimensional Data by Mixtures of Factor Analyzers.''} \emph{Computational Statistics \& Data Analysis}, Recent {Developments} in {Mixture} {Model},. \url{https://doi.org/10.1016/S0167-9473(02)00183-4}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mclachlan_peel00}{}}%
-McLachlan, Geoffrey, and David Peel. 2000. \emph{Finite {Mixture Models}: {McLachlan}/{Finite Mixture Models}}. {John Wiley \& Sons, Inc.} \url{https://doi.org/10.1002/0471721182}.
+McLachlan, Geoffrey, and David Peel. 2000. \emph{Finite {Mixture Models}: {McLachlan}/{Finite Mixture Models}}. John Wiley \& Sons, Inc. \url{https://doi.org/10.1002/0471721182}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mclachlan_peel00a}{}}%
-Mclachlan, G., and David Peel. 2000. {``Mixtures of {Factor} {Analyzers}.''} In.
-
-\leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_etal10a}{}}%
-McNicholas, P. D., T. B. Murphy, A. F. McDaid, and D. Frost. 2010b. {``Serial and Parallel Implementations of Model-Based Clustering via Parsimonious {Gaussian} Mixture Models.''} \emph{Computational Statistics \& Data Analysis}, Second {Special} {Issue} on {Statistical} {Algorithms} and {Software},. \url{https://doi.org/10.1016/j.csda.2009.02.011}.
+Mclachlan, G., and David Peel. 2000. {``Mixtures of {Factor} {Analyzers}.''} In. \url{https://doi.org/10.48550/arXiv.1507.02801}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_etal10}{}}%
----------. 2010a. {``Serial and Parallel Implementations of Model-Based Clustering via Parsimonious Gaussian Mixture Models.''} \emph{Computational Statistics \& Data Analysis} 54 (3): 711--23. \url{https://doi.org/10.1016/j.csda.2009.02.011}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_murphy08b}{}}%
-McNicholas, Paul David, and Thomas Brendan Murphy. 2008b. {``Parsimonious {Gaussian} Mixture Models.''} \emph{Statistics and Computing}. \url{https://doi.org/10.1007/s11222-008-9056-0}.
+McNicholas, P. D., T. B. Murphy, A. F. McDaid, et al. 2010. {``Serial and Parallel Implementations of Model-Based Clustering via Parsimonious Gaussian Mixture Models.''} \emph{Computational Statistics \& Data Analysis}. \url{https://doi.org/10.1016/j.csda.2009.02.011}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_murphy08}{}}%
----------. 2008a. {``Parsimonious Gaussian Mixture Models.''} \emph{Statistics and Computing} 18 (3): 285--96. \url{https://doi.org/10.1007/s11222-008-9056-0}.
+McNicholas, Paul David, and Thomas Brendan Murphy. 2008. {``Parsimonious Gaussian Mixture Models.''} \emph{Statistics and Computing}. \url{https://doi.org/10.1007/s11222-008-9056-0}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-pgmm}{}}%
-McNicholas, Paul D., Aisha ElSherbiny, Aaron F. McDaid, and T. Brendan Murphy. 2022. \emph{Pgmm: Parsimonious Gaussian Mixture Models}.
+McNicholas, Paul D., Aisha ElSherbiny, Aaron F. McDaid, et al. 2022. \emph{Pgmm: Parsimonious Gaussian Mixture Models}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-mcnicholas_murphy10}{}}%
-McNicholas, Paul D., and Thomas Brendan Murphy. 2010. {``Model-Based Clustering of Microarray Expression Data via Latent Gaussian Mixture Models.''} \emph{Bioinformatics} 26 (21): 2705--12. \url{https://doi.org/10.1093/bioinformatics/btq498}.
+McNicholas, Paul D., and Thomas Brendan Murphy. 2010. {``Model-Based Clustering of Microarray Expression Data via Latent Gaussian Mixture Models.''} \emph{Bioinformatics}. \url{https://doi.org/10.1093/bioinformatics/btq498}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-clustMD}{}}%
 McParland, Damien, and Isobel Claire Gormley. 2017. \emph{clustMD: Model Based Clustering for Mixed Data}.
@@ -1086,7 +1084,10 @@ Melnykov, Volodymyr, Wei-Chen Chen, and Ranjan Maitra. 2021. \emph{MixSim: Simul
 Meng, Lingyao. 2016. {``Method for Computation of the Fisher Information Matrix in the Expectation-Maximization Algorithm.''} arXiv. \url{https://doi.org/10.48550/ARXIV.1608.01734}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-meng_rubin93}{}}%
-MENG, XIAO-LI, and Donald Rubin. 1993. {``Maximum {Likelihood Estimation} via the {ECM Algorithm}: {A General Framework}.''} \emph{Biometrika} 80. \url{https://doi.org/10.1093/biomet/80.2.267}.
+MENG, XIAO-LI, and Donald Rubin. 1993. {``Maximum {Likelihood Estimation} via the {ECM Algorithm}: {A General Framework}.''} \emph{Biometrika}. \url{https://doi.org/10.1093/biomet/80.2.267}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-meng_vandyk97}{}}%
+Meng, Xiao-Li, and David Van Dyk. 1997. {``The {EM} {Algorithm}--an {Old} {Folk}-Song {Sung} to a {Fast} {New} {Tune}.''} \emph{Journal of the Royal Statistical Society: Series B (Statistical Methodology)}. \url{https://doi.org/10.1111/1467-9868.00082}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-microbenchmark}{}}%
 Mersmann, Olaf. 2021. \emph{Microbenchmark: Accurate Timing Functions}.
@@ -1098,31 +1099,31 @@ Mohammadi, Reza. 2021. \emph{Bmixture: Bayesian Estimation for Finite Mixture of
 Mouselimis, Lampros. 2022. \emph{ClusterR: Gaussian Mixture Models, k-Means, Mini-Batch-Kmeans, k-Medoids and Affinity Propagation Clustering}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-murphy12}{}}%
-Murphy, Kevin. 2012. \emph{Machine {Learning A Probabilistic Perspective}}. {Adaptive Computation and Machine Learning series}.
+Murphy, Kevin. 2012. \emph{Machine {Learning A Probabilistic Perspective}}. Adaptive Computation; Machine Learning series. \url{https://doi.org/10.1080/09332480.2014.914768}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-rebmix2015a}{}}%
-Nagode, Marko. 2015. {``Finite Mixture Modeling via REBMIX.''} \emph{Journal of Algorithms and Optimization} 3 (2): 14--28.
+Nagode, Marko. 2015. {``Finite Mixture Modeling via REBMIX.''} \emph{Journal of Algorithms and Optimization}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-rebmix}{}}%
 ---------. 2022. \emph{Rebmix: Finite Mixture Modeling, Clustering \& Classification}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-nityasuddhi_bohning03}{}}%
-Nityasuddhi, Dechavudh, and Dankmar Böhning. 2003. {``Asymptotic Properties of the {EM} Algorithm Estimate for Normal Mixture Models with Component Specific Variances.''} \emph{Computational Statistics \& Data Analysis} 41 (3): 591--601. \url{https://doi.org/10.1016/S0167-9473(02)00176-7}.
+Nityasuddhi, Dechavudh, and Dankmar Böhning. 2003. {``Asymptotic Properties of the {EM} Algorithm Estimate for Normal Mixture Models with Component Specific Variances.''} \emph{Computational Statistics \& Data Analysis}. \url{https://doi.org/10.1016/S0167-9473(02)00176-7}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-nowakowska_etal14}{}}%
-Nowakowska, Ewa, Jacek Koronacki, and Stan Lipovetsky. 2014. {``Tractable {Measure} of {Component Overlap} for {Gaussian Mixture Models}.''}
+Nowakowska, Ewa, Jacek Koronacki, and Stan Lipovetsky. 2014. {``Tractable {Measure} of {Component Overlap} for {Gaussian Mixture Models}.''} \url{https://doi.org/10.48550/arXiv.1407.7172}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-oakes99}{}}%
-Oakes, D. 1999. {``Direct Calculation of the Information Matrix via the {EM}.''} \emph{Journal of the Royal Statistical Society} 61 (2): 479--82.
+Oakes, D. 1999. {``Direct Calculation of the Information Matrix via the {EM}.''} \emph{Journal of the Royal Statistical Society}. \url{https://doi.org/10.1111/1467-9868.00188}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-rebmix2020b}{}}%
-Panic, Branislav, Jernej Klemenc, and Marko Nagode. 2020. {``Improved Initialization of the EM Algorithm for Mixture Model Parameter Estimation.''} \emph{Mathematics} 8 (3): 373. \url{https://doi.org/10.3390/math8030373}.
+Panic, Branislav, Jernej Klemenc, and Marko Nagode. 2020. {``Improved Initialization of the EM Algorithm for Mixture Model Parameter Estimation.''} \emph{Mathematics}. \url{https://doi.org/10.3390/math8030373}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-fabMix}{}}%
 Papastamoulis, Panagiotis. 2020. \emph{fabMix: Overfitting Bayesian Mixtures of Factor Analyzers with Parsimonious Covariance and Unknown Number of Components}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-pastore_calcagni19}{}}%
-Pastore, Massimiliano, and Antonio Calcagnì. 2019. {``Measuring {Distribution Similarities Between Samples}: {A Distribution-Free Overlapping Index}.''} \emph{Frontiers in Psychology} 10. \url{https://doi.org/10.3389/fpsyg.2019.01089}.
+Pastore, Massimiliano, and Antonio Calcagnì. 2019. {``Measuring {Distribution Similarities Between Samples}: {A Distribution-Free Overlapping Index}.''} \emph{Frontiers in Psychology}. \url{https://doi.org/10.3389/fpsyg.2019.01089}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Petersen2008}{}}%
 Petersen, K. B., and M. S. Pedersen. 2008. {``The Matrix Cookbook.''} Technical University of Denmark.
@@ -1137,7 +1138,7 @@ Prates, Marcos, Victor Lachos, and Celso Cabral. 2021. \emph{Mixsmsn: Fitting Fi
 Prates, Marcos, Victor Lachos, and Aldo Garay. 2021. \emph{Nlsmsn: Fitting Nonlinear Models with Scale Mixture of Skew-Normal Distributions}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-EMMIXmfa}{}}%
-Rathnayake, Suren, Geoff McLachlan, David Peel, and Jangsun Baek. 2019. \emph{EMMIXmfa: Mixture Models with Component-Wise Factor Analyzers}.
+Rathnayake, Suren, Geoff McLachlan, David Peel, et al. 2019. \emph{EMMIXmfa: Mixture Models with Component-Wise Factor Analyzers}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-coseq}{}}%
 Rau, Andrea. 2022. \emph{Coseq: Co-Expression Analysis of Sequencing Data}.
@@ -1146,34 +1147,31 @@ Rau, Andrea. 2022. \emph{Coseq: Co-Expression Analysis of Sequencing Data}.
 Rauschenberger, Armin. 2022. \emph{Semisup: Semi-Supervised Mixture Model}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-redner_walker84}{}}%
-Redner, Richard A., and Homer F. Walker. 1984. {``Mixture {Densities}, {Maximum Likelihood} and the {Em Algorithm}.''} \emph{SIAM Review} 26 (2): 195--239.
+Redner, Richard A., and Homer F. Walker. 1984. {``Mixture {Densities}, {Maximum Likelihood} and the {Em Algorithm}.''} \emph{SIAM Review}. https://doi.org/\url{239https://doi.org/10.1137/1026034}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-robert_casella10}{}}%
-Robert, Christian, and George Casella. 2010. \emph{Introducing {Monte Carlo Methods} with {R}}. {Springer}. \url{https://doi.org/10.1007/978-1-4419-1576-4}.
+Robert, Christian, and George Casella. 2010. \emph{Introducing {Monte Carlo Methods} with {R}}. Springer. \url{https://doi.org/10.1007/978-1-4419-1576-4}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-CAMAN}{}}%
 Schlattmann, Peter, Johannes Hoehne, and Maryna Verba. 2022. \emph{CAMAN: Finite Mixture Models and Meta-Analysis Tools - Based on c.a.MAN}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-schwarz78}{}}%
-Schwarz, Gideon. 1978. {``Estimating the {Dimension} of a {Model}.''} \emph{The Annals of Statistics} 6 (2): 461--64. \url{https://doi.org/10.1214/aos/1176344136}.
+Schwarz, Gideon. 1978. {``Estimating the {Dimension} of a {Model}.''} \emph{The Annals of Statistics}. \url{https://doi.org/10.1214/aos/1176344136}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-scrucca10}{}}%
 Scrucca, Luca. 2010. {``Dimension Reduction for Model-Based Clustering.''} \emph{Statistics and Computing}. \url{https://doi.org/10.1007/s11222-009-9138-7}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-scrucca_etal16}{}}%
-Scrucca, Luca, Michael Fop, T. Brendan Murphy, and Adrian E. Raftery. 2016. {``Mclust 5: {Clustering}, {Classification} and {Density Estimation Using Gaussian Finite Mixture Models}.''} \emph{The R Journal} 8 (1): 289--317.
+Scrucca, Luca, Michael Fop, T. Brendan Murphy, et al. 2016. {``Mclust 5: {Clustering}, {Classification} and {Density Estimation Using Gaussian Finite Mixture Models}.''} \emph{The R Journal}. \url{https://doi.org/10.32614/RJ-2016-021}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-scrucca_raftery15}{}}%
-Scrucca, Luca, and Adrian E. Raftery. 2015. {``Improved Initialisation of Model-Based Clustering Using {Gaussian} Hierarchical Partitions.''} \emph{Advances in Data Analysis and Classification} 9 (4): 447--60. \url{https://doi.org/10.1007/s11634-015-0220-z}.
+Scrucca, Luca, and Adrian E. Raftery. 2015. {``Improved Initialisation of Model-Based Clustering Using {Gaussian} Hierarchical Partitions.''} \emph{Advances in Data Analysis and Classification}. \url{https://doi.org/10.1007/s11634-015-0220-z}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-shimizu_kaneko20}{}}%
-Shimizu, Naoto, and Hiromasa Kaneko. 2020. {``Direct Inverse Analysis Based on {Gaussian} Mixture Regression for Multiple Objective Variables in Material Design.''} \emph{Materials \& Design} 196: 109168. \url{https://doi.org/10.1016/j.matdes.2020.109168}.
+Shimizu, Naoto, and Hiromasa Kaneko. 2020. {``Direct Inverse Analysis Based on {Gaussian} Mixture Regression for Multiple Objective Variables in Material Design.''} \emph{Materials \& Design}. \url{https://doi.org/10.1016/j.matdes.2020.109168}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-fmrs}{}}%
 Shokoohi, Farhad. 2022. \emph{Fmrs: Variable Selection in Finite Mixture of AFT Regression and FMR Models}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-taushanov_berchtold19}{}}%
-Taushanov, Zhivko, and André Berchtold. 2019. {``Bootstrap Validation of the Estimated Parameters in Mixture Models Used for Clustering.''} \emph{Journal de La Société Française de Statistique}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-AdaptGauss}{}}%
 Thrun, Michael, Onno Hansen-Goos, and Alfred Ultsch. 2020. \emph{AdaptGauss: Gaussian Mixture Models (GMM)}.
@@ -1188,22 +1186,22 @@ Turner, Rolf. 2021. \emph{Mixreg: Functions to Fit Mixtures of Regressions}.
 Viroli, Cinzia, and Geoffrey J. McLachlan. 2020. \emph{Deepgmm: Deep Gaussian Mixture Models}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-walsh75}{}}%
-Walsh, Gordon Raymond. 1975. \emph{Methods of {Optimization}}. {Wiley}.
+Walsh, Gordon Raymond. 1975. \emph{Methods of {Optimization}}. Wiley.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-IMIX}{}}%
 Wang, Ziqiao. 2022. \emph{IMIX: Gaussian Mixture Model for Multi-Omics Data Integration}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-xu_knight10}{}}%
-Xu, Dinghai, and John Knight. 2010. {``Continuous {Empirical Characteristic Function Estimation} of {Mixtures} of {Normal Parameters}.''} \emph{Econometric Reviews} 30 (1): 25--50. \url{https://doi.org/10.1080/07474938.2011.520565}.
+Xu, Dinghai, and John Knight. 2010. {``Continuous {Empirical Characteristic Function Estimation} of {Mixtures} of {Normal Parameters}.''} \emph{Econometric Reviews}. \url{https://doi.org/10.1080/07474938.2011.520565}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-dppmix}{}}%
-Xu, Yanxun, Peter Mueller, Donatello Telesca, and David J. H. Shih. 2020. \emph{Dppmix: Determinantal Point Process Mixture Models}.
+Xu, Yanxun, Peter Mueller, Donatello Telesca, et al. 2020. \emph{Dppmix: Determinantal Point Process Mixture Models}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-yang05}{}}%
-Yang, Yuhong. 2005. {``Can the Strengths of {AIC} and {BIC} Be Shared? {A} Confict Between Model Identification and Regression Estimation.''} \emph{Biometrika} 92: 937--50. \url{https://doi.org/10.1093/biomet/92.4.937}.
+Yang, Yuhong. 2005. {``Can the Strengths of {AIC} and {BIC} Be Shared? {A} Confict Between Model Identification and Regression Estimation.''} \emph{Biometrika}. \url{https://doi.org/10.1093/biomet/92.4.937}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-mixtools}{}}%
-Young, Derek, Tatiana Benaglia, Didier Chauveau, and David Hunter. 2020. \emph{Mixtools: Tools for Analyzing Finite Mixture Models}.
+Young, Derek, Tatiana Benaglia, Didier Chauveau, et al. 2020. \emph{Mixtools: Tools for Analyzing Finite Mixture Models}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R-mixR}{}}%
 Yu, Youjiao. 2021. \emph{mixR: Finite Mixture Modeling for Raw and Binned Data}.
@@ -1568,11 +1566,11 @@ However, while parsimonious representations can largely reduce the computational
 
 When the sub dimension \(d_j\) is known, a closed version is generally available for the M-step of the EM algorithm, however \(d_j\) is itself an hyperparameter to estimate. Though, (Bouveyron, Celeux, and Girard 2011) has shown that a classical Cattell's scree-test could be used to asymptotically estimate the intrinsic dimension of each cluster. Compared to the previous approach, this method has a strong theoretical background and strong impact on the running times performance.
 
-Taking a concrete use case from the help documentation of the package \pkg{HDclassif}, it enabled to cluster a dataset of 10 classes with 130 observations overall and described in a 1024-dimensional space (consider the famous machine-learning digit recognition problem). Variants of these approaches have been developed in the following packages: \pkg{HDclassif}, \pkg{fabMix}, \pkg{EMMIXmfa} and \pkg{pgmm}. We refer the interested reader to the educational vignette of \pkg{HDclassif}: \href{https://rdrr.io/pkg/HDclassif/man/HDclassif-package.html}{HDclassif} and papers (Paul David McNicholas and Murphy 2008a; P. D. McNicholas et al. 2010a; Paul D. McNicholas and Murphy 2010).
+Taking a concrete use case from the help documentation of the package \pkg{HDclassif}, it enabled to cluster a dataset of 10 classes with 130 observations overall and described in a 1024-dimensional space (consider the famous machine-learning digit recognition problem). Variants of these approaches have been developed in the following packages: \pkg{HDclassif}, \pkg{fabMix}, \pkg{EMMIXmfa} and \pkg{pgmm}. We refer the interested reader to the educational vignette of \pkg{HDclassif}: \href{https://rdrr.io/pkg/HDclassif/man/HDclassif-package.html}{HDclassif} and papers (Paul David McNicholas and Murphy 2008; P. D. McNicholas et al. 2010; Paul D. McNicholas and Murphy 2010).
 
 \color{blue}
 
-Historically, the first mention of a probabilistic framework with an application to dimension reduction in the context of finite mixture models goes back to Tipping and Bishop (1999), based on principal component analysis. G. J. McLachlan, Peel, and Bean (2003) and Mclachlan and Peel (2000) extend this original model by postulating that the distribution of the data within any latent class could be described using the tools of the factor analysis field\footnote{Although principal component analysis and factor analysis are closely related, we can differentiate both approaches by their differing objective: while PCA seeks to capture the overall variability of the dataset, factor analysis focuses on describing the intra-variability between covariates. In practice, the differences between the two approaches are minor, we can notably show that the output of PCA is one of the solutions suggested by standard factor analysis.} Finally, building on the parsimonious parametrisations already theorised for GMMs (see previous section) , Paul David McNicholas and Murphy (2008b), P. D. McNicholas et al. (2010b) and Bouveyron, Girard, and SCHMID (2007) proposed a variety of constraints, but this time directly defined on the projected subspace. Since all methods based on factor analysis provide a transition matrix, using the two or three most informative eigen values and their associated eigen vectors in order to project the dataset on a smaller subspace provides a simple visualisation tool for representing high dimensional datasets.
+Historically, the first mention of a probabilistic framework with an application to dimension reduction in the context of finite mixture models goes back to Tipping and Bishop (1999), based on principal component analysis. G. J. McLachlan, Peel, and Bean (2003) and Mclachlan and Peel (2000) extend this original model by postulating that the distribution of the data within any latent class could be described using the tools of the factor analysis field\footnote{Although principal component analysis and factor analysis are closely related, we can differentiate both approaches by their differing objective: while PCA seeks to capture the overall variability of the dataset, factor analysis focuses on describing the intra-variability between covariates. In practice, the differences between the two approaches are minor, we can notably show that the output of PCA is one of the solutions suggested by standard factor analysis.} Finally, building on the parsimonious parametrisations already theorised for GMMs (see previous section) , Paul David McNicholas and Murphy (2008), P. D. McNicholas et al. (2010) and Bouveyron, Girard, and SCHMID (2007) proposed a variety of constraints, but this time directly defined on the projected subspace. Since all methods based on factor analysis provide a transition matrix, using the two or three most informative eigen values and their associated eigen vectors in order to project the dataset on a smaller subspace provides a simple visualisation tool for representing high dimensional datasets.
 However, this method may is not suitable for unravelling the clustering structure. Instead, \emph{the GMMDR method}, first proposed by Scrucca (2010) and implemented in the \code{MclustDR} function, from \pkg{mclust} package, aims at recovering the subspace that best captures the underlying latent clustering structure (we notably expect invariance of the global overlap in the sampling space and the corresponding projected subspace). More precisely, the main objective of the GMMDR technique is to infer the global \emph{change-of-basis matrix} \(\boldsymbol{Q}\) that minimises the differences in the a posteriori probabilities of assigning each observation \(i\) to a given cluster \(s_i\), knowing the value of the vector of observed covariates \(\boldsymbol{x}_i\). Namely, we are looking for the orientation matrix \(\boldsymbol{Q}\) that maximally ensures the following objective (Eq. \eqref{eq:GMMDR}):
 
 \begin{equation}
@@ -1719,7 +1717,7 @@ the covariance matrix of the MLE (X. Cao and Spall 2012).
 
 However all these methods require to compute second derivatives of the
 log-likelihood leading to some disadvantages from a computational point
-of view. More recently, Meng (2016) and Delattre and Kuhn (2019) proposed an
+of view. More recently, L. Meng (2016) and Delattre and Kuhn (2019) proposed an
 accelerated algorithm requiring only computation of first order
 derivatives. A similar alternative is implemented in the
 \CRANpkg{mixsmsn} package (Prates, Lachos, and Cabral 2021):
@@ -1732,13 +1730,7 @@ gradient of the log-likelihood Equation
     \label{eq:approximation-fim-gradient}
 \end{equation}
 
-according to an idea developed in paper Basford et al. (1997). A benchmark
-reviewing the main bootstrap methods used for the validation of the MLE
-estimates in mixture models is proposed in Taushanov and Berchtold (2019).
-
-For a more general introduction to Gaussian mixtures, including other
-models and parametrisations in the multivariate case, we refer the
-reader to the reference book \emph{Gaussian parsimonious clustering models}
+according to an idea developed in paper Basford et al. (1997). For a more general introduction to Gaussian mixtures, including other models and parametrisations in the multivariate case, we refer the reader to the reference book \emph{Gaussian parsimonious clustering models}
 Celeux and Govaert (1992).
 
 \hypertarget{an-analytic-formula-of-the-overlap-for-univariate-gaussian-mixtures}{%
@@ -1960,14 +1952,8 @@ non-informative Dirichlet prior distribution on the ratios and the
 higher expected performances of the algorithm are not demonstrated on
 real use cases (Figueiredo and Jain 2002).
 
-The Expectation/Conditional Maximisation (ECM) (MENG and Rubin 1993) is a GEM
-(general EM) algorithm used when the maximisation of the auxiliary
-function yields a non-closed form to solve. GEM algorithms share the
-same theoretical properties of the EM algorithm, especially local
-consistency of the estimates. ECM is used with GMMs when the
-optimisation must satisfy a linear constraint on their means. A GEM
-dealing with such constraints is available in the \pkg{mixtools}
-package.
+The Expectation/Conditional Maximisation (ECM) (MENG and Rubin 1993) belongs to the super-family of GEM (general EM) algorithms, generally used when the maximisation of the auxiliary function yields a non-closed form to solve. To do so, the ECM algorithm replaces the intractable M-step of the EM algorithm by a number of computationally simpler conditional maximization (CM) steps (instead of inferring all parameters at once, the conditional step retrieves a set of optimal parameters, conditioned by the current value of the others). ECM is for instance used with GMMs including an additional linear constraint on the means of the components, as provided by the \pkg{mixtools}
+package. As documented in Table \ref{tab:high-comparison-packages-pdf}, \pgk{EMMIXmfa} implements an extension of the ECM, termed alternating expectation--conditional maximization (AECM) algorithm (X.-L. Meng and Van Dyk 1997), and which can be used to reduce the computational burden of estimating the parameters of mixtures of factor analysers. The AECM algorithm is an extension of the ECM algorithm that allows the complete data used for estimation to differ on each CM-step (generally, in order to speed the computation, by selecting a subset of the most leveraged observations). GEM algorithms share the same asymptotic theoretical properties of the EM algorithm, especially the local consistency of the estimates returned.
 
 \hypertarget{a-small-simulation-to-evaluate-the-impact-of-outliers}{%
 \subsection{A small simulation to evaluate the impact of outliers}\label{a-small-simulation-to-evaluate-the-impact-of-outliers}}
@@ -2257,7 +2243,7 @@ package.
 Only the packages dedicated to high-dimensionality, listed in our first bullet point, are relevant to benchmark their performance as a function of the number of dimensions. Indeed, although some packages computing mixtures of regressions do implement features allowing to to handle high-dimensional datasets, such as \pkg{RobMixReg} and \pkg{fmerPack}, they all assume a diagonal covariance structure, and accordingly independent covariates.
 
 The two existing strategies are then limited to projection to a smaller subspace, usually within the theoretical framework of factor analysis or to perform a feature selection strategy.\\
-We quickly discarded \pkg{fabMix}, since it only retrieves the parameters of GMMs within a Bayesian framework, while we focused on strategies retrieving the MLE via the EM algorithm. The core function \code{pgmmEM} in the \pkg{pgmm} package unfortunately includes a seed for the the algorithm's initialization that cannot be disabled. Such a feature is generally not recommended for reproducibility, since by defining the seed internally in the function, we were not able to independently generate new reproducible datasets in our benchmark (instead, it is recommended to set the seed value once and for all at the beginning of the virtual simulation).
+We quickly discarded \pkg{fabMix}, since it only retrieves the parameters of GMMs within a Bayesian framework, while we focused on strategies retrieving the MLE via the EM algorithm. The core function \code{pgmmEM} in the \pkg{pgmm} package unfortunately includes a seed for the the algorithm's initialisation that cannot be disabled. Such a feature is generally not recommended for reproducibility, since by defining the seed internally in the function, we were not able to independently generate new reproducible datasets in our benchmark (instead, it is recommended to set the seed value once and for all at the beginning of the virtual simulation). Additionally, while implementing the same AECM variant of the EM algorithm as \pkg{EMMIXmfa}, as detailed in \protect\hyperlink{appendix-b-extensions-of-the-em-algorithm-to-overcome-its-limitations}{Appendix B: Extensions of the EM algorithm to overcome its limitations}, its convergence criteria differs from the other benchmarked packages. Indeed, instead of considering a limiting number of iterations along with a prior threshold, either \emph{absolute} or \emph{relative}, it examines only the difference between the current value of the log-likelihood and a corresponding asymptotic estimate, based on the Aitken acceleration (Lindsay 1995). In brief, the asymptotic value of the log-likelihood is the limiting sum of a geometric series, whose common ratio, the so-called Aitken acceleration, is the relative fraction of the log-likelihood gain of the current iteration. Therefore, the use of a different termination criterion precludes any further fair comparison with the other benchmarked packages, as there is no direct equivalence between the two methods.
 
 Finally, \pkg{clustvarsel} is not really tailored for datasets with a large number of dimensions, but rather for datasets with a small number of observations. Indeed, by performing a sequential search in the model space in a forward-backward process (namely by adding variables to the null model till we recover the full model, with all features), the algorithm requires intensive computational resources (for instance, there are already \(2^{10}=1024\) models to be tested in dimension 10). Instead of a greedy strategy, it would have been interesting to implement a in independent and highly parallelizable feature selection process by sampling the model space. To do so, (J. Chen and Chen 2008; He and Chen 2016) suggests a stochastic and greedy feature selection strategy, using notably the \emph{eBIC} criteria in order to have an equal chance to draw a model of any dimension\footnote{Indeed, by simply uniformly sampling among the \(2^D\) models available, the probability of getting models with \(D/2\) features is much higher than drawing models at the boundaries, displaying either few or close to \(|D|\) covariates.}. Such a strategy is commonly used in \emph{ensemble learning}.
 
@@ -2279,7 +2265,8 @@ Interestingly, the probability of generating a sample among the \(N\) repetition
 
 Unless stated explicitly, we keep the default hyper-parameters and custom global options provided by each package. For instance, the \pkg{flexmix} package has a default option, \emph{minprior}, set by default to 0.05 which removes any component present in the mixture with a ratio below \(0.05\). Besides, we only implement the fully unconstrained model in both univariate and multivariate settings, as it is the only parametrisation implemented in all the seven packages and the most popular to perform classic GMM clustering, as no restrictive and difficult-to-test assumptions are required.
 
-\color{blue} Additionally, as stated in \protect\hyperlink{parameters-estimation-in-a-high-dimensional-context}{Parameters estimation in a high-dimensional context}, the intrinsic dimension \(d_j\) for each cluster \(j\) is a hyperparameter, which is generally inferred independently from the GMM estimation itself. While a variety of methods from the field of factor analysis, enumerated in \href{https://en.wikipedia.org/wiki/Factor_analysis\#Criteria_for_determining_the_number_of_factors}{Factor criteria selection}, have been developed to estimate the intrinsic dimension, to our knowledge, only two of them have been implemented in CRAN packages: the \emph{Cattell's scree-test} (Cattell 1966) or the dimension selection graph using one of the \emph{penalty metric} discussed in the appendix \protect\hyperlink{model-selection}{Model selection} (Bergé, Bouveyron, and Girard 2012). However, while \pkg{HDclassif} natively implements a performance criterion method for determining the dimension of the spanning space, performed under the hood by function \code{mixsmsn::hdcc}, none of the other packages evaluated implemented a dimension selection feature. Instead, we infer it for each of the packages dedicated to high-dimensionality with HDclassif, using using the so-called model ``AkjBkQkD'', for which the intrinsic dimension is common to all components but the characteristics unique for each component Finally, we use among all supplied parametrisations, the least constrained one. Namely, we used the model ``AkjBkQkDk'' with HDclassif, in which not only the individual features of the covariance matrix but also the spanning dimension are unique for each cluster, and function \code{mcfa} of the \pkg{ EMMIXmfa} package, in which the \emph{transition matrix} is common to all components (referred to as the orientation matrix in Appendix \protect\hyperlink{parameters-estimation-in-a-high-dimensional-context}{Parameters estimation in a high-dimensional context}. \color{black}
+\color{blue} Additionally, as stated in \protect\hyperlink{parameters-estimation-in-a-high-dimensional-context}{Parameters estimation in a high-dimensional context}, the intrinsic dimension \(d_j\) for each cluster \(j\) is a hyperparameter, which is generally inferred independently from the GMM estimation itself. While a variety of methods from the field of factor analysis, enumerated in \href{https://en.wikipedia.org/wiki/Factor_analysis\#Criteria_for_determining_the_number_of_factors}{Factor criteria selection}, have been developed to estimate the intrinsic dimension, to our knowledge, only two of them have been implemented in CRAN packages: the \emph{Cattell's scree-test} (Cattell 1966) or the dimension selection graph using one of the \emph{penalty metric} discussed in the appendix \protect\hyperlink{model-selection}{Model selection} (Bergé, Bouveyron, and Girard 2012). However, while \pkg{HDclassif} natively implements a performance criterion method for determining the dimension of the spanning space, performed under the hood by function \code{mixsmsn::hdcc}, none of the other packages evaluated implemented a dimension selection feature. Instead, we infer it for each of the packages dedicated to high-dimensionality with HDclassif, using using the so-called model ``AkjBkQkD'', for which the intrinsic dimension is common to all components but the characteristics unique for each component Finally, we use among all supplied parametrisations, the least constrained one. Namely, we used the model ``AkjBkQkDk'' with HDclassif, in which not only the individual features of the covariance matrix but also the spanning dimension are unique for each cluster, and function \code{mcfa} of the \pkg{ EMMIXmfa} package, in which the \emph{transition matrix} is common to all components (referred to as the orientation matrix in Appendix \protect\hyperlink{parameters-estimation-in-a-high-dimensional-context}{Parameters estimation in a high-dimensional context}.
+\color{black}
 
 If all the seven reviewed packages accept initial estimates provided by the user, both the input and the output format differ between them, requiring an intensive processing to standardise both the initial estimates input, and the output estimates. Notably, a well-known issue with the mixture models is that they identifiable up to a permutation of the components (alternatively, changing the index of the labels do not change the likelihood of the model). Assigning one component of the mixture to a specific index is generally immaterial, as the main objective is to return the estimates. However, when it comes to compare the estimated parameters with the true estimates, we must associate unequivocally each component to a specific index. To do so, we set a partial ordering, sorting the components by increasing order of their mean components. Actually, if the ratio or the covariance estimates can be equal for all the components, it is generally not the case for the centroids, as this would result into a degenerate distribution. The consequence and some illustrations of the non-identifiability of the mixture distributions are discussed in section \href{https://stats.stackexchange.com/questions/265898/why-is-a-normal-mixture-model-not-identifiable-and-why-does-it-matter}{Identifiability of finite mixture models}, in Dai and Mukherjea (2001) and in Book Robert and Casella (2010).
 
@@ -2298,7 +2285,7 @@ We detail below some additional functions we implement to both homogenise input 
 
 \color{blue}
 
-On the contrary, none of the packages we evaluated that were dedicated to high-dimensional datasets allow the user to provide its own estimates. Thus, when any of the benchmarked initialization methods listed in Table \ref{tab: general-parameter-description-pdf}, was internally available in the package, we use it with the same hyperparameters described in {[}Initialization of the EM algorithm{]}. If not, we provide instead a vector containing the MAP assignments inferred by the native initialisation method, in a process similar to that used used with hierarchical clustering.
+On the contrary, none of the packages we evaluated that were dedicated to high-dimensional datasets allow the user to provide its own estimates. Thus, when any of the benchmarked initialisation methods listed in Table \ref{tab:general-parameter-description-pdf}, was internally available in the package, we use it with the same hyperparameters described in \protect\hyperlink{initialisation-of-the-em-algorithm}{Initialisation of the EM algorithm}. If not, we provide instead a vector containing the MAP assignments inferred by the native initialisation method, in a process similar to that used used with hierarchical clustering.
 \color{black}
 
 In addition to the plots displaying the bootstrap parameter estimations associated to Scenarios in Tables \ref{tab:parameter-configuration-univariate}, \ref{tab:parameter-configuration-bivariate} and \ref{tab:parameter-configuration-HD}, we have computed summary statistics to compare the performances of the reviewed packages:
@@ -2381,6 +2368,15 @@ We enumerate below some additional features supplied by the packages:
   In addition to log rescaling, \pkg{GMKMcharlie} includes an additional argument, \emph{embedNoise}, to avoid degenerate GMMs by adding a small constant to any diagonal term (by default \(10^{-6}\)). Besides, instead of controlling whether there was a relative change of the log-likelihood, the EM implementation of \pkg{GMKMcharlie} controls instead that there was no significant relative difference in the estimated parameters in the ten previous optimisations\footnote{In our simulation, the behaviour of the \pkg{GMKMcharlie} did not differ significantly from the remaining packages of the second class. However, the use of an Euclidean distance criterion may be problematic when parameters are not on the same order of magnitude, requiring their prior normalisation}. Finally, since \pkg{GMKMcharlie} has implemented a parallelised version of the algorithm, it ensures using a a time limit that the algorithm indeed terminates (by default, set to one hour).
 \item
   \pkg{flexmix} performs an unbiased estimate of the covariance matrix, instead of the corresponding ML covariance estimate (divides by a factor \(n-1\) instead of the number of observations \(n\)). Such a choice does not affect the results in our simulations, but may have a stronger impact when fitting models to a small number of observations.
+\end{itemize}
+
+\color{blue}
+
+\begin{itemize}
+\tightlist
+\item
+  Similarly to flexmix, the \pkg{HDclassif} package implements some constraints to preserve numerical stability. The \texttt{min.individuals} attribute, like the \texttt{minprior} attribute of \texttt{flexmix} function, discards any cluster having fewer observations\footnote{by default, set to two, i.e.~the minimum number of replications to derive an unbiased estimate of the empirical variance of a sample}. However, unlike \pkg{flexmix}, the algorithm stops instead of reparametrising the mixture problem with a smaller number of components. Coupled with the \emph{Cattell's scree-test}, the \texttt{noise.ctrl} attribute is the minimum threshold of a feature's contribution to the overall variance, computed as the corresponding normalised eigenvalue, in order to be included in the mixture of factor analysers. This additional constraint ensures a parsimonious dimension selection process, so that the number of selected intrinsic dimensions cannot be greater than or equal to the order of the discarded eigenvalues.
+  \color{black}
 \end{itemize}
 
 \newpage
@@ -3214,7 +3210,7 @@ Finally, Figures \ref{fig:general-balanced-overlapping-bivariate}, \ref{fig:gene
 \hypertarget{supplementary-figures-and-tables-in-the-hd-simulation}{%
 \subsection{Supplementary Figures and Tables in the HD simulation}\label{supplementary-figures-and-tables-in-the-hd-simulation}}
 
-Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of parameters used to simulate Gaussian distributions in a rather high dimension context:
+Table below (\ref{tab:parameter-configuration-HD}) lists the complete set of parameters used to simulate Gaussian distributions in the high dimensional benchmark:
 
 \begin{table}[!h]
 
@@ -3322,7 +3318,7 @@ HD8b & 2e-01 & 2000 & 0.69 / 0.31 & \includegraphics[scale=0.05]{figs/red_cross.
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.4\linewidth]{figs/HD/HD-separated-unbalanced-ellipsoidal} 
+{\centering \includegraphics[width=0.6\linewidth]{figs/HD/HD-separated-unbalanced-ellipsoidal} 
 
 }
 
@@ -3636,14 +3632,12 @@ In Panel D, we display the boxplots associated to scenario HD6a) (unbalanced and
   \tightlist
   \item
     \textbf{S1.} Bootstrap distributions of the estimated parameters for each
-    scenario described in \ref{tab:parameter-configuration-univariate}, for each
-    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
+    scenario described in \ref{tab:parameter-configuration-univariate}.
   \item
     \textbf{S2.} Mean, standard deviation, bias and MSE for each individually
-    estimated parameter in scenarios listed in \ref{tab:parameter-configuration-univariate}, for each
-    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
+    estimated parameter in scenarios listed in \ref{tab:parameter-configuration-univariate}.
   \item
-    \textbf{S3.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \ref{tab:parameter-configuration-univariate}, for each benchmarked package. We selected the \emph{k}-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
+    \textbf{S3.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all nine scenarios described in \ref{tab:parameter-configuration-univariate}, for each benchmarked package. We selected the \emph{k}-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario.
   \item
     \textbf{S4.} Distribution of the time computations taken by the six initialisation methods listed in Table \ref{tab:general-parameter-description-pdf}.
   \end{itemize}
@@ -3654,8 +3648,7 @@ In Panel D, we display the boxplots associated to scenario HD6a) (unbalanced and
   \tightlist
   \item
     \textbf{S5.} Bootstrap distributions of the estimated parameters used to
-    generate Figure \ref{fig:outliers}, for each combination of package
-    and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}. We additionally include the \pkg{otrimle} package, dedicated to these extreme distributions. Two scenarios were tested, introducing \(2 \%\) and \(4 \%\) of outliers drawn from an improper uniform distribution.
+    generate Figure \ref{fig:outliers}. We additionally include the \pkg{otrimle} package, dedicated to these extreme distributions. Two scenarios were tested, introducing \(2 \%\) and \(4 \%\) of outliers drawn from an improper uniform distribution.
   \item
     \textbf{S6.} Mean, standard deviation, bias and MSE for each individually
     estimated parameter in both scenarios visualised on Figure
@@ -3663,19 +3656,30 @@ In Panel D, we display the boxplots associated to scenario HD6a) (unbalanced and
     initialisation method.
   \end{itemize}
 \item
-  Additional files related to the multivariate setting:
+  Additional files related to the bivariate benchmark:
 
   \begin{itemize}
   \item
     \textbf{S7.} Bootstrap distributions of the estimated parameters for each
-    scenario described in \ref{tab:parameter-configuration-bivariate}, for each
-    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
+    scenario described in \ref{tab:parameter-configuration-bivariate}.
   \item
     \textbf{S8.} Mean, standard deviation, bias and MSE for each individually
-    estimated parameter in scenarios listed in \ref{tab:parameter-configuration-bivariate}, for each
-    combination of package and initialisation method listed in Table \ref{tab:general-parameter-description-pdf}.
+    estimated parameter in scenarios listed in \ref{tab:parameter-configuration-bivariate}.
   \item
-    \textbf{S9.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \ref{tab:parameter-configuration-bivariate}, for each benchmarked package. We selected the \emph{k}-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario. The general options (number of observations, criterion threshold, \ldots) are listed in Table \ref{tab:general-parameter-description-pdf}.
+    \textbf{S9.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \ref{tab:parameter-configuration-bivariate}, for each benchmarked package. We selected the \emph{k}-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario.
+  \end{itemize}
+\item
+  Additional files related to the high-dimensional benchmark:
+
+  \begin{itemize}
+  \item
+    \textbf{S10.} Bootstrap distributions of the estimated parameters for each
+    scenario described in \ref{tab:parameter-configuration-HD}.
+  \item
+    \textbf{S11.} Mean, standard deviation, bias and MSE for each individually
+    estimated parameter in scenarios listed in \ref{tab:parameter-configuration-HD}.
+  \item
+    \textbf{S12.} Distribution of the running times taken for the EM estimation of the parameters of the GMM, across all twenty scenarios described in \ref{tab:parameter-configuration-HD}, for each benchmarked package. We selected the \emph{k}-means algorithm to initialise the EM algorithm, as being the least variable for a given package and scenario.
   \end{itemize}
 \end{itemize}
 
