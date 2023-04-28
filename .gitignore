@@ -3,14 +3,8 @@
 .RData
 .Ruserdata
 *.log
-*.html
-*.pdf
 .RDataTmp
 *test*
-figs/**
-data/**
-scripts/**
-**/anciens articles/
 # History files
 .Rhistory
 .Rapp.history
@@ -46,4 +40,3 @@ docs/
 po/*~
 # RStudio Connect folder
 rsconnect/
-old version
