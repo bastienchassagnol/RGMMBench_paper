@@ -40,3 +40,5 @@ docs/
 po/*~
 # RStudio Connect folder
 rsconnect/
+old_versions/
+RGMMBench-Bastien-CHASSAGNOL

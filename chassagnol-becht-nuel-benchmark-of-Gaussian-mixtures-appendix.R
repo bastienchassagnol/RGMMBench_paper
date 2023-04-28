@@ -449,7 +449,7 @@ download_trends <- ggplot(downloaded_mixture_packages, aes(x=date, y=count, shap
 download_trends
 
 
-## ----parameter-configuration-univariate, layout = "l-body-outset"-------------
+## ----parameter-configuration-univariate, layout = "l-page"--------------------
 univariate_configuration  %>%   mutate(Proportions=purrr::map_chr(true_parameters, ~paste(.x$p, collapse = " / ")),
                                        Means=purrr::map_chr(true_parameters, ~paste(.x$mu, collapse = " / ")),
                                        Correlations=purrr::map_chr(true_parameters, ~paste(.x$sigma, collapse = " / "))) %>%
@@ -459,7 +459,7 @@ univariate_configuration  %>%   mutate(Proportions=purrr::map_chr(true_parameter
       escape=F, align = "c") %>%
   kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T) %>% row_spec(1:9, hline_after = T) %>%
-  kable_styling(bootstrap_options = c("hover", "condensed"))
+  kable_styling(bootstrap_options = c("hover"))
 
 
 ## ----prepare-legend-univariate------------------------------------------------
@@ -516,7 +516,7 @@ html_caption_intermediate_scenario_univariate <- "Benchmark summary plots of sce
 pdf_caption_intermediate_scenario_univariate <- "Benchmark summary plots of scenarios U4 and U6 in Table \\ref{tab:parameter-configuration-univariate} (small unbalance, with additional overlap in scenario U6). Panel A and B display the univariate GMM distributions of respectively scenarios U4 and U6, and Panel C and D the benchmarked distributions of respectively scenarios U4 and U6, built as Panel C of Figure \\ref{fig:four-component-balanced-separated}."
 
 html_global_heatmap_univariate <- "Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure (2), in the bivariate setting."
-pdf_global_heatmap_univariate <- "Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure \\ref{fig:dichotomy-package-conclusion}, in the bivariate setting."
+pdf_global_heatmap_univariate <- "Correlation heatmaps of the estimated parameters extended to the four initialisation methods benchmarked, using the same configuration described in Figure (2), in the bivariate setting."
 
 html_univariate_init_time <- "Distribution of the running times taken by each initialisation algorithm enumerated in Table \\@ref(tab:general-parameter-description-html), across all scenarios listed in Table \\@ref(tab:parameter-configuration-univariate), sorted by increasing ID number in the lexicographical order."
 pdf_univariate_init_time <- "Distribution of the running times taken by each initialisation algorithm enumerated in Table \\ref{tab:general-parameter-description-pdf}, across all scenarios listed in Table \\ref{tab:parameter-configuration-univariate}, sorted by increasing ID number in the lexicographical order."
@@ -871,7 +871,7 @@ ggsave("./figs/univariate_initialisation_time_computations.png", inialisation_pl
 knitr::include_graphics("./figs/univariate_initialisation_time_computations.png", dpi = 75)
 
 
-## ----parameter-configuration-bivariate, layout = "l-body-outset"--------------
+## ----parameter-configuration-bivariate, layout = "l-page"---------------------
 bivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, ~paste(.x$p, collapse = " / ")),
                                        Means=purrr::map_chr(true_parameters, ~paste0("(", paste0(.x$mu[,1], collapse = ","), ");(", paste0(.x$mu[,2], collapse = ","), ")")),
                                        Correlations=purrr::map_chr(true_parameters, ~paste(c(.x$sigma[1, 2, 1], .x$sigma[1, 2, 2]), collapse = " / "))) %>%
@@ -881,7 +881,7 @@ bivariate_configuration  %>% mutate(Proportions=purrr::map_chr(true_parameters, 
       escape=F, align = "c") %>%
   kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T) %>% row_spec(1:20, hline_after = T) %>%
-  kable_styling(bootstrap_options = c("hover", "condensed"))
+  kable_styling(bootstrap_options = c("hover"))
 
 
 ## ----prepare-legend-bivariate-------------------------------------------------
@@ -934,7 +934,7 @@ html_unbalanced_well_separated_general_bivariate <- "Benchmark summary plots of 
 pdf_unbalanced_well_separated_general_bivariate <- "Benchmark summary plots of respectively scenarios B16, B17 and B20 in Table \\ref{tab:parameter-configuration-bivariate} featuring unbalanced and well-separated clusters, with the same layout as Figure \\ref{fig:general-balanced-overlapping-bivariate}."
 
 html_global_heatmap_bivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure (2)."
-pdf_global_heatmap_bivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure \\ref{fig:dichotomy-package-conclusion}."
+pdf_global_heatmap_bivariate <- "Correlation heatmaps of the estimated parameters in the bivariate setting extended to the four initialisation methods benchmarked, with the most discriminating scenario B11, using the same process described in Figure (2)."
 
 
 ## ----compute-bivariate-overlapping-unbalanced-negative-correlated-------------
@@ -1386,7 +1386,7 @@ ggsave("./figs/bivariate/heatmap_bivariate.png", multivariate_correlation_heatma
 knitr::include_graphics("./figs/bivariate/heatmap_bivariate.png", dpi = 75)
 
 
-## ----parameter-configuration-HD, layout = "l-body-outset"---------------------
+## ----parameter-configuration-HD, layout = "l-page"----------------------------
 HD_configuration_formatted <- HD_configuration  %>%
   rename(Entropy=entropy, Spherical=is_diagonal, `Number of observations`=nobservations) %>%
   mutate(Proportions=purrr::map_chr(true_parameters, ~paste(round(.x$p, digits = 2), collapse = " / ")),
@@ -1403,7 +1403,7 @@ HD_configuration_formatted %>%
       col.names = linebreak(c("ID", "OVL", "Number of \nobservations", "Proportions", "Spherical"))) %>%
   kable_styling(latex_options=c("hold_position", "scale_down")) %>%
   row_spec(0,bold=T) %>% row_spec(1:16, hline_after = T) %>%
-  kable_styling(bootstrap_options = c("hover", "condensed"))
+  kable_styling(bootstrap_options = c("hover"))
 
 
 ## ----prepare-legend-HD--------------------------------------------------------
@@ -1459,7 +1459,7 @@ pdf_caption_HD_impact_num_observations <- "Overview of scenarios HD1 a) and b) a
 
 
 html_global_heatmap_HD <- "Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, *k*-means and rebmix) in the most discriminating scenario HD8a), using the same process described in Figure (2)."
-pdf_global_heatmap_HD <- "Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, \\textit{k}-means and rebmix) in the most discriminating scenario HD8a), using the same process described in Figure \\ref{fig:dichotomy-package-conclusion}."
+pdf_global_heatmap_HD <- "Correlation heatmaps of the estimated parameters in the high dimensional (HD) setting extended to the three initialisation methods benchmarked (respectively hc, \\textit{k}-means and rebmix) in the most discriminating scenario HD8a), using the same process described in Figure (2)."
 
 
 ## ----compute-HD-separated-unbalanced-ellipsoidal------------------------------
